@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.bfly.dao.BflyUserVoteInfoDao">
+
+    <select id="selectPageVOFromSnapshot" resultType="com.yeweihui.modules.bfly.entity.BflyUserVoteInfo">
+        SELECT uv.id, uv.bfly_user_id, uv.bfly_vote_id, uv.meeting_signature_url, uv.vote_signature_url, uv.status, uv.meeting_submit_time, uv.vote_submit_time,
+        u.nickname, brv.zone_id,
+        z.`name`,
+        brv.court, brv.building, brv.unit_name, brv.floor_name, brv.housing_area, brv.user_name,
+        bv.title
+        FROM bfly_user_vote uv
+        LEFT JOIN bfly_user u ON u.id = uv.bfly_user_id
+        LEFT JOIN bfly_room_vote_snapshot brv ON brv.user_vote_id = uv.id
+        LEFT JOIN bfly_vote bv ON bv.id = uv.bfly_vote_id
+        LEFT join zones z on z.id = brv.zone_id
+        <where>
+            <if test="zoneId != null and zoneId != 0">
+                AND brv.zone_id = #{zoneId}
+            </if>
+            <choose>
+                <when test="null==statusList or  statusList.length==0"></when>
+                <when test="statusList.length==1">
+                    AND uv.status = #{statusList[0]}
+                </when>
+                <when test="statusList.length>1">
+                    AND uv.status in
+                    <foreach collection="statusList" item="item" index="index"
+                             open="(" close=")" separator=",">
+                        '${item}'
+                    </foreach>
+                </when>
+            </choose>
+            <if test="nickname != null and nickname != ''">
+                AND u.nickname LIKE CONCAT('%', #{nickname}, '%')
+            </if>
+            <if test="title != null and title != ''">
+                AND bv.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="userName != null and userName != ''">
+                AND u.username LIKE CONCAT('%', #{userName}, '%')
+            </if>
+        </where>
+        order by uv.id DESC
+    </select>
+
+<!--    <select id="selectPageVO" resultType="com.yeweihui.modules.bfly.entity.BflyUserVoteInfo">-->
+<!--        SELECT uv.id, uv.bfly_user_id, uv.bfly_vote_id, uv.meeting_signature_url, uv.vote_signature_url, uv.status, uv.meeting_submit_time, uv.vote_submit_time,-->
+<!--        u.nickname, u.zone_id,-->
+<!--        z.name,-->
+<!--        br.court, br.building, br.unit_name, br.floor_name, br.housing_area, u.username userName,-->
+<!--        bv.title-->
+<!--        FROM bfly_user_vote uv-->
+<!--        LEFT JOIN bfly_user u ON u.id=uv.bfly_user_id-->
+<!--        LEFT JOIN zones z ON z.id=u.zone_id-->
+<!--        LEFT JOIN bfly_room br ON br.id=u.bfly_room_id-->
+<!--        LEFT JOIN bfly_vote bv ON bv.id=uv.bfly_vote_id-->
+<!--        <where>-->
+<!--        <if test="zoneId != null and zoneId != 0">-->
+<!--            AND u.zone_id = #{zoneId}-->
+<!--        </if>-->
+<!--        <choose>-->
+<!--            <when test="null==statusList or  statusList.length==0"></when>-->
+<!--            <when test="statusList.length==1">-->
+<!--                AND uv.status = #{statusList[0]}-->
+<!--            </when>-->
+<!--            <when test="statusList.length>1">-->
+<!--                AND uv.status in-->
+<!--                <foreach collection="statusList" item="item" index="index"-->
+<!--                         open="(" close=")" separator=",">-->
+<!--                    '${item}'-->
+<!--                </foreach>-->
+<!--            </when>-->
+<!--        </choose>-->
+<!--        <if test="nickname != null and nickname != ''">-->
+<!--            AND u.nickname LIKE CONCAT('%', #{nickname}, '%')-->
+<!--        </if>-->
+<!--        <if test="title != null and title != ''">-->
+<!--            AND bv.title LIKE CONCAT('%', #{title}, '%')-->
+<!--        </if>-->
+<!--        <if test="userName != null and userName != ''">-->
+<!--            AND u.username LIKE CONCAT('%', #{userName}, '%')-->
+<!--        </if>-->
+<!--        </where>-->
+<!--    </select>-->
+
+
+
+</mapper>

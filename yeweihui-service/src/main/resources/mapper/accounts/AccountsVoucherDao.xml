@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.accounts.dao.AccountsVoucherDao">
+
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.accounts.entity.AccountsVoucherEntity" id="accountsVoucherMap">
+        <result property="id" column="id"/>
+        <result property="accountsId" column="accounts_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUime" column="update_time"/>
+        <result property="date" column="date"/>
+        <result property="tagNumber" column="tag_number"/>
+        <result property="makeUsername" column="make_username"/>
+    </resultMap>
+	
+	<!-- 凭证列表 -->
+    <select id="simpleList" resultType="com.yeweihui.modules.accounts.entity.AccountsVoucherEntity">
+        SELECT * FROM `accounts_voucher`
+        <include refid="queryParam" />
+    </select>
+	<!--查询条件-->
+    <sql id="queryParam">
+        <where>
+        	<!-- 账簿ID -->
+            <if test="accountsId">
+                AND accounts_id = #{accountsId}
+            </if>
+            <!-- 凭证日期 -->
+            <if test="date != null">
+                AND date = #{date}
+            </if>
+            <!-- 记字号数字 -->
+            <if test="tagNumber != null">
+                AND tag_number = #{tagNumber}
+            </if>
+            <!-- 财务信绑定的科目信息 -->
+            <if test="subjectId != null and subjectId.size > 0">
+                AND id in(
+                	select voucher_id from `accounts_financialinform` where subject_id in (
+                	<foreach collection="subjectId" item="subjectIdItem" index="index" separator="," >
+                    	#{subjectIdItem}
+                	</foreach>
+                	)
+                )
+            </if>
+        </where>
+    </sql>
+    
+    <!-- 获取指定账簿下的凭证信息集合 -->
+	<select id="listByAccountsId" resultType="com.yeweihui.modules.accounts.entity.AccountsVoucherEntity">
+        select * from `accounts` where accounts_id = #{accountsid}
+    </select>
+    <!-- 获取指定凭证下可用的下一位凭证记字号数字 -->
+	<select id="getNextTagNumber" resultType="java.lang.Integer">
+        select (MAX(tag_number)+1) as NextTagNumber from `accounts_voucher` where accounts_id = #{accountsid}
+    </select>
+</mapper>

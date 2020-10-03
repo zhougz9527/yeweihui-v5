@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.BillDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.BillEntity" id="billMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="uid" column="uid"/>
+        <result property="name" column="name"/>
+        <result property="money" column="money"/>
+        <result property="content" column="content"/>
+        <result property="happenDate" column="happen_date"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="total" column="total"/>
+        <result property="checked" column="checked"/>
+        <result property="recordStatus" column="record_status"/>
+    </resultMap>
+
+    <!-- 分页 -->
+    <select id="selectPageVO" resultType="com.yeweihui.modules.vo.api.vo.BillVO">
+        SELECT
+            bill.id,
+            bill.create_time,
+            bill.update_time,
+            bill.zone_id,
+            bill.uid,
+            bill.`name`,
+            bill.money,
+            bill.content,
+            bill.happen_date,
+            bill.type,
+            bill.`status`,
+            bill.total,
+            bill.checked,
+            bill.record_status,
+        zones.name zone_name,
+            `user`.realname,
+            <if test="verifyUid != null">
+                bill_member.status member_status,
+            </if>
+            `user`.realname,
+            `user`.avatar_url
+        FROM
+            bill
+        LEFT JOIN zones ON bill.zone_id = zones.id
+        left join `user` on `user`.id = bill.uid
+        <if test="verifyUid != null">
+            left join bill_member on bill_member.bid = bill.id
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            bill
+        LEFT JOIN zones ON bill.zone_id = zones.id
+        <if test="verifyUid != null">
+            left join bill_member on bill_member.bid = bill.id
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+    <select id="selectPageEn" resultType="com.yeweihui.modules.operation.entity.BillEntity">
+        SELECT
+        bill.id,
+        bill.create_time,
+        bill.update_time,
+        bill.zone_id,
+        bill.uid,
+        bill.`name`,
+        bill.money,
+        bill.content,
+        bill.happen_date,
+        bill.type,
+        bill.`status`,
+        bill.total,
+        bill.checked,
+        bill.record_status,
+        zones.name zone_name,
+        `user`.realname,
+        <if test="verifyUid != null">
+            bill_member.status member_status,
+        </if>
+        `user`.realname,
+        `user`.avatar_url
+        FROM
+        bill
+        LEFT JOIN zones ON bill.zone_id = zones.id
+        left join `user` on `user`.id = bill.uid
+        <if test="verifyUid != null">
+            left join bill_member on bill_member.bid = bill.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by bill.id desc
+        </if>
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 关键字（昵称/手机号/真实姓名） -->
+            <if test="keyword != null and keyword != ''">
+                AND (
+                bill.content like CONCAT('%', #{keyword}, '%')
+                or `user`.nickname like CONCAT('%', #{keyword}, '%')
+                or `user`.realname like CONCAT('%', #{keyword}, '%')
+                or `user`.mobile like CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+
+            <!-- 小区id -->
+            <if test="zoneId != null">
+                AND bill.zone_id = #{zoneId}
+            </if>
+            <!-- 授权行业主管查看 -->
+            <if test="authZoneIdList != null">
+                AND bill.zone_id in
+                <foreach item="authZoneIdList" index="index" collection="authZoneIdList"
+                         open="(" separator="," close=")">
+                    #{authZoneIdList}
+                </foreach>
+            </if>
+            <!-- 授权查看的小区id authZoneId -> {Long@12673}34 -->
+            <if test="authZoneId != null and authZoneId != 0">
+                AND bill.zone_id = #{authZoneId}
+            </if>
+            <!-- 关键字（经办人） -->
+            <if test="keyword != null and keyword != ''">
+                AND (bill.name like CONCAT('%', #{keyword}, '%'))
+            </if>
+
+
+            <!-- 报销用户id -->
+            <if test="uid != null">
+                AND bill.uid = #{uid}
+            </if>
+            <!-- 报销状态 0等待 1通过 2未通过 -->
+            <if test="billStatus != null">
+                AND bill.status = #{billStatus}
+            </if>
+            <!-- 报销类型 1小额主任审批 2大额业委会审批 -->
+            <if test="billType != null">
+                AND bill.type = #{billType}
+            </if>
+            <!-- 报销参与状态 0未审批 1已通过 2未通过 -->
+            <if test="billMemberStatus != null">
+                AND bill_member.status = #{billMemberStatus} and bill_member.type = 1
+            </if>
+            <!-- 审批用户id -->
+            <if test="verifyUid != null">
+                AND bill_member.uid = #{verifyUid} and bill_member.type = 1
+            </if>
+
+            <!-- 状态 0未审核 1通过 2未通过 -->
+            <if test="billMemberStatusList != null and billMemberStatusList.size() >0">
+                and bill_member.type = 1 and bill_member.status IN
+                <foreach collection="billMemberStatusList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+            <!-- 报销状态 0等待 1通过 2未通过 -->
+            <if test="billStatusList != null and billStatusList.size() >0">
+                and bill.status IN
+                <foreach collection="billStatusList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+            <!-- 显示状态 -->
+            <if test="minRecordStatus != null">
+                and bill.record_status >= #{minRecordStatus}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.NoticeReadRecordDao">
+
+
+    <select id="selectReadMembersByNoticeId" resultType="com.yeweihui.modules.operation.entity.NoticeReadRecordEntity">
+        SELECT
+        notice_read_record.id,
+        notice_read_record.nid,
+        notice_read_record.uid,
+        notice_read_record.read_time,
+        `user`.role_name,
+        `user`.realname,
+        `user`.avatar_url
+        FROM
+         notice_read_record
+        left join `user` on notice_read_record.uid = `user`.id
+        <where>
+            notice_read_record.nid = #{nid}
+        </where>
+    </select>
+
+</mapper>

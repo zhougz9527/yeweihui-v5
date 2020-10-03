@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>投票信息</title>
+    <#include "/header.html"/>
+    <style>
+        .grid-btn > .form-group {
+            margin-bottom: 0 !important;
+        }
+
+        .grid-btn {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-horizontal > .form-group > .control-label {
+            padding-top: 0px !important;
+        }
+
+        .control-label {
+            padding-top: 0px !important;
+            text-align: right;
+        }
+
+        .linkBtn {
+            cursor: pointer;
+            color:#3D83FB;
+        }
+
+        .control-label{
+            width:26%;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div v-show="user.zoneId == 0" class="form-group col-sm-2">
+                <div class="col-sm-2 control-label">小区</div>
+                <div class="col-sm-10">
+                    <el-select v-model="q.zoneId" placeholder="请选择" clearable filterable :disabled="!admin">
+                        <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group col-sm-2">
+                <div class="col-sm-2 control-label">表决主题</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="q.voteTitle" @keyup.enter="query"
+                           placeholder="表决主题"/>
+                </div>
+            </div>
+            <div class="form-group col-sm-2">
+                <div class="col-sm-2 control-label">业主姓名</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="q.userName" @keyup.enter="query"
+                           placeholder="业主姓名"/>
+                </div>
+            </div>
+            <div class="form-group col-sm-2">
+                <div class="col-sm-2 control-label">投票状态</div>
+                <div class="col-sm-10">
+                    <el-select v-model="q.status" placeholder="请选择" clearable filterable>
+                        <el-option :key="1" :label="'未投票'":value="1"></el-option>
+                        <el-option :key="2" :label="'已投票'":value="2"></el-option>
+                    </el-select>
+                </div>
+            </div>
+
+
+
+            <a class="btn btn-default" @click="query">查询</a>
+
+
+        </div>
+
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <!--浏览页面-->
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+
+        <form class="form-horizontal">
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">表决名称</div>
+                <div class="col-sm-10">
+                    {{voteInfo.title}}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">表决展示状态</div>
+                <div class="col-sm-10">
+                    <span v-if="voteInfo.isShow === 1">显示</span>
+                    <span v-else>隐藏</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">确认日期</div>
+                <div class="col-sm-10">
+                    {{voteInfo.voteSubmitTime||'暂无'}}
+                </div>
+            </div>
+
+            <div v-for="(value, key, index) in voteInfo.childVote">
+                <div class="child-vote-border">
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">子表决{{ key + 1 }}</div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">子表决名称</div>
+                        <div class="col-sm-10">
+                            {{value.title}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label"></div>
+                        <div class="col-sm-10">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>表决事项</th>
+                                    <th>主要内容</th>
+                                </tr>
+                                </thead>
+                                <tbody v-for="(v, k, i) in value.bflyVoteItems">
+                                <tr>
+                                    <td>{{v.matter}}</td>
+                                    <td>
+                                        {{v.content}}
+                                        <div class="linkBtn" v-if="v.attachmentUrls" @click="getVoteItemDetail(v.attachmentUrls)">查看详情></div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">表决说明</div>
+                        <div class="col-sm-10">
+                            {{value.description}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">表决选项</div>
+                        <div class="col-sm-10">
+                        </div>
+                    </div>
+                    <div v-for="(v, k, i) in JSON.parse(value.options)">
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">选项{{k+1}}</div>
+                            <div class="col-sm-8">
+                                {{v}}
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group" >
+                        <div class="col-sm-2 control-label">投票选项</div>
+                        <div class="col-sm-8" v-if="voteInfo.bflyUserVote.status == 2">
+                            {{value.bflyUserSubVote.resultOption||'--'}}
+                        </div>
+                        <div class="col-sm-8" v-else>
+                            未投票
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">业主姓名</div>
+                <div class="col-sm-10">
+                    {{voteInfo.userVote.username?voteInfo.userVote.username:'--'}}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">业主房号</div>
+                <div class="col-sm-10">
+                    {{voteInfo.userVote.floorName||'--'}}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">建筑面积</div>
+                <div class="col-sm-10">
+                    {{voteInfo.userVote.housingArea||'--'}}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">业主签名</div>
+                <div class="col-sm-10">
+                    <img width="100%" v-if="voteInfo.bflyUserVote.voteSignatureUrl" :src="voteInfo.bflyUserVote.voteSignatureUrl" alt="">
+                    <div v-else>暂无</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">业主自拍头像</div>
+                <div class="col-sm-10">
+                    <img width="100%" v-if="voteInfo.bflyUserVote.voteSignatureHeaderUrl" :src="voteInfo.bflyUserVote.voteSignatureHeaderUrl" alt="">
+                    <div v-else>暂无</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="goBack" value="返回"/>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+<script src="${request.contextPath}/statics/js/modules/operation/bflyvoteinfo.js?_${.now?long}"></script>
+
+</body>
+</html>

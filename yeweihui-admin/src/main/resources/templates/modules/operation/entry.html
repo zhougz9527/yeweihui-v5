@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<#include "/header.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>收支录入</title>
+<style>
+.grid-btn {
+	display: flex;
+	/* align-items: center; */
+	position: relative;
+}
+
+.el-upload__input {
+	display: none !important;
+}
+
+.border_black {
+	overflow: hidden;
+}
+
+.layui-col-md3 {
+	width: 33%;
+	text-align: center;
+	/* padding: 10px; */
+}
+
+.layui-col-md3 .xj-card {
+	border: 1px solid #ffffff;
+	height: 50px;
+	background-color: rgba(255, 255, 255, .8);
+}
+
+.lay-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+
+.layui-content {
+	width: 450px;
+	position: absolute;
+	right: 0;
+}
+
+
+
+.abstract {
+	border: none;
+	outline: none;
+}
+
+
+
+.el-form-item {
+	font-size: 12px;
+	border-bottom: 1px solid white;
+}
+
+.el-form-item__content {
+	font-size: 12px;
+}
+
+.el-form-item {
+    margin-bottom: 0px;
+}
+</style>
+<script>
+
+<#assign byPageInfo=(RequestParameters.pageRoleTag!"")/>
+//启用账簿权限
+var Role_Accounts_Add = ${shiro.hasPermission(byPageInfo+"accounts:accounts:add")?string("true","false")};
+//审核账簿权限
+var Role_Accounts_Audit = ${shiro.hasPermission(byPageInfo+"accounts:accounts:submitAuditResult")?string("true","false")};
+//凭证查询权限
+var Role_Voucher_List = ${shiro.hasPermission(byPageInfo+"accounts:voucher:list")?string("true","false")};
+</script>
+</head>
+
+<body>
+	<div id="rrapp" v-cloak >
+	    <template>
+	    	<div v-show="isLockScreen" style="width:100%; height:100%; position: fixed; top:0px; left:0px; z-index:999; background:rgba(255,255,255,0.3);"></div>
+	    </template>
+	    <template>
+  			<el-dialog title="欢迎使用小区财务记账系统" :visible.sync="isAddAccounts" center width="600px">
+				
+				<el-form label-width="80px" label-width="150px" :model="currentAccounts">
+  					<el-form-item label-width="220px" label="记账起始月份:">
+    					<el-date-picker size="small" v-model="currentAccounts.startDate" type="month" value-format="yyyy-MM" placeholder="请选择" :picker-options="optionalStartDate"></el-date-picker>
+  					</el-form-item>
+  					<el-form-item label-width="220px" label="起始月上月经营结余:">
+    					<el-input-number size="small" v-model="currentAccounts.lastOperatingSurplus" min="0" max="999999999" placeholder="请输入" controls-position="right" style="width:220px;"></el-input-number>
+  					</el-form-item>
+  					<el-form-item label-width="220px" label="起始月上月押金结余:">
+    					<el-input-number size="small" v-model="currentAccounts.lastPledgeSurplus" min="0" max="999999999" placeholder="请输入" controls-position="right" style="width:220px;"></el-input-number>
+  					</el-form-item>
+				</el-form>
+				
+    			<div slot="footer" class="dialog-footer">
+      				<el-button type="primary" @click="submitAccounts">开始使用</el-button>
+    			</div>
+  			</el-dialog>
+		</template>
+		<template>
+  			<el-dialog title="请选择账簿结束月份" :visible.sync="isSubmitAduit" center width="600px">
+
+				<div style="text-align: center;">
+					<el-date-picker size="mini" v-model="currentAccounts.startDate" type="month" value-format="yyyy-MM" disabled="true"></el-date-picker> &nbsp;&nbsp;-&nbsp;&nbsp; 
+					<el-date-picker size="mini" v-model="currentAccounts.endDate" type="month" value-format="yyyy-MM" :picker-options="optionalEndDate" placeholder="请选择" :disabled="!isCanSealingAccount"></el-date-picker>
+				</div>
+				<template>
+				<div style="width:60%; margin:auto;">
+				<el-alert title="当前时间不允许对账簿进行封账。" type="error" center show-icon v-show="!isCanSealingAccount" :closable="false" style="margin-top:10px;"></el-alert>
+				<el-alert title="当前账簿对账单信息为空，不影响提交。" type="warning" center show-icon v-show="(fileList.length == 0)" :closable="false" style="margin-top:10px;"></el-alert>
+    			</div></template>
+    			<div slot="footer" class="dialog-footer">
+      				<el-button type="primary" @click="submitAduit" v-show="isCanSealingAccount">提交审核</el-button>
+    			</div>
+  			</el-dialog>
+		</template>
+		<template>
+  			<el-dialog title="审核意见" :visible.sync="isSubmitAduitResult" center width="600px">
+    			<div slot="footer" class="dialog-footer">
+      				<el-button type="warning" @click="submitAduitResult(false)">不通过</el-button>
+      				<el-button type="primary" @click="submitAduitResult(true)">通过</el-button>
+    			</div>
+  			</el-dialog>
+		</template>
+
+		<div v-show="showList">
+			<div class="grid-btn">
+				<el-row>
+				<el-tag effect="dark" size="medium">会计期间 ：{{currentAccounts.startDate}}{{(currentAccounts.endDate!=null)?" ~ "+currentAccounts.endDate:""}}</el-tag> 
+				<el-tag type="info" size="medium" effect="dark" v-if="canEdit()">录入中</el-tag> 
+				<el-tag type="info" size="medium" effect="dark" v-if="currentAccounts.status == 1">审核中</el-tag> 
+				<el-tag type="info" size="medium" effect="dark" v-if="currentAccounts.status == 2">审核失败</el-tag> 
+				<#if shiro.hasPermission(byPageInfo+"accounts:accounts:getStatementOfAccounts")>
+				<el-button type="warning" size="small" @click="accessoryManage">银行对账单管理</el-button>
+				<el-dialog title="银行对账单管理" :visible.sync="dialogAccessoryVisible"> 
+					
+					<el-upload class="upload-demo" action="../../sys/oss/upload" :on-preview="handlePreview" :disabled="!canEdit() || !${shiro.hasPermission(byPageInfo+"accounts:accounts:updateStatementOfAccounts")?string("true","false")}" :on-remove="handleRemove" :before-remove="beforeRemove" :on-success="handleSuccess" :on-exceed="handleExceed" :before-upload="handleBeforeUpload" :file-list="fileList" list-type="picture" accept="image/jpeg,image/jpg,image/png"> 
+						<#if shiro.hasPermission(byPageInfo+"accounts:accounts:updateStatementOfAccounts")>
+						<el-button size="small" type="primary" v-show="canEdit()">点击上传</el-button>
+						<div slot="tip" class="el-upload__tip" v-show="canEdit()" style="position:relative;"><el-button type="success" size="small" @click="submitStatement()" v-show="canEdit()" style="position:absolute; left:100px; top:-39px;">提交</el-button>
+							*支持图片，最大不超过10M
+							<p class="upload-tip">请耐心等待，完成上传后再进行下一步操作</p>
+						</div>
+						</#if>
+					</el-upload>
+					
+				</el-dialog>
+				</#if>
+				<#if shiro.hasPermission(byPageInfo+"accounts:accounts:submitAudit")>
+				<el-button type="success" size="small" @click="SubmitAduitButtonClick" v-if="canEdit()" style="margin-left:0px;">封账，提交审核</el-button>
+				</#if>
+				<#if shiro.hasPermission(byPageInfo+"accounts:accounts:submitAuditResult")>
+				<el-button type="success" size="small" v-if="currentAccounts.status == 1" style="margin-left:0px;" @click="isSubmitAduitResult = true">审核</el-button>
+				</#if>
+				 </el-row>
+				<div class="layui-content">
+					<div class="border_black">
+						<div class="lay-row">
+							<div class="layui-col-md3">
+								<div class="xj-card">
+									<div>
+										<i class="fa fa-file-text" aria-hidden="true"></i> <span>已录经营收入</span>
+									</div>
+									<div>{{report.operationsReceipts}}</div>
+								</div>
+							</div>
+							<div class="layui-col-md3">
+								<div class="xj-card">
+									<div>
+										<i class="fa fa-file-text" aria-hidden="true"></i> <span>已录经营支出</span>
+									</div>
+									<div>{{report.operationsDisbursements}}</div>
+
+								</div>
+							</div>
+							<div class="layui-col-md3">
+								<div class="xj-card">
+									<div>
+										<i class="fa fa-file-text" aria-hidden="true"></i> <span>已录经营结余</span>
+									</div>
+									<div>{{report.operationsBlance}}</div>
+
+
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="border_black">
+						<div class="lay-row">
+							<div class="layui-col-md3">
+								<div class="xj-card">
+									<div>
+										<i class="fa fa-file-text" aria-hidden="true"></i> <span>已录押金收入</span>
+									</div>
+									<div>{{report.depositReceipts}}</div>
+
+								</div>
+							</div>
+							<div class="layui-col-md3">
+								<div class="xj-card">
+									<div>
+										<i class="fa fa-file-text" aria-hidden="true"></i> <span>已录押金支出</span>
+									</div>
+									<div>{{report.depositDisbursements}}</div>
+
+								</div>
+							</div>
+							<div class="layui-col-md3">
+								<div class="xj-card">
+									<div>
+										<i class="fa fa-file-text" aria-hidden="true"></i> <span>已录押金结余</span>
+									</div>
+									<div>{{report.depositBlance}}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<el-form :inline="true" style="margin-top: 70px;">
+				<#if shiro.hasPermission(byPageInfo+"accounts:voucher:list")>
+				<el-form-item label="凭证编号"><el-input-number v-model="q.voteTitle" size="small" controls-position="right" :min="1" :max="9999" @keyup.enter="query" placeholder="请输入"/></el-form-item>
+				<el-form-item label="科目"><el-cascader size="small" :options="subjects" :props="{ value: 'id', label: 'name',children:'children',expandTrigger: 'hover'}" filterable :show-all-levels="true" clearable @change="subjectChange($event)"/></el-form-item>
+				<el-form-item label="日期">
+					<el-date-picker size="small" v-model="q.creatDate" align="right" type="date" placeholder="选择日期"
+                            :picker-options="pickerOptions" :clearable="false" value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd">
+                            </el-date-picker>
+                </el-form-item>
+                </#if>
+                <el-form-item>
+                	<#if shiro.hasPermission(byPageInfo+"accounts:voucher:list")>
+                	<el-button type="primary" round size="small" @click="changbg(1)">&nbsp;&nbsp;查询&nbsp;&nbsp;</el-button>
+                    </#if>
+                    <#if shiro.hasPermission(byPageInfo+"accounts:voucher:add")>
+                    <el-button type="primary" round size="small" @click="changbg(2)" v-show="canEdit()">&nbsp;&nbsp;录入&nbsp;&nbsp;</el-button>
+                    </#if>
+                    <#if shiro.hasPermission(byPageInfo+"accounts:voucher:update")>
+                    <el-button type="primary" round size="small" @click="changbg(3)" v-show="canEdit()">&nbsp;&nbsp;编辑&nbsp;&nbsp;</el-button>
+                    </#if>
+                    <#if shiro.hasPermission(byPageInfo+"accounts:voucher:delete")>
+                    <el-button type="danger" round size="small" @click="changbg(4)" v-show="canEdit()">&nbsp;&nbsp;删除&nbsp;&nbsp;</el-button>
+                    </#if>
+                    <#if shiro.hasPermission(byPageInfo+"accounts:voucher:viewPdf")>
+                    <el-button type="primary" round size="small" @click="viewPdfPrint">&nbsp;&nbsp;打印&nbsp;&nbsp;</el-button>
+                    </#if>
+                    <#if shiro.hasPermission(byPageInfo+"accounts:voucher:exportExcel")>
+                    <el-button type="primary" round size="small" @click="viewPdfPrintPdf">&nbsp;&nbsp;导出&nbsp;&nbsp;</el-button>
+                    </#if>
+                </el-form-item>
+			</el-form>
+			
+			  <!-- <el-col :span="12">
+			  <#if shiro.hasPermission(byPageInfo+"accounts:voucher:list")>
+			  	凭证编号&nbsp;<el-input-number v-model="q.voteTitle" size="small" controls-position="right" :min="1" :max="9999" @keyup.enter="query" placeholder="请输入"></el-input-number>
+				&nbsp;&nbsp;科目&nbsp;<el-cascader size="small" :options="subjects" :props="{ value: 'id', label: 'name',children:'children',expandTrigger: 'hover'}" filterable :show-all-levels="true" clearable @change="subjectChange($event)"></el-cascader>
+                &nbsp;&nbsp;日期&nbsp;<el-date-picker size="small" v-model="q.creatDate" align="right" type="date" placeholder="选择日期"
+                            :picker-options="pickerOptions" :clearable="false" value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd">
+                            </el-date-picker>
+                    	&nbsp;&nbsp;
+                    		<el-button type="primary" round size="small" @click="changbg(1)">&nbsp;&nbsp;查询&nbsp;&nbsp;</el-button>
+                    		</#if>
+                    		<#if shiro.hasPermission(byPageInfo+"accounts:voucher:add")>
+                    		<el-button type="primary" round size="small" @click="changbg(2)" v-show="canEdit()">&nbsp;&nbsp;录入&nbsp;&nbsp;</el-button>
+                    		</#if>
+                    		<#if shiro.hasPermission(byPageInfo+"accounts:voucher:update")>
+                    		<el-button type="primary" round size="small" @click="changbg(3)" v-show="canEdit()">&nbsp;&nbsp;编辑&nbsp;&nbsp;</el-button>
+                    		</#if>
+                    		<#if shiro.hasPermission(byPageInfo+"accounts:voucher:delete")>
+                    		<el-button type="danger" round size="small" @click="changbg(4)" v-show="canEdit()">&nbsp;&nbsp;删除&nbsp;&nbsp;</el-button>
+                    		</#if>
+                    		<#if shiro.hasPermission(byPageInfo+"accounts:voucher:viewPdf")>
+                    		<el-button type="primary" round size="small" @click="viewPdfPrint">&nbsp;&nbsp;打印&nbsp;&nbsp;</el-button>
+                    		</#if>
+                    		<#if shiro.hasPermission(byPageInfo+"accounts:voucher:exportExcel")>
+                    		<el-button type="primary" round size="small" @click="viewPdfPrintPdf">&nbsp;&nbsp;导出&nbsp;&nbsp;</el-button>
+                    		</#if>
+                    	</el-col>  --></el-row>
+
+			<template> 
+			 <el-table ref="multipleTable" :data="tableData6" tooltip-effect="dark" border height="590" style="width: 100%; margin:10px auto; border-color:#ccc;" @selection-change="handleSelectionChange" :span-method="mergeVoucherRow" v-loading.lock="isLoadVoucherData" element-loading-text="" element-loading-background="rgba(255, 255, 255, 0.6)"> 
+			    <el-table-column type="selection"> </el-table-column> 
+			    <el-table-column prop="voucher.date" label="日期" align="center" min-width="100" :formatter="voucherDateFormat"> </el-table-column> 
+				<el-table-column label="凭证号" align="center" min-width="100"> 
+					<template slot-scope="scope"> 记-{{scope.row.voucher.tagNumber}} </template> 
+				</el-table-column> 
+				<el-table-column prop="digest" label="摘要" align="center" min-width="100"> </el-table-column> 
+				<el-table-column prop="accountsSubject.name" label="科目" align="center" min-width="100">
+					<template slot-scope="scope">
+						{{getSubjectLabels(scope.row.subjectIds)}}
+					</template>
+				</el-table-column> 
+				<el-table-column prop="auxiliary" label="辅助账" align="center" min-width="100"> </el-table-column> 
+				<el-table-column label="借方金额" align="center" min-width="100"> 
+					<template slot-scope="scope"> {{scope.row.monery}}<span v-if="scope.row.accountsSubject.rdtype == 1">{{scope.row.money}}</span> <span v-else>0</span> 
+					</template> 
+				</el-table-column> 
+				<el-table-column label="贷方金额" align="center" min-width="100"> 
+					<template slot-scope="scope"> <span v-if="scope.row.accountsSubject.rdtype == 2">{{scope.row.money}}</span> <span v-else>0</span>
+					</template> 
+				</el-table-column> 
+				<el-table-column prop="voucher.date" label="附件张数" align="center" min-width="100"> 
+					<template slot-scope="scope"> {{scope.row.accessory.fileInfos.length}} </template> 
+				</el-table-column> 
+				<el-table-column prop="voucher.makeUsername" label="制单人" align="center" min-width="100"> </el-table-column> 
+				<el-table-column label="审核人" align="center" min-width="100"> 
+					<template slot-scope="scope"> {{currentAccounts.auditor}} 
+					</template> 
+				</el-table-column> 
+				<el-table-column label="查看附件" align="center" min-width="150"> 
+					<template slot-scope="scope"> 
+                    	<template v-for="fileInfo in scope.row.accessory.fileInfos"> 
+                          	<el-link type="info" :href="fileInfo.url" target="_blank" style="text-decoration:none;">{{fileInfo.name}} </el-link><br />
+						</template> 
+					</template> 
+				</el-table-column> 
+			</el-table>
+			</template>
+			<div class="block" align="center">
+				<el-pagination 
+      				@size-change="handleSizeChange"
+      				@current-change="changPage"
+      				:current-page="pageInfo.currPage"
+      				:page-sizes="[5, 10, 15]"
+      				:page-size="pageInfo.pageSize"
+      				:page-count="pageInfo.totalPage"
+      				:total="pageInfo.totalCount"
+      				layout="total, sizes, prev, pager, next, jumper">
+    			</el-pagination>
+			</div>
+		</div>
+	</div>
+	
+	<script src="${request.contextPath}/statics/js/modules/operation/entry.js?_${.now?long}"></script>
+</body>
+
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>业主导入</title>
+    <#include "/header.html"/>
+    <style>
+        /* 和bootstrap样式冲突*/
+        .el-upload__input {
+            display: none !important;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .file-upload-input {
+            opacity:0;
+            width:54px;
+            height:34px;
+            /*overflow: hidden;*/
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            /*width:54px!important;*/
+            /*height:34px!important;*/
+
+        }
+
+        .upload-file-form {
+            position: relative!important;
+        }
+
+        #upload-file-form {
+            display: inline-block;
+        }
+
+        .description{
+            border: 1px solid #ddd;
+            margin:20px 0;
+            padding:10px;
+        }
+
+        .tableWrap{
+            width:800px;
+            /*max-height:630px;*/
+            z-index: 1000;
+            box-sizing: border-box;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+
+        }
+        .wrap {
+            /*max-height:600px;*/
+            position:relative;
+            padding-bottom:10px;
+            overflow: hidden;
+            overflow-y: scroll;
+        }
+        .importWrap {
+            position:relative;
+            vertical-align: middle;
+            display:inline-block;
+            width:54px;
+            height:34px;
+            line-height:34px;
+            text-align: center;
+            background-color: #337ab7;
+            color:#fff;
+            border-radius: 4px;
+        }
+        .importWrap:hover {
+            cursor: pointer;
+        }
+
+        .importDetailPop {
+            position:fixed;
+            left:0;
+            top:0;
+            width:100%;
+        }
+        .mask{
+            z-index: 999;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        .btnWrap {
+            width:100%;
+            display:flex;
+            justify-content: center;
+            margin-top:10px;
+
+        }
+        .btnWrap .btn-primary {
+            margin-right:20px;
+        }
+        /*th{*/
+        /*    width:50px;*/
+        /*}*/
+
+
+    </style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+        <div class="description">
+            <p>说明：请先选择需要上传业主的小区，每个小区仅可导入一次，请确保所选小区与导入业主的小区一致！</p>
+            <p>请按照模板录入业主信息，如果一个房号多个业主信息，请导入多条</p>
+            <p>苑：小区内分区，如X区，X苑等，可为空</p>
+            <p>幢：业主楼号，如1号楼，1幢，商铺和排屋直接输入 商铺/排屋</p>
+            <p>单元号：楼层单元号，可为空，排屋和商铺如有编号可输入编号，如排屋1号，商铺2号</p>
+            <p>房号：业主房号，业主具体房号</p>
+            <p>实例：</p>
+            <p>A区1幢 1单元101室</p>
+            <p>1幢 1单元101室</p>
+            <p>A区商铺1号101室</p>
+            <p>A区排屋4号402室</p>
+        </div>
+        <div class="form-group col-sm-2">
+            <div class="col-sm-2 control-label">小区</div>
+            <div class="col-sm-10">
+                <el-select v-model="zoneId" placeholder="请选择" clearable filterable :disabled="!admin">
+                    <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name"
+                               :value="item.id"></el-option>
+                </el-select>
+            </div>
+        </div>
+    <div class="importWrap">
+        导入
+        <input id="file-input" type="file" class="file-upload-input" @change="importExcel($event)" accept=".xls, .xlsx"/>
+    </div>
+        <button class="btn btn-primary" @click="btnExport">下载模版</button>
+
+    <div v-show="importSuccess" class="importDetailPop">
+        <div class="mask"></div>
+        <div class="tableWrap">
+            <div class="wrap">
+                <el-table
+                        :data="usersListResult"
+                        style="width: 100%"
+                        height="400"
+                >
+                    <el-table-column
+                            type="index"
+                            width="60">
+                    <el-table-column
+                            prop="id"
+                            label="ID"
+                            width="60"
+                            >
+                    </el-table-column>
+                    <el-table-column
+                            prop="court"
+                            label="苑"
+                            width="100"
+                            >
+                    </el-table-column>
+                    <el-table-column
+                            prop="building"
+                            label="楼号"
+                            width="60"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="unitName"
+                            label="单元"
+                            width="60"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="floorName"
+                            label="房号"
+                            width="60"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="userName"
+                            label="真实姓名"
+                            width="100"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="phoneNum"
+                            label="手机"
+                            width="150"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="idCard"
+                            label="身份证号"
+                            width="200"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="housingArea"
+                            label="建筑面积"
+                            width="100"
+                    >
+                    </el-table-column>
+                </el-table>
+<!--                <table>-->
+<!--                    <tr>-->
+<!--                        <th>ID</th>-->
+<!--                        <th>苑</th>-->
+<!--                        <th>楼号</th>-->
+<!--                        <th>单元</th>-->
+<!--                        <th>房号</th>-->
+<!--                        <th>真实姓名</th>-->
+<!--                        <th>手机</th>-->
+<!--                        <th>身份证号</th>-->
+<!--                        <th>建筑面积</th>-->
+<!--                    </tr>-->
+
+<!--                    <tr v-for="list in usersListResult">-->
+<!--                        <td>{{list.id}}</td>-->
+<!--                        <td>{{list.court}}</td>-->
+<!--                        <td>{{list.building}}</td>-->
+<!--                        <td>{{list.unitName}}</td>-->
+<!--                        <td>{{list.floorName}}</td>-->
+<!--                        <td>{{list.userName}}</td>-->
+<!--                        <td>{{list.phoneNum}}</td>-->
+<!--                        <td>{{list.idCard}}</td>-->
+<!--                        <td>{{list.housingArea}}</td>-->
+<!--                    </tr>-->
+<!--                </table>-->
+<!--   <table id="jqGrid"></table>-->
+<!--            <div id="jqGridPager"></div>-->
+            <div class="btnWrap">
+                <button class="btn btn-primary" @click="confirmImport">确认导入</button>
+                <button class="btn" @click="cancelImport">取消</button>
+            </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="${request.contextPath}/statics/js/modules/operation/bflyuserimport.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/xlsx.mini.min.js"></script>
+<script src="${request.contextPath}/statics/js/export.js"></script>
+</body>
+</html>

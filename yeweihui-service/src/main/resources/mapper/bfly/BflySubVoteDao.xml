@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.bfly.dao.BflySubVoteDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bfly_vote_id AS bflyVoteId, title, vote_type AS voteType, description, options, result_option AS resultOption, default_option AS defaultOption, created_at, updated_at    </sql>
+
+    <select id="selectSubVoteId" resultType="java.lang.Long">
+        select id from bfly_sub_vote where bfly_vote_id = #{bflyVoteId};
+    </select>
+
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.bfly.dao.BflyUserCertRecordDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bfly_user_id AS bflyUserId, bfly_room_id AS bflyRoomId, court, building, unit_name AS unitName, floor_name AS floorName, check_user_name AS checkUserName, check_housing_area AS checkHousingArea, check_phone_num AS checkPhoneNum, check_id_card AS checkIdCard, check_id_card_url AS checkIdCardUrl, check_house_certificate_url AS checkHouseCertificateUrl, check_header_url AS checkHeaderUrl, status, created_at, updated_at
+    </sql>
+
+    <select id="selectUserCertList" resultType="com.yeweihui.modules.bfly.entity.BflyUserCertRecord">
+        select
+        bucr.id,
+        bucr.court,
+        bucr.building,
+        bucr.unit_name AS unitName,
+        bucr.floor_name AS floorName,
+        bucr.check_user_name AS checkUserName,
+        bucr.check_housing_area AS checkHousingArea,
+        bucr.check_phone_num AS checkPhoneNum,
+        bucr.check_id_card AS checkIdCard,
+        bucr.check_id_card_url AS checkIdCardUrl,
+        bucr.check_id_card_url_extra1 AS checkIdCardUrlExtra1,
+        bucr.check_house_certificate_url AS checkHouseCertificateUrl,
+        bucr.check_house_certificate_url_extra1 AS checkHouseCertificateUrlExtra1,
+        bucr.check_header_url AS checkHeaderUrl,
+        bucr.status,
+        z.name as zoneName
+        from bfly_user_cert_record bucr
+        inner join bfly_room br on
+        bucr.bfly_room_id = br.id
+        inner join zones z on z.id = br.zone_id
+        <where>
+            <if test="null != phone and phone != ''">
+                and bucr.check_phone_num like  '%${phone}%'
+            </if>
+            <if test="null != ownerName and ownerName != ''">
+                and bucr.check_user_name like  '%${ownerName}%'
+            </if>
+            <if test="null != zoneId and  zoneId != 0">
+                and br.zone_id = #{zoneId}
+            </if>
+            <if test="null != submitMethod">
+                and bucr.submitMethod = #{submitMethod}
+            </if>
+        </where>
+        order by bucr.status ASC
+        <if test="null != current and null!= size">
+            limit #{current},#{size}
+        </if>
+    </select>
+
+    <select id="selectUserCertListCount" resultType="java.lang.Long">
+        select
+        count(1)
+        from bfly_user_cert_record bucr
+        inner join bfly_room br on
+        bucr.bfly_room_id = br.id
+        <where>
+            <if test="null != phone and phone != ''">
+                and bucr.check_phone_num like  '%${phone}%'
+            </if>
+            <if test="null != ownerName and ownerName != ''">
+                and bucr.check_user_name like  '%${ownerName}%'
+            </if>
+            <if test="null != zoneId and  zoneId != 0">
+                and br.zone_id = #{zoneId}
+            </if>
+            <if test="null != submitMethod">
+                and bucr.submitMethod = #{submitMethod}
+            </if>
+        </where>
+    </select>
+
+</mapper>

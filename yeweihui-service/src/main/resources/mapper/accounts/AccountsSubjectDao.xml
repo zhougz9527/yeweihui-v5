@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.accounts.dao.AccountsSubjectDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.accounts.entity.AccountsSubjectEntity" id="accountsSubjectMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="rdtype" column="rdtype"/>
+        <result property="parentId" column="parent_id"/>
+    </resultMap>
+
+    <!-- 科目列表 -->
+    <select id="simpleList" resultType="com.yeweihui.modules.accounts.entity.AccountsSubjectEntity">
+        SELECT * FROM `accounts_subject`
+        <include refid="queryParam" />
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 科目名称 -->
+            <if test="name != null">
+                AND `accounts_subject`.name like '%#{name}%'
+            </if>
+            <!-- 科目类型 -->
+            <if test="type != null and type.size > 0">
+                AND `accounts_subject`.type in(
+                <foreach collection="type" item="typeItem" index="index" separator="," >
+                    #{typeItem}
+                </foreach>
+                )
+            </if>
+            <!-- 收支类型 -->
+            <if test="rdtype != null and rdtype.size > 0">
+                AND `accounts_subject`.rdtype in(
+                <foreach collection="rdtype" item="rdtypeItem" index="index" separator="," >
+                    #{rdtypeItem}
+                </foreach>
+                )
+            </if>
+            <!-- 上级科目ID-->
+            <if test="parentId != null and parentId.size > 0">
+                AND `accounts_subject`.parent_id in(
+                <foreach collection="parentId" item="parentIdItem" index="index" separator="," >
+                    #{parentIdItem}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+</mapper>

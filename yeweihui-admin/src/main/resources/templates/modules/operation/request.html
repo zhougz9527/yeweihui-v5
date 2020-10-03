@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用章申请表</title>
+		<#include "/header.html"/>
+
+    <style>
+        /* 和bootstrap样式冲突*/
+        .el-upload__input {
+            display: none!important;
+        }
+        .upload-tip {
+            color:red;
+            font-size:14px;
+            font-weight:700;
+        }
+    </style>
+
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div class="form-group col-sm-2">
+                <div class="col-sm-2 control-label">小区</div>
+                <div class="col-sm-10">
+                    <el-select v-model="q.zoneId" placeholder="请选择" clearable filterable>
+                        <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="q.keyword" @keyup.enter="query" placeholder="经办人"/>
+            </div>
+            <a class="btn btn-default" @click="query">查询</a>
+
+			<#if shiro.hasPermission("operation:request:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("operation:request:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("operation:request:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+            <#if shiro.hasPermission("operation:request:hide")>
+            <a class="btn btn-primary" @click="hide"><i class="fa fa-trash-o"></i>&nbsp;隐藏</a>
+            </#if>
+            <#if shiro.hasPermission("operation:request:recovery")>
+            <a class="btn btn-primary" @click="recovery"><i class="fa fa-trash-o"></i>&nbsp;恢复</a>
+            </#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <!--<div class="form-group">
+                <div class="col-sm-2 control-label">创建时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="request.createTime" placeholder="创建时间" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">更新时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="request.updateTime" placeholder="更新时间" readonly/>
+                </div>
+            </div>-->
+
+            <!--<div class="form-group">
+                <div class="col-sm-2 control-label">小区id</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="request.zoneId" placeholder="小区id"/>
+                </div>
+            </div>-->
+            <!--<div class="form-group">
+                <div class="col-sm-2 control-label">小区</div>
+                <div class="col-sm-10">
+                    <el-select v-model="request.zoneId" placeholder="请选择" clearable filterable disabled>
+                        <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </div>
+            </div>-->
+            <!--<div class="form-group">
+                <div class="col-sm-2 control-label">申请人id</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="request.uid" placeholder="申请人id" readonly/>
+                </div>
+            </div>-->
+            <!--<div class="form-group">
+                <div class="col-sm-2 control-label">经办人</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="request.uname" placeholder="经办人" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">已审批过人数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="request.step" placeholder="已审批过人数" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">需要审批人数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="request.stepTotal" placeholder="需要审批人数" readonly/>
+                </div>
+            </div>-->
+            <div class="form-group">
+                <div class="col-sm-2 control-label">截止日期</div>
+                <div class="col-sm-10">
+                    <el-date-picker
+                            v-model="request.useDate"
+                            align="right"
+                            type="date"
+                            placeholder="选择日期"
+                            :picker-options="pickerOptions"
+                            :clearable="false"
+                            value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd">
+                    </el-date-picker>
+                </div>
+            </div>
+            <div class="form-group" v-if="viewMode">
+                <div class="col-sm-2 control-label">经办人</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="request.uname" placeholder="经办人" readonly/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">文件名</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="request.documentName" placeholder="文件名"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">文件份数</div>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" v-model="request.num" placeholder="文件份数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">文件类型</div>
+                <div class="col-sm-10">
+                    <!--<input type="text" class="form-control" v-model="request.fileType" placeholder="类别 1合同 2公告 3发函 4其他"/>-->
+                    <el-select v-model="request.fileType" placeholder="请选择" filterable>
+                        <el-option v-for="item in fileTypeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">印章种类</div>
+                <div class="col-sm-10">
+                    <!--<input type="text" class="form-control" v-model="request.seal" placeholder="印章 1业主大会 2业委会 3财务专用章 4其他"/>-->
+                    <el-select v-model="request.seal" placeholder="请选择" filterable>
+                        <el-option v-for="item in sealOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用章详情</div>
+                <div class="col-sm-10">
+                    <textarea placeholder="请输入更多详情" class="form-control" v-model="request.notice"></textarea>
+<!--                    <input type="text" class="form-control" v-model="request.notice" placeholder="请输入更多详情"/>-->
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">附件</div>
+                <div class="col-sm-10">
+                    <el-upload
+                            action="../../sys/oss/upload"
+                            :on-preview="handlePictureCardPreview"
+                            :on-remove="handleRemove"
+                            :on-success="handleSuccess"
+                            :on-progress="handleProgress"
+                            :before-upload="handleBeforeUpload"
+                            :file-list="request.fileList"
+                            :limit=9
+                            accept=".doc, .docx, .ppt, .pptx, .xls, .xlsx, .pdf, image/jpeg,image/jpg,image/png"
+                            list-type="picture">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">*支持图片,word,excel,ppt,pdf，最大不超过2M，最多上传9个文件
+                            <p class="upload-tip">请耐心等待，完成上传后再进行下一步操作</p>
+                        </div>
+                    </el-upload>
+                    <el-dialog :visible.sync="dialogVisible" :before-close="closeDialog">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">审核人</div>
+                <div class="col-sm-10">
+                    <el-select v-model="request.verifyType" placeholder="请选择"
+                               :disabled="request.id != null"
+                               @change="resetRequestMemberList">
+                        <el-option
+                                v-for="item in requestMemberTypeOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-cascader
+                            v-show="request.verifyType === 2"
+                            v-model="requestMemberList"
+                            :options="requestMemberOptions"
+                            :props="cascaderProps"
+                            :disabled="request.id != null"
+                            filterable
+                            clearable>
+                    </el-cascader>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">抄送人员</div>
+                <div class="col-sm-10">
+                    <li v-for="(value, key, index) in request.copyToMemberEntityList" style="float:left; padding-right:10px; padding-bottom: 5px;">
+                        <el-tag type="info" @close="handleClose3(value.uid)" :key="value.uid" closable>{{ value.realname }}</el-tag><!--【{{ value.mobile }}】-->
+                    </li>
+                </div>
+                <button class="btn btn-primary" type="button" @click="getCourier2">选择</button>
+            </div>
+            <!--<div class="form-group">
+                <div class="col-sm-2 control-label">类型</div>
+                <div class="col-sm-10">
+                    &lt;!&ndash;<input type="text" class="form-control" v-model="request.type" placeholder="类型 1用章"/>&ndash;&gt;
+                    <el-select v-model="request.type" placeholder="请选择" filterable>
+                        <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+            </div>-->
+
+
+           <!-- <div class="form-group">
+                <div class="col-sm-2 control-label">状态</div>
+                <div class="col-sm-10">
+                    &lt;!&ndash;<input type="text" class="form-control" v-model="request.status" placeholder="状态 0审核中 1审核通过 2撤销 3未通过"/>&ndash;&gt;
+                    <el-select v-model="request.status" placeholder="请选择" filterable disabled>
+                        <el-option v-for="item in verifyStatusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+            </div>-->
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" v-if="!viewMode" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                <input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <div class="col-sm-10">
+                    <p class="upload-tip">请在附件上传100%后再点击“确定”</p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--业委会成员抄送绑定-->
+    <div class="modal fade" id="courierModal2" tabindex="-1" role="basic">
+        <div class="modal-dialog" role="document" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <strong style="font-size: 15px;">业委会成员选择</strong>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <form action="" method="post" id="commonForm2">
+                            <div class="form-group">
+                                <label class="control-label">业委会成员选择搜索：</label>
+                                <div class="form-group col-sm-2">
+                                    <div class="col-sm-2 control-label">小区</div>
+                                    <div class="col-sm-10">
+                                        <el-select v-model="courierQuery.zoneId" placeholder="请选择" clearable filterable>
+                                            <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                                <input name="keyword" type="text" class="form-control" style="display: inline-block;width: 20%;" v-model="courierQuery.keyword" placeholder="用户姓名/手机号">
+                                <a class="btn btn-primary btn-sm" style="margin-left:5px;" @click="reloadCourierGrid2">
+                                    <i class="fa fa-search"></i>&nbsp;<span>搜索</span>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row">
+                        <div class="jqGrid_wrapper">
+                            <table id="courierModalGrid2"></table>
+                            <div id="courierModalPager2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="utton" class="btn btn-primary" @click="selectcCourier2">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/operation/request.js?_${.now?long}"></script>
+</body>
+</html>

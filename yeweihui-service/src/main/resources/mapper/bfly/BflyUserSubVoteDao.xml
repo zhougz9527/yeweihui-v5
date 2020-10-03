@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.bfly.dao.BflyUserSubVoteDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bfly_user_id AS bflyUserId, bfly_sub_vote_id AS bflySubVoteId, result_option AS resultOption, created_at, updated_at    </sql>
+
+    <select id="stateUserVote" resultType="map">
+        select count(bfly_user_id) as total, bfly_sub_vote_id from bfly_user_sub_vote where 1=1
+        <if test="null != subVoteIdList and subVoteIdList.size() > 0 ">
+            and bfly_sub_vote_id in
+            <foreach collection="subVoteIdList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+         group by bfly_sub_vote_id
+    </select>
+
+<!--    <select id="stateUserAreaVote" resultType="map">-->
+<!--        select sum(u.housing_area) as allArea-->
+<!--        from-->
+<!--        bfly_user_sub_vote usv inner join bfly_user u on usv.bfly_user_id = u.id-->
+<!--        inner join bfly_user_vote buv on buv.bfly_user_vo-->
+<!--        where 1=1-->
+<!--        <if test="null != bflySubVoteId and 0 != bflySubVoteId">-->
+<!--            and usv.bfly_sub_vote_id = #{bflySubVoteId}-->
+<!--        </if>-->
+<!--        <if test="null != resultOption and '' != resultOption">-->
+<!--            and result_option = #{resultOption}-->
+<!--        </if>-->
+<!--    </select>-->
+
+    <select id="stateUserAreaVote" resultType="map">
+        select sum(brvs.housing_area) as allArea
+        FROM
+        bfly_user_vote buv  join bfly_sub_vote bsv on buv.bfly_vote_id = bsv.bfly_vote_id
+        join bfly_user_sub_vote busv on busv.bfly_sub_vote_id = bsv.id and buv.bfly_user_id = busv.bfly_user_id
+        join bfly_room_vote_snapshot brvs on brvs.user_vote_id = buv.id
+        where buv.status = 2
+        <if test="null != bflySubVoteId and 0 != bflySubVoteId">
+            and busv.bfly_sub_vote_id = #{bflySubVoteId}
+        </if>
+        <if test="null != resultOption">
+            and busv.result_option = #{resultOption}
+        </if>
+    </select>
+
+    <select id="selectUserSubVoteResultByTitle" resultType="map">
+        select busv.result_option
+        from
+        bfly_sub_vote bsv inner join bfly_user_sub_vote busv on bsv.id = busv.bfly_sub_vote_id
+        where bsv.title = #{bflySubVoteTitle} and bsv.bfly_vote_id = #{bflyVoteId} and busv.bfly_user_id = #{bflyUserId}
+    </select>
+
+
+</mapper>

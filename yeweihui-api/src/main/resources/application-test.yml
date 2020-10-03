@@ -1,0 +1,56 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      url: jdbc:mysql://106.15.74.23:3306/yeweihui_prod?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
+      username: root
+      password: Fish&Chips161728
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        #login-username: admin
+        #login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+
+getui:
+  appId: xK1FdmWNMR6UEF6Fxa4oB5
+  appSecret: a2xcKXQOzW8nJy8hiws9qA
+  appKey: 0sSG3tclP56Yd3cQ1EjC42
+  masterSecret: Y64zPRPXxa84n1h65cYgs6
+  host: http://sdk.open.api.igexin.com/apiex.htm
+
+wx:
+  miniapp:
+    configs:
+      - appid: wx5e7524c02dade60a #微信小程序的appid
+        secret: 1bebca5499dfe479b15e15cfc74cf1f7 #微信小程序的Secret
+        token: #微信小程序消息服务器配置的token
+        aesKey: #微信小程序消息服务器配置的EncodingAESKey
+        msgDataFormat: JSON
+  public:
+    configs:
+      appid: wx76a3568799db3640
+      secret: 7eda5b694d93cf2e5f8595bc10856581
+
+#pdf
+FONT: font/simhei.ttf

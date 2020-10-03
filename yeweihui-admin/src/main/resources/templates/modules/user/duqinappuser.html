@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>APP用户</title>
+		<#include "/header.html"/>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+			<#if shiro.hasPermission("user:duqinappuser:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("user:duqinappuser:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("user:duqinappuser:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">登陆账号</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.account" placeholder="登陆账号"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">密码</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.password" placeholder="密码"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户类型（游客 GUEST、普通用户 NORMAL_USER、读亲达人 DQ_EXPERT、读亲歌手 DQ_SINGER、读亲号
+                    DQ_OFFICIAL_ACCOUNT、管理员 ADMIN）
+                </div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.type"
+                           placeholder="用户类型（游客 GUEST、普通用户 NORMAL_USER、读亲达人 DQ_EXPERT、读亲歌手 DQ_SINGER、读亲号 DQ_OFFICIAL_ACCOUNT、管理员 ADMIN） "/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">申请成为 type中的一个角色,默认NONE,不申请</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.applyFor"
+                           placeholder="申请成为 type中的一个角色,默认NONE,不申请"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">升级申请时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.applyForTime" placeholder="升级申请时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">手机</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.phone" placeholder="手机"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">昵称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.nickname" placeholder="昵称"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户头像url</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.headIconUrl" placeholder="用户头像url"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">注册时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.registerTime" placeholder="注册时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">最后一次登陆时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.lastLoginTime" placeholder="最后一次登陆时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计浏览次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.viewTimes" placeholder="累计浏览次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计评论次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.commentTimes" placeholder="累计评论次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计发微读数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.weReadTimes" placeholder="累计发微读数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计小视频数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.tinyVideoCount" placeholder="累计小视频数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计视频数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.videoCount" placeholder="累计视频数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计歌曲数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.songCount" placeholder="累计歌曲数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计文章数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.articleCount" placeholder="累计文章数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计图集数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.picGroupCount" placeholder="累计图集数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">手机唯一识别码</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.phoneUniqueCode" placeholder="手机唯一识别码"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">token</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.token" placeholder="token"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户生日</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.birthday" placeholder="用户生日"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">是否冻结 1 是 0否</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.isFreeze" placeholder="是否冻结 1 是 0否"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">冻结原因</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.freezeReason" placeholder="冻结原因"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">是否禁言 1 是 0否</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.isMute" placeholder="是否禁言 1 是 0否"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">禁言原因</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.muteReason" placeholder="禁言原因"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">介绍</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.description" placeholder="介绍"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">app转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.appShareCount" placeholder="app转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">微信转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.wechatShareCount" placeholder="微信转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">朋友圈转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.momentsShareCount" placeholder="朋友圈转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">微博转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.microBlogShareCount"
+                           placeholder="微博转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">qq转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.qqShareCount" placeholder="qq转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">app今日阅读次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.todayReadCount" placeholder="app今日阅读次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">app累计阅读次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.totalReadCount" placeholder="app累计阅读次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">app平均日阅读次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.avgDayReadCount"
+                           placeholder="app平均日阅读次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">今日停留（分钟）</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.todayStayMinutes" placeholder="今日停留（分钟）"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计停留（分钟）</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.totalStayMinutes" placeholder="累计停留（分钟）"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">使用app天数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.totalAppUseDays" placeholder="使用app天数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">地区</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.area" placeholder="地区"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">省</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.province" placeholder="省"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">市</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.city" placeholder="市"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">区</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.district" placeholder="区"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">性别 MALE FEMALE</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.gender" placeholder="性别 MALE FEMALE"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">粉丝数量</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.fansCount" placeholder="粉丝数量"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">读亲id类似抖音号</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.duqinId" placeholder="读亲id类似抖音号"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">创建时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.createTime" placeholder="创建时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">修改时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="duqinAppUser.modifyTime" placeholder="修改时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/user/duqinappuser.js?_${.now?long}"></script>
+</body>
+</html>

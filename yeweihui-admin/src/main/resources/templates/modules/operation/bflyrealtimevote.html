@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>投票管理</title>
+    <#include "/header.html"/>
+    <style>
+        /* 和bootstrap样式冲突*/
+        .el-upload__input {
+            display: none !important;
+        }
+        .upload-tip {
+            color:red;
+            font-size:14px;
+            font-weight:700;
+        }
+        .form-horizontal{
+            width: 80vw!important;
+        }
+
+        .grid-btn > .form-group {
+            margin-bottom: 0 !important;
+        }
+
+        .grid-btn {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-horizontal > .form-group > .control-label {
+            padding-top: 0px !important;
+        }
+
+        .control-label {
+            padding-top: 0px !important;
+        }
+
+        .add-child {
+            margin-left: 120px;
+            margin-bottom: 30px;
+        }
+
+        .child-vote-title {
+            margin-left: 50px;
+            margin-bottom: 20px;
+        }
+
+        .child-vote-border {
+            border: 1px solid #ccc;
+            padding: 10px 0;
+            margin: 20px 10px;
+        }
+
+        .vote-item-detail {
+            margin-bottom: 10px;
+            resize:vertical;
+        }
+
+        .vote-item-delete {
+            float:right;
+        }
+
+        .pieWrap {
+            width:100%;
+            height:100%;
+            position:relative;
+        }
+
+        .exportBtn {
+            position: absolute;
+            top:20px;
+            right:0;
+            background:#3c8dbc;
+            border-radius: 4px;
+            opacity:0.8;
+            color:#fff;
+            padding:4px;
+        }
+
+        .exportBtn:active{
+            opacity:1;
+        }
+
+        .exportBtn:hover{
+            cursor: pointer;
+        }
+
+        .linkBtn {
+            cursor: pointer;
+            color:#3D83FB;
+        }
+
+        .pie {
+            width:45%;
+            /*height:300px;*/
+            float:left;
+            text-align: center;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+        }
+        .pieCanvas {
+            width:100%;
+            /*height:300px;*/
+        }
+
+        .addBtn {
+            margin-left:20px;
+        }
+
+        .timeTip{
+            color:#333;
+        }
+
+        .add-option {
+            color:#fff;
+            background:#449ab7;
+        }
+        .add-option:hover{
+            color:#fff;
+        }
+
+        .add-option2 {
+            color:#fff;
+            background:rgba(41,100,200,0.8);
+        }
+        .add-option2:hover{
+            background:rgba(41,100,200,1);
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <!--    <button @click="getRefDetail">按钮</button>-->
+    <!--    <div ref="testRef">1111</div>-->
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div v-show="user.zoneId == 0" class="form-group col-sm-2">
+                <div class="col-sm-2 control-label">小区</div>
+                <div class="col-sm-10">
+                    <el-select v-model="q.zoneId" placeholder="请选择" clearable filterable :disabled="!admin">
+                        <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group col-sm-4">
+                <div class="col-sm-2 control-label">会议主题</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="q.voteTitle" @keyup.enter="query"
+                           placeholder="会议主题"/>
+                </div>
+            </div>
+            <div class="form-group col-sm-4">
+                <div class="col-sm-2 control-label">创建时间</div>
+                <div class="col-sm-10">
+                    <el-date-picker
+                            v-model="q.creatDate"
+                            align="right"
+                            type="date"
+                            placeholder="选择日期"
+                            :picker-options="pickerOptions"
+                            :clearable="false"
+                            value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd">
+                    </el-date-picker>
+                </div>
+            </div>
+
+            <a class="btn btn-default" @click="query">查询</a>
+            <a class="btn btn-primary addBtn" @click="add">添加</a>
+
+
+        </div>
+        <!--        <div class="grid-btn" style="display: inline-block;">-->
+        <!--            <#if shiro.hasPermission("operation:menusetting:update")>-->
+        <!--            <a class="btn btn-primary" @click="add">添加</a>-->
+        <!--        </#if>-->
+        <!--        <#if shiro.hasPermission("operation:meeting:update")>-->
+        <!--        <a class="btn btn-primary" @click="recovery">显示</a>-->
+        <!--    </#if>-->
+        <!--    <#if shiro.hasPermission("operation:menusetting:update")>-->
+        <!--    <a class="btn btn-primary" @click="hide">隐藏</a>-->
+        <!--</#if>-->
+        <!--</div>-->
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <!--浏览 表决详情-->
+        <div v-show="!showUpload">
+            <form class="form-horizontal" v-show="viewMode">
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">小区</div>
+                    <div class="col-sm-10">
+                        <!--                    <input type="text" class="form-control" v-model="vote.zoneId" placeholder="小区id"/>-->
+                        <el-select v-model="voteDetail.zoneId" placeholder="请选择" clearable filterable disabled>
+                            <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">表决名称</div>
+                    <div class="col-sm-10">
+                        {{voteDetail.title}}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">参会开始时间</div>
+                    <div class="col-sm-10">
+                        {{voteDetail.meetingStartTime}}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">参会截止时间</div>
+                    <div class="col-sm-10">
+                        {{voteDetail.meetingEndTime}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">投票开始时间</div>
+                    <div class="col-sm-10">
+                        {{voteDetail.voteStartTime}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">投票截止时间</div>
+                    <div class="col-sm-10" id="pieContent">
+                        {{voteDetail.voteEndTime}}
+                    </div>
+                </div>
+                <div class="form-group" v-if="status===5||4">
+                    <div class="col-sm-2 control-label">线上参会结果</div>
+                    <div class="col-sm-10">
+                        <div class="pieWrap">
+                            <div class="pie">
+                                <div id="voteHousePie" :style="{width: 250 + 'px', height: 250 + 'px'}"></div>
+                            </div>
+                            <div class="pie">
+                                <div id="voteAreaPie" :style="{width: 250 + 'px', height: 250 + 'px'}"></div>
+                            </div>
+<!--                            <div class="exportBtn" @click="exportMettingData">一键导出excel</div>-->
+                        </div>
+                    </div>
+                </div>
+
+                <div v-for="(value, key, index) in voteDetail.bflySubVotes">
+                    <div class="child-vote-border">
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">子表决{{ key + 1 }}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">子表决名称</div>
+                            <div class="col-sm-10">
+                                {{value.title}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label"></div>
+                            <div class="col-sm-10">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>表决事项</th>
+                                        <th>主要内容</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody v-for="(v, k, i) in value.bflyVoteItems">
+                                    <tr>
+                                        <td>
+                                     <textarea placeholder="请输入事项标题" class="form-control vote-item-detail"
+                                               v-model="v.matter" readonly></textarea>
+                                        </td>
+                                        <td>
+                                    <textarea placeholder="请输入事项详情" class="form-control vote-item-detail"
+                                              v-model="v.content" readonly></textarea>
+                                            <!--                                        <img width="100%" :src="attachmentUrls" alt=""/>-->
+                                            <div class="linkBtn" v-if="v.attachmentUrls" @click="getVoteItemDetail(v.attachmentUrls)">查看详情></div>
+                                            <!--                                        <el-upload-->
+                                            <!--                                                action="../../sys/oss/upload"-->
+                                            <!--                                                :on-preview="handlePictureCardPreview"-->
+                                            <!--                                                :file-list="v.attachmentUrls"-->
+                                            <!--                                                :limit=9-->
+                                            <!--                                                accept=".doc, .docx, .ppt, .pptx, .xls, .xlsx, .pdf, image/jpeg,image/jpg,image/png"-->
+                                            <!--                                                list-type="picture">-->
+                                            <!--                                        </el-upload>-->
+                                            <!--                                        <el-dialog :visible.sync="dialogVisible" :before-close="closeDialog">-->
+                                            <!--                                            <img width="100%" :src="dialogImageUrl" alt="">-->
+                                            <!--                                        </el-dialog>-->
+
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">表决说明</div>
+                            <div class="col-sm-10">
+                                {{value.description}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">表决选项</div>
+                            <div class="col-sm-10">
+
+                            </div>
+                        </div>
+
+                        <div v-for="(v, k, i) in JSON.parse(value.options)">
+                            <div class="form-group">
+                                <div class="col-sm-2 control-label">选项{{k+1}}</div>
+                                <div class="col-sm-8">
+                                    {{v}}
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group" v-if="status===5||4">
+                            <div class="col-sm-2 control-label">线上投票结果</div>
+                            <div class="col-sm-10">
+                                <div class="pieWrap">
+                                    <div class="pie">
+                                        <!--                                    <div>小区总户数：100户</div>-->
+                                        <div :id='"housePie"+key' class="pieCanvas" :style="{width: 250 + 'px', height: 250 + optionNum * 30 + 'px'}"></div>
+                                    </div>
+                                    <div class="pie">
+                                        <!--                                    <div>小区总面积：100户</div>-->
+                                        <div :id='"areaPie"+key' class="pieCanvas" :style="{width: 250 + 'px', height: 250 + optionNum * 30 + 'px'}"></div>
+                                    </div>
+<!--                                    <div class="exportBtn" @click="exportVoteresult">一键导出excel</div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group" v-if="status===5||4">
+                    <div class="col-sm-2 control-label">线下投票结果</div>
+                    <div class="col-sm-10">
+                        <img v-if="voteDetail.offlineVoteResultUrl" width="100%" :src="voteDetail.offlineVoteResultUrl" alt="">
+                        <div v-else>未上传</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label"></div>
+                        <input type="button" class="btn btn-primary" @click="reloadVoteData" value="刷新"/>
+                    &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+                </div>
+            </form>
+            <!--添加表决start-->
+            <form class="form-horizontal" v-show="!viewMode">
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">小区</div>
+                    <div class="col-sm-10">
+                        <!--                    <input type="text" class="form-control" v-model="vote.zoneId" placeholder="小区id"/>-->
+                        <el-select v-model="vote.zoneId" placeholder="请选择" clearable filterable :disabled="!admin">
+                            <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name"
+                                       :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">会议主题</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="vote.title" placeholder="会议主题"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">参会开始时间</div>
+                    <div class="col-sm-10">
+                        <el-date-picker
+                                v-model="vote.meetingStartTime"
+                                align="right"
+                                type="datetime"
+                                placeholder="选择日期"
+                                :picker-options="createPickeroptions"
+                                :clearable="false"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                format="yyyy-MM-dd HH:mm:ss">
+                        </el-date-picker>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">参会截止时间</div>
+                    <div class="col-sm-10">
+                        <el-date-picker
+                                v-model="vote.meetingEndTime"
+                                align="right"
+                                type="datetime"
+                                placeholder="选择日期"
+                                :picker-options="createPickeroptions"
+                                :clearable="false"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                format="yyyy-MM-dd HH:mm:ss">
+                        </el-date-picker>
+                        <span class="timeTip">请根据小区的议事规则设定</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">投票开始时间</div>
+                    <div class="col-sm-10">
+                        <el-date-picker
+                                v-model="vote.voteStartTime"
+                                align="right"
+                                type="datetime"
+                                placeholder="选择日期"
+                                :picker-options="createPickeroptions"
+                                :clearable="false"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                format="yyyy-MM-dd HH:mm:ss">
+                        </el-date-picker>
+                        <span class="timeTip">可与"参会开始时间"一致</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">投票截止时间</div>
+                    <div class="col-sm-10">
+                        <el-date-picker
+                                v-model="vote.voteEndTime"
+                                align="right"
+                                type="datetime"
+                                placeholder="选择日期"
+                                :picker-options="createPickeroptions"
+                                :clearable="false"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                format="yyyy-MM-dd HH:mm:ss">
+                        </el-date-picker>
+                        <span class="timeTip">请根据小区的议事规则设定，必须等于或长于"参会截止时间"</span>
+                    </div>
+                </div>
+
+                <div v-for="(value, key, index) in vote.bflySubVotes">
+                    <div class="child-vote-border">
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">表决事项{{ key + 1 }}</div>
+                            <a v-if="key > 0"  class="btn btn-default" @click="deleteChild(key)">
+                                <i class="fa fa-trash-o"></i>删除
+                            </a>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">表决事项名称</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" v-model="value.title" placeholder="表决名称"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label"></div>
+                            <div class="col-sm-10">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>表决选项</th>
+                                        <th>主要内容</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody v-for="(v, kItem, iItem) in value.bflyVoteItems">
+                                    <tr>
+                                        <td>
+                                    <textarea placeholder="请输入详情" class="form-control vote-item-detail"
+                                              v-model="v.matter"></textarea>
+                                        </td>
+                                        <td>
+                                    <textarea placeholder="请输入详情" class="form-control vote-item-detail"
+                                              v-model="v.content"></textarea>
+                                            <el-upload
+                                                    action="../../sys/oss/upload"
+                                                    :on-preview="handlePictureCardPreview"
+                                                    :on-remove="(res)=>{return handleRemove(res,key,kItem)}"
+                                                    :on-success="(res)=>{return handleSuccess(res,key,kItem)}"
+                                                    :on-progress="handleProgress"
+                                                    :before-upload="handleBeforeUpload"
+                                                    :file-list="v.attachmentUrls"
+                                                    :limit=1
+                                                    accept=".doc, .docx, .ppt, .pptx, .xls, .xlsx, .pdf"
+                                                    list-type="picture">
+                                                <el-button size="small" type="primary">上传附件</el-button>
+                                                <div slot="tip" class="el-upload__tip">
+                                                    *支持上传doc,docx,.ppt, .pptx, .xls, .xlsx, .pdf格式的文件，最大不超过2M，最多上传1个文件
+                                                    <p class="upload-tip">请耐心等待，完成上传后再进行下一步操作</p>
+                                                </div>
+                                            </el-upload>
+                                            <el-dialog :visible.sync="dialogVisible" :before-close="closeDialog">
+                                                <img width="100%" :src="dialogImageUrl" alt="">
+                                            </el-dialog>
+                                            <div class="vote-item-delete">
+                                                <a v-if="kItem > 0"  class="btn btn-default" @click="deleteChildContent(key,kItem)">
+                                                    <i class="fa fa-trash-o"></i>删除
+                                                </a>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label"><a class="btn btn-primary add-child" @click='addChildContent(key)'><i class="fa fa-plus"></i>&nbsp;添加表决选项</a></div>
+                            <div class="col-sm-10">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">表决说明</div>
+                            <div class="col-sm-10">
+                        <textarea placeholder="表决说明" class="form-control vote-item-detail"
+                                  v-model="value.description"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">自设表决意见</div>
+                            <div class="col-sm-10">
+                            </div>
+                        </div>
+                        <div v-for="(v, k, i) in value.options">
+                            <div class="form-group">
+                                <div class="col-sm-2 control-label">选项{{k+1}}</div>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" v-model="value.options[k]" :placeholder="getPlaceHolder(k)"/>
+                                </div>
+                                <div class="col-sm-2">
+                                    <a v-if="k > 0 && k < value.options.length-1"  class="btn btn-default" @click="deleteChildItem(key,k)">
+                                        <i class="fa fa-trash-o"></i>删除
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label"><a class="btn btn-primary add-child add-option2" @click="addChildItem(key)"><i class="fa fa-plus"></i>&nbsp;添加表决意见</a></div>
+                            <div class="col-sm-10">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label"> <a class="btn add-child add-option" @click="addChild"><i class="fa fa-plus"></i>&nbsp;添加表决事项</a></div>
+                    <div class="col-sm-10">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label"></div>
+                    <el-button
+                            class="btn btn-primary"
+                            type="primary"
+                            v-if="!viewMode"
+                            @click="saveOrUpdate"
+                            :disabled="voteSavable"
+                            v-loading.fullscreen.lock="fullscreenLoading"
+                    >
+                        确定
+                    </el-button>
+<!--                    <input type="button" class="btn btn-primary" v-if="!viewMode" @click="saveOrUpdate" value="确定" :disabled="voteSavable"/>-->
+                    &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label"></div>
+                    <div class="col-sm-10">
+                        <p class="upload-tip">请在附件上传100%后再点击“确定”</p>
+                    </div>
+                </div>
+
+            </form>
+            <!--添加表决end-->
+        </div>
+        <!--上传表决结果start-->
+        <div v-show="showUpload">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-2">上传图片</label>
+                    <div class="col-sm-10">
+                        <el-upload
+                                class="upload-demo"
+                                action="../../sys/oss/upload"
+                                :on-preview="handlePictureCardPreview"
+                                :on-remove="handleRemoveOfflineUrl"
+                                :on-success="handleOfflineUrlSuccess"
+                                :on-progress="handleProgress"
+                                :before-upload="handleBeforeUpload"
+                                :file-list="offlineFileList"
+                                :limit=1
+                                accept="image/jpeg,image/jpg,image/png"
+                                list-type="picture">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                            <div slot="tip" class="el-upload__tip">*支持jpeg、jpg、png图片格式，最多上传1张图片
+                                <p class="upload-tip">请耐心等待，完成上传后再进行下一步操作</p>
+                            </div>
+                        </el-upload>
+                        </el-upload>
+                        <el-dialog :visible.sync="dialogVisible" :before-close="closeDialog">
+                            <img width="100%" :src="dialogImageUrl" alt="">
+                        </el-dialog>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label"></div>
+                    <input v-show="offlineFileList.length > 0" type="button" class="btn btn-primary" @click="handleUpload" value="确定" v-loading.fullscreen.lock="fullscreenLoading"/>
+                    &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label"></div>
+                    <div class="col-sm-10">
+                        <p class="upload-tip">请在附件上传100%后再点击“确定”</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--上传表决结果end-->
+    </div>
+
+
+
+</div>
+<script src="${request.contextPath}/statics/js/modules/operation/bflyrealtimevote.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/echarts.min.js"></script>
+
+</body>
+</html>

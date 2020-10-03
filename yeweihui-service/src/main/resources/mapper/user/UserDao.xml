@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.user.dao.UserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.user.entity.UserEntity" id="userMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="roleCode" column="role_code"/>
+        <result property="roleName" column="role_name"/>
+        <result property="openid" column="openid"/>
+        <result property="pid" column="pid"/>
+        <result property="nickname" column="nickname"/>
+        <result property="realname" column="realname"/>
+        <result property="gender" column="gender"/>
+        <result property="city" column="city"/>
+        <result property="province" column="province"/>
+        <result property="country" column="country"/>
+        <result property="integral" column="integral"/>
+        <result property="avatarUrl" column="avatar_url"/>
+        <result property="lastLogin" column="last_login"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="mobile" column="mobile"/>
+        <result property="status" column="status"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="salt" column="salt"/>
+        <result property="email" column="email"/>
+        <result property="roomNum" column="room_num"/>
+        <result property="verifyStatus" column="verify_status"/>
+        <result property="group" column="group"/>
+        <result property="divisionId" column="division_id"/>
+    </resultMap>
+
+
+    <!-- 查询用户的所有权限 -->
+    <select id="queryAllPerms" resultType="string">
+		select m.perms from sys_user_role ur
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id
+			LEFT JOIN sys_menu m on rm.menu_id = m.menu_id
+		where ur.user_id = #{userId}
+	</select>
+
+    <!-- 查询用户的所有菜单ID -->
+    <select id="queryAllMenuId" resultType="long">
+		select distinct rm.menu_id from sys_user_role ur
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id
+		where ur.user_id = #{userId}
+	</select>
+
+    <!-- 用户列表 -->
+    <select id="simpleList" resultType="com.yeweihui.modules.user.entity.UserEntity">
+        SELECT
+            `user`.id,
+            `user`.create_time,
+            `user`.update_time,
+            `user`.zone_id,
+            `user`.role_id,
+            `user`.role_code,
+            `user`.role_name,
+            `user`.openid,
+            `user`.pid,
+            `user`.nickname,
+            `user`.realname,
+            `user`.gender,
+            `user`.city,
+            `user`.province,
+            `user`.country,
+            `user`.integral,
+            `user`.avatar_url,
+            `user`.last_login,
+            `user`.username,
+            `user`.`password`,
+            `user`.mobile,
+            `user`.`status`,
+            `user`.dept_id,
+            `user`.salt,
+            `user`.email,
+            `user`.room_num,
+            `user`.verify_status,
+            `user`.group,
+            sys_role.group
+        FROM
+            `user`
+        left join sys_role on sys_role.remark = `user`.role_code
+        <include refid="queryParam" />
+    </select>
+
+    <!-- 获取主任角色，获取当前小区主任用户 -->
+    <select id="getDirectorByZoneId" resultType="com.yeweihui.modules.user.entity.UserEntity">
+        select * from `user` where `user`.zone_id = #{zoneId} and role_code = '1001'
+        limit 1
+    </select>
+
+    <!-- 获取当前小区的小区管理员用户 -->
+    <select id="getManageByZoneId" resultType="com.yeweihui.modules.user.entity.UserEntity">
+        select `user`.* from `user` join sys_user_role on `user`.id = sys_user_role.user_id where sys_user_role.role_id = 1 and zone_id = #{zoneId}
+    </select>
+
+
+    <select id="findUserByUserId" resultType="com.yeweihui.modules.user.entity.UserEntity">
+        select * from `user` where id = #{userId}
+    </select>
+
+    <!-- 根据openId获取用户 -->
+    <select id="getByOpenId" resultType="com.yeweihui.modules.user.entity.UserEntity">
+        select * from `user` where `user`.openid = #{openId}
+    </select>
+
+    <select id="findGroupIdByUserId" resultType="Long">
+        select g.id from `user` u inner join sys_role r on u.role_id = r.role_id inner join zone_group g on r.group = g.group_name where u.id = #{userId}
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 关键字（昵称/手机号/真实姓名） -->
+            <!--<if test="keyword != null and keyword != ''">
+                AND (ec_app_user.nickname like CONCAT('%', #{keyword})
+                or ec_app_user.phone like CONCAT('%', #{keyword})
+                or ec_app_user.realname like CONCAT('%', #{keyword}))
+            </if>-->
+
+            <!-- 小区 -->
+            <if test="zoneId != null">
+                AND `user`.zone_id = #{zoneId}
+            </if>
+            <!-- 角色code -->
+            <if test="roleCodeList!= null">
+                AND `user`.role_code in(
+                <foreach collection="roleCodeList" item="roleCode" index="index" separator="," >
+                    #{roleCode}
+                </foreach>
+                )
+            </if>
+            <!-- 授权行业主管查看 -->
+            <if test="authZoneIdList != null">
+                AND `user`.zone_id in
+                <foreach item="authZoneIdList" index="index" collection="authZoneIdList"
+                         open="(" separator="," close=")">
+                    #{authZoneIdList}
+                </foreach>
+            </if>
+            <!-- 用户审核状态 0审核中 1审核通过 2撤销 3未通过 -->
+            <if test="userVerifyStatus != null">
+                AND `user`.verify_status = #{userVerifyStatus}
+            </if>
+            <!-- 状态 0禁用 1正常 -->
+            <if test="status != null">
+                AND `user`.status = #{status}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

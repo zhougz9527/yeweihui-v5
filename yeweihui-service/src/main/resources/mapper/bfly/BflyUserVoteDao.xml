@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.bfly.dao.BflyUserVoteDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bfly_user_id AS bflyUserId, bfly_vote_id AS bflyVoteId, meeting_signature_url AS meetingSignatureUrl, vote_signature_url AS voteSignatureUrl, meeting_submit_time AS meetingSubmitTime, vote_submit_time AS voteSubmitTime, status, created_at, updated_at
+    </sql>
+
+    <select id="selectUserVote" resultType="map">
+        select bv.id, bv.title, uv.id user_vote_id from bfly_user_vote uv inner join bfly_vote bv on uv.bfly_vote_id = bv.id
+        where 1=1
+        <if test="userId != null and userId != 0">
+            and uv.bfly_user_id = #{userId}
+        </if>
+        <if test="userVoteStatus != null">
+            and uv.status = #{userVoteStatus}
+        </if>
+        <if test="null != isShow">
+            and bv.is_show = #{isShow}
+        </if>
+        <if test="voteStatus != null and voteStatus.size() > 0">
+            and bv.status in
+            <foreach collection="voteStatus" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        order by uv.created_at desc
+    </select>
+
+    <select id="searchAreaAndCount" resultType="java.util.Map">
+        select sum(bu.housing_area) housingArea,
+        count(bu.id) userCount
+        from bfly_user_vote buv
+        inner join bfly_user bu on buv.bfly_user_id = bu.id
+        where buv.bfly_vote_id=#{voteId} and bu.zone_id = #{zoneId}
+    </select>
+
+    <select id="meetingUserInfoByVoteId" resultType="map">
+<!--        select z.name, buv.bfly_user_id, br.court, br.building, br.unit_name, br.floor_name, br.user_name, br.housing_area, buv.meeting_submit_time, buv.vote_submit_time-->
+<!--        from bfly_user_vote buv inner join bfly_user bu on buv.bfly_user_id = bu.id-->
+<!--        inner join bfly_room br on bu.bfly_room_id = br.id-->
+<!--        inner join zones z on br.zone_id = z.id where buv.bfly_vote_id = #{voteId} and buv.status in (1,2);-->
+        select
+            z.name,
+            buv.bfly_user_id,
+            brvs.court,
+            brvs.building,
+            brvs.unit_name,
+            brvs.floor_name,
+            brvs.user_name,
+            brvs.housing_area,
+            buv.meeting_submit_time,
+            buv.vote_submit_time
+        from bfly_user_vote buv
+            inner join bfly_room_vote_snapshot brvs on brvs.user_vote_id = buv.id
+            inner join zones z on brvs.zone_id = z.id
+        where buv.bfly_vote_id = #{voteId} and buv.status in (1,2)
+    </select>
+
+    <select id="voteUserInfoByVoteId" resultType="map">
+        select
+        z.name,
+        buv.bfly_user_id,
+        brvs.court,
+        brvs.building,
+        brvs.unit_name,
+        brvs.floor_name,
+        brvs.user_name,
+        brvs.housing_area,
+        buv.meeting_submit_time,
+        buv.vote_submit_time
+        from bfly_user_vote buv
+        inner join bfly_room_vote_snapshot brvs on brvs.user_vote_id = buv.id
+        inner join zones z on brvs.zone_id = z.id
+        where buv.bfly_vote_id = #{voteId} and buv.status = 2
+    </select>
+
+</mapper>

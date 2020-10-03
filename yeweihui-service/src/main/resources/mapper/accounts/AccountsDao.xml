@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.accounts.dao.AccountsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.accounts.entity.AccountsEntity" id="accountsMap">
+        <result property="id" column="id"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUime" column="update_time"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="status" column="status"/>
+        <result property="lastOperatingSurplus" column="last_operating_surplus"/>
+        <result property="lastPledgeSurplus" column="last_pledge_surplus"/>
+        <result property="auditor" column="auditor"/>
+    </resultMap>
+
+    <!-- 账簿列表 -->
+    <select id="simpleList" resultType="com.yeweihui.modules.accounts.entity.AccountsEntity">
+        SELECT * FROM `accounts`
+        <include refid="queryParam" />
+        ORDER BY start_date DESC
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 账簿所属日期 -->
+            <if test="accountsDate != null">
+                AND (
+                (start_date = #{accountsDate} AND end_date is null)
+                  OR
+                (start_date <![CDATA[ <= ]]> #{accountsDate} AND #{accountsDate} <![CDATA[ <= ]]> end_date)
+                )
+            </if>
+            <!-- 小区ID -->
+            <if test="zoneId != null">
+                AND zone_id = #{zoneId}
+            </if>
+            <!-- 账簿状态 -->
+            <if test="status != null and status.size > 0">
+                AND status in(
+                <foreach collection="status" item="statusItem" index="index" separator="," >
+                    #{statusItem}
+                </foreach>
+                )
+            </if>
+            <if test="yearDate != null">
+                AND YEAR(end_date)= #{yearDate}
+            </if>
+        </where>
+    </sql>
+
+	<!-- 获取指定小区当前非封账状态（正在使用）的账簿信息 -->
+	<select id="getUseAccounts" resultType="com.yeweihui.modules.accounts.entity.AccountsEntity">
+        select * from `accounts` where zone_id = #{zoneId} and status not in (3)
+    </select>
+    <!-- 获取指定小区指定月份已封账的账簿信息 -->
+	<select id="getAccountsByMonth" resultType="com.yeweihui.modules.accounts.entity.AccountsEntity">
+        select * from `accounts` where zone_id = #{zoneId} and status = 3 AND start_date <![CDATA[ <= ]]> #{accountsDate} AND #{accountsDate} <![CDATA[ <= ]]> end_date
+    </select>
+	
+</mapper>

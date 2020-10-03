@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>小区</title>
+		<#include "/header.html"/>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div class="form-group col-sm-2">
+                <div class="col-sm-2 control-label">小区</div>
+                <div class="col-sm-10">
+                    <el-select v-model="q.zoneId" placeholder="请选择" clearable filterable>
+                        <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="q.keyword" @keyup.enter="query" placeholder="小区名称">
+            </div>
+            <a class="btn btn-default" @click="query">查询</a>
+
+			<#if shiro.hasPermission("user:zones:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("user:zones:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("user:zones:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">小区名称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="zones.name" placeholder="小区名称"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">地址</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="zones.address" placeholder="地址"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">前台电话</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="zones.tel" placeholder="前台电话"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">状态</div>
+                <div class="col-sm-10">
+                    <el-select v-model="zones.status" placeholder="请选择">
+                        <el-option v-for="item in statusList" :key="item.id" :label="item.status" :value="item.id">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">省份</div>
+                <div class="col-sm-10">
+                    <el-select v-model="zones.provinceId" placeholder="请选择所属省份" @change="loadDistrict">
+                        <el-option
+                                v-for="item in provinceList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">城市</div>
+                <el-select v-model="zones.cityId" placeholder="请选择所属城市" @change="loadDistrict">
+                    <el-option
+                            v-for="item in cityList"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                    </el-option>
+                </el-select>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">行政区</div>
+                <div class="col-sm-10">
+                    <el-select v-model="zones.districtId" placeholder="请选择所属行政区" @change="loadDistrict">
+                        <el-option
+                                v-for="item in districtList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">街道</div>
+                <div class="col-sm-10">
+                    <el-select v-model="zones.subdistrictId" placeholder="请选择所属街道" @change="loadDistrict">
+                        <el-option
+                                v-for="item in subdistrictList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">社区</div>
+                <div class="col-sm-10">
+                    <el-select v-model="zones.communityId" placeholder="请选择所属社区">
+                        <el-option
+                                v-for="item in communityList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">邀请码</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="zones.inviteCode" placeholder="邀请码" disabled/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">注册时间</div>
+                <div class="col-sm-10">
+                    <el-date-picker
+                            v-model="zones.registerTime"
+                            align="right"
+                            type="date"
+                            placeholder="选择日期"
+                            :picker-options="pickerOptions"
+                            :clearable="false"
+                            value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd"
+                           >
+                    </el-date-picker>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">可全额退款时间</div>
+                <div class="col-sm-10">
+                    <el-date-picker
+                            v-model="zones.refundEnableTime"
+                            align="right"
+                            type="date"
+                            placeholder="选择日期"
+                            :picker-options="pickerOptions"
+                            :clearable="false"
+                            value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd">
+                    </el-date-picker>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">使用截止时间</div>
+                <div class="col-sm-10">
+                    <el-date-picker
+                            v-model="zones.enableUseTime"
+                            align="right"
+                            type="date"
+                            placeholder="选择日期"
+                            :picker-options="pickerOptions"
+                            :clearable="false"
+                            value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd">
+                    </el-date-picker>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module" src="${request.contextPath}/statics/js/modules/user/zones.js?_${.now?long}"></script>
+</body>
+</html>

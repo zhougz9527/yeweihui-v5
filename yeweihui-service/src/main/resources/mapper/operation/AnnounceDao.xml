@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.AnnounceDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.AnnounceEntity" id="announceMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="uid" column="uid"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="manager" column="manager"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="status" column="status"/>
+        <result property="recordStatus" column="record_status"/>
+    </resultMap>
+
+    <select id="simpleList" resultType="com.yeweihui.modules.operation.entity.AnnounceEntity">
+        SELECT
+        announce.id,
+        announce.create_time,
+        announce.update_time,
+        announce.zone_id,
+        announce.uid,
+        announce.title,
+        announce.content,
+        announce.manager,
+        announce.start_time,
+        announce.end_time,
+        announce.`status`,
+        announce.record_status,
+        announce.remark,
+        announce.finish_url,
+        <if test="receiverUid != null">
+            announce_member.status member_status,
+        </if>
+        zones.`name` zone_name,
+        `user`.avatar_url,
+        `user`.realname
+        FROM
+        announce
+        LEFT JOIN zones ON announce.zone_id = zones.id
+        LEFT JOIN `user` ON `user`.id = announce.uid
+        <if test="receiverUid != null">
+            left join announce_member on announce_member.aid = announce.id
+        </if>
+        <include refid="queryParam" />
+    </select>
+    <select id="selectPageEn" resultType="com.yeweihui.modules.operation.entity.AnnounceEntity">
+        SELECT
+        announce.id,
+        announce.create_time,
+        announce.update_time,
+        announce.zone_id,
+        announce.uid,
+        announce.title,
+        announce.content,
+        announce.manager,
+        announce.start_time,
+        announce.end_time,
+        announce.`status`,
+        announce.record_status,
+        announce.remark,
+        announce.finish_url,
+        <if test="receiverUid != null">
+            announce_member.status member_status,
+        </if>
+        zones.`name` zone_name,
+        `user`.avatar_url,
+        `user`.realname
+        FROM
+        announce
+        LEFT JOIN zones ON announce.zone_id = zones.id
+        LEFT JOIN `user` ON `user`.id = announce.uid
+        <if test="receiverUid != null">
+            left join announce_member on announce_member.aid = announce.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by announce.id desc
+        </if>
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 关键字（昵称/手机号/真实姓名） -->
+            <!--<if test="keyword != null and keyword != ''">
+                AND (ec_app_user.nickname like CONCAT('%', #{keyword})
+                or ec_app_user.phone like CONCAT('%', #{keyword})
+                or ec_app_user.realname like CONCAT('%', #{keyword}))
+            </if>-->
+
+            <!-- 小区id -->
+            <if test="zoneId != null">
+                AND announce.zone_id = #{zoneId}
+            </if>
+            <!-- 授权行业主管查看 -->
+            <if test="authZoneIdList != null">
+                AND announce.zone_id in
+                <foreach item="authZoneIdList" index="index" collection="authZoneIdList"
+                         open="(" separator="," close=")">
+                    #{authZoneIdList}
+                </foreach>
+            </if>
+            <!-- 授权查看的小区id -->
+            <if test="authZoneId != null and authZoneId != 0">
+                AND announce.zone_id = #{authZoneId}
+            </if>
+            <!-- 关键字（经办人） -->
+<!--            <if test="keyword != null and keyword != ''">-->
+<!--                AND (-->
+<!--                    announce.title like CONCAT('%', #{keyword}, '%')-->
+<!--                    or `user`.nickname like CONCAT('%', #{keyword}, '%')-->
+<!--                    or `user`.realname like CONCAT('%', #{keyword}, '%')-->
+<!--                    or `user`.mobile like CONCAT('%', #{keyword}, '%')-->
+<!--                )-->
+<!--            </if>-->
+            <!-- 发函人id -->
+            <if test="uid != null">
+                AND announce.uid = #{uid}
+            </if>
+            <!--状态 0正常1撤销 -->
+            <if test="status != null">
+                AND announce.`status` = #{status}
+            </if>
+            <!-- 是否已读 -->
+            <if test="memberStatus != null">
+                AND announce_member.status = #{memberStatus}
+            </if>
+            <!-- 获取超时的 -->
+            <if test="expire != null and expire == 'true'.toString()">
+                AND DATE_ADD(announce.end_time,INTERVAL 240 HOUR) <![CDATA[ < ]]> now()
+            </if>
+            <!-- 获取通知时间 -->
+            <if test="noticeTime != null">
+                AND DATE_SUB(announce.end_time,INTERVAL 72 HOUR) <![CDATA[ < ]]> #{noticeTime}
+            </if>
+            <!-- 收件用户id -->
+            <if test="receiverUid != null">
+                AND announce_member.uid = #{receiverUid}
+            </if>
+            <!-- 显示状态 -->
+            <if test="minRecordStatus != null">
+                and announce.record_status >= #{minRecordStatus}
+            </if>
+            <!-- 截止日期 -->
+            <if test="endTime != null">
+                AND announce.end_time <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

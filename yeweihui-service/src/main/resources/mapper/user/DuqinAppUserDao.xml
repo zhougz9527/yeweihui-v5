@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.user.dao.DuqinAppUserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.user.entity.DuqinAppUserEntity" id="duqinAppUserMap">
+        <result property="id" column="id"/>
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="type" column="type"/>
+        <result property="applyFor" column="apply_for"/>
+        <result property="applyForTime" column="apply_for_time"/>
+        <result property="phone" column="phone"/>
+        <result property="nickname" column="nickname"/>
+        <result property="headIconUrl" column="head_icon_url"/>
+        <result property="registerTime" column="register_time"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="viewTimes" column="view_times"/>
+        <result property="commentTimes" column="comment_times"/>
+        <result property="weReadTimes" column="we_read_times"/>
+        <result property="tinyVideoCount" column="tiny_video_count"/>
+        <result property="videoCount" column="video_count"/>
+        <result property="songCount" column="song_count"/>
+        <result property="articleCount" column="article_count"/>
+        <result property="picGroupCount" column="pic_group_count"/>
+        <result property="phoneUniqueCode" column="phone_unique_code"/>
+        <result property="token" column="token"/>
+        <result property="birthday" column="birthday"/>
+        <result property="isFreeze" column="is_freeze"/>
+        <result property="freezeReason" column="freeze_reason"/>
+        <result property="isMute" column="is_mute"/>
+        <result property="muteReason" column="mute_reason"/>
+        <result property="description" column="description"/>
+        <result property="appShareCount" column="app_share_count"/>
+        <result property="wechatShareCount" column="wechat_share_count"/>
+        <result property="momentsShareCount" column="moments_share_count"/>
+        <result property="microBlogShareCount" column="micro_blog_share_count"/>
+        <result property="qqShareCount" column="qq_share_count"/>
+        <result property="todayReadCount" column="today_read_count"/>
+        <result property="totalReadCount" column="total_read_count"/>
+        <result property="avgDayReadCount" column="avg_day_read_count"/>
+        <result property="todayStayMinutes" column="today_stay_minutes"/>
+        <result property="totalStayMinutes" column="total_stay_minutes"/>
+        <result property="totalAppUseDays" column="total_app_use_days"/>
+        <result property="area" column="area"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="district" column="district"/>
+        <result property="gender" column="gender"/>
+        <result property="fansCount" column="fans_count"/>
+        <result property="duqinId" column="duqin_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+
+</mapper>

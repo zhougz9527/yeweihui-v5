@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>工作任务表</title>
+		<#include "/header.html"/>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+			<#if shiro.hasPermission("operation:task:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("operation:task:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("operation:task:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+            <#if shiro.hasPermission("operation:task:hide")>
+            <a class="btn btn-primary" @click="hide"><i class="fa fa-trash-o"></i>隐藏</a>
+            </#if>
+            <#if shiro.hasPermission("operation:task:recovery")>
+            <a class="btn btn-primary" @click="recovery"><i class="fa fa-trash-o"></i>恢复</a>
+            </#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">创建时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="task.createTime" placeholder="创建时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">更新时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="task.updateTime" placeholder="更新时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">小区</div>
+                <div class="col-sm-10">
+                    <!--<input type="text" class="form-control" v-model="task.zoneId" placeholder="小区id"/>-->
+                    <el-select v-model="task.zoneId" placeholder="请选择" clearable filterable disabled>
+                        <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户id</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="task.uid" placeholder="用户id"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">标题</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="task.title" placeholder="标题"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">内容</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="task.content" placeholder="内容"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">总任务数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="task.total" placeholder="总任务数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">完成任务数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="task.checked" placeholder="完成任务数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">状态</div>
+                <div class="col-sm-10">
+                    <!--<input type="text" class="form-control" v-model="task.status" placeholder="状态 1完成2超时"/>-->
+                    <el-select v-model="task.status" placeholder="请选择" filterable>
+                        <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">截止日期</div>
+                <div class="col-sm-10">
+                    <!--<input type="text" class="form-control" v-model="task.endDate" placeholder="截止日期"/>-->
+                    <el-date-picker
+                            v-model="task.endDate"
+                            align="right"
+                            type="date"
+                            placeholder="选择日期"
+                            :picker-options="pickerOptions"
+                            :clearable="false"
+                            value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd">
+                    </el-date-picker>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/operation/task.js?_${.now?long}"></script>
+</body>
+</html>

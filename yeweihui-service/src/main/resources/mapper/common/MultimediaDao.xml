@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.common.dao.MultimediaDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.common.entity.MultimediaEntity" id="fileMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="name" column="name"/>
+        <result property="url" column="url"/>
+        <result property="size" column="size"/>
+        <result property="description" column="description"/>
+        <result property="relatedId" column="related_id"/>
+        <result property="relatedType" column="related_type"/>
+        <result property="fileType" column="file_type"/>
+    </resultMap>
+
+    <insert id="insertAndGetId" useGeneratedKeys="true" keyProperty="id" parameterType="com.yeweihui.modules.common.entity.MultimediaEntity">
+        insert into multimedia(create_time, update_time, name, url, size, description, related_id, related_type, file_type)
+        values (#{createTime}, #{updateTime}, #{name}, #{url}, #{size}, #{description}, #{relatedId}, #{relatedType}, #{fileType})
+    </insert>
+    
+    <update id="updateRelatedId" parameterType="map">
+        update multimedia set related_id = #{announceId}
+        where id in
+        <foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+    </update>
+
+    <select id="findList" parameterType="map" resultType="com.yeweihui.modules.common.entity.MultimediaEntity">
+        select * from multimedia where related_id = #{aid} and related_type = #{relatedType} and (file_type = #{fileType} or file_type = #{publicityFileType})
+    </select>
+
+
+</mapper>

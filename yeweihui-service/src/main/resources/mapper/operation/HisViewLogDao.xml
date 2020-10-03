@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.HisViewLogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.HisViewLogEntity" id="hisViewLogMap">
+        <result property="id" column="id"/>
+        <result property="viewTime" column="view_time"/>
+        <result property="uid" column="uid"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="type" column="type"/>
+        <result property="referId" column="refer_id"/>
+        <result property="recordStatus" column="record_status"/>
+    </resultMap>
+
+    <select id="selectPageEn" resultType="com.yeweihui.modules.operation.entity.HisViewLogEntity">
+        SELECT
+            his_view_log.id,
+            his_view_log.view_time,
+            his_view_log.uid,
+            his_view_log.zone_id,
+            his_view_log.type,
+            his_view_log.refer_id,
+            his_view_log.record_status,
+            zones.name zone_name,
+            `user`.realname
+        FROM his_view_log
+        LEFT JOIN zones ON his_view_log.zone_id = zones.id
+        LEFT join `user` on his_view_log.uid = `user`.id
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by his_view_log.id desc
+        </if>
+    </select>
+
+
+    <select id="simpleList" resultType="com.yeweihui.modules.operation.entity.MeetingEntity">
+        SELECT
+        meeting.id,
+        meeting.create_time,
+        meeting.update_time,
+        meeting.uid,
+        meeting.zone_id,
+        meeting.title,
+        meeting.num,
+        meeting.sign_num,
+        meeting.location,
+        meeting.start_at,
+        meeting.end_date,
+        meeting.type,
+        meeting.spend_time,
+        meeting.content,
+        meeting.`status`,
+        meeting.record_status,
+        zones.name zone_name,
+        <if test="participateMeetingUid != null">
+            meeting_member.status member_status,
+            meeting_member.uid member_uid,
+        </if>
+        `user`.realname,
+        `user`.avatar_url
+        FROM
+        meeting
+        LEFT JOIN zones ON meeting.zone_id = zones.id
+        left join `user` on meeting.uid = `user`.id
+        <if test="participateMeetingUid != null">
+            left join meeting_member on meeting_member.mid = meeting.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by meeting.id desc
+        </if>
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 小区id -->
+            <if test="zoneId != null">
+                AND his_view_log.zone_id = #{zoneId}
+            </if>
+            <!-- 授权行业主管查看 -->
+            <if test="authZoneIdList != null">
+                AND his_view_log.zone_id in
+                <foreach item="authZoneIdList" index="index" collection="authZoneIdList"
+                         open="(" separator="," close=")">
+                    #{authZoneIdList}
+                </foreach>
+            </if>
+            <!-- 授权查看的小区id -->
+            <if test="authZoneId != null and authZoneId != 0">
+                AND his_view_log.zone_id = #{authZoneId}
+            </if>
+            <!-- 关键字（经办人） -->
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    `user`.nickname like CONCAT('%', #{keyword}, '%')
+                    or `user`.realname like CONCAT('%', #{keyword}, '%')
+                    or `user`.mobile like CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+
+            <!-- 查看人id -->
+            <if test="uid != null">
+                AND his_view_log.uid = #{uid}
+            </if>
+
+            <!-- 类型 BizTypeEnum -->
+            <if test="type != null">
+                AND his_view_log.type = #{type}
+            </if>
+            <!-- 显示状态 -->
+            <if test="minRecordStatus != null">
+                and his_view_log.record_status >= #{minRecordStatus}
+            </if>
+
+        </where>
+    </sql>
+
+</mapper>

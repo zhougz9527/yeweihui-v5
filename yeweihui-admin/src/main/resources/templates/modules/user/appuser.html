@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<head>
+    <title>APP用户</title>
+    <#include "/header.html"/>
+</head>
+<style>
+    .btm20px{
+        margin-bottom: 20px;
+    }
+</style>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="q.nickname" @keyup.enter="query" placeholder="昵称">
+            </div>
+            <div class="form-group col-sm-1">
+                <el-select v-model="q.userType" placeholder="请选择">
+                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </div>
+            <a class="btn btn-default" @click="query">查询</a>
+
+            <!--<#if shiro.hasPermission("user:appuser:save")>
+                <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+            </#if>-->
+            <#if shiro.hasPermission("user:appuser:save")>
+                <a class="btn btn-primary" @click="addVirtualUser"><i class="fa fa-plus"></i>&nbsp;新增虚拟用户</a>
+            </#if>
+            <!--<#if shiro.hasPermission("user:appuser:update")>
+                <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+            </#if>-->
+            <#if shiro.hasPermission("user:appuser:update")>
+                <a class="btn btn-primary" @click="updateVirtualUser"><i class="fa fa-pencil-square-o"></i>&nbsp;修改虚拟用户</a>
+            </#if>
+            <#if shiro.hasPermission("user:appuser:delete")>
+                <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+            </#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <!--用户展示-->
+    <div v-show="showUser" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+
+        <form>
+            <div class="row">
+                <form action="" method="post" id="userInfoForm">
+                    <input type="button" class="btn btn-warning" @click="reload" value="返回" style="margin-left: 20px;"/>
+                    <div class="panel-body">
+                        <div class="col-md-12">
+                            <div class="col-md-12" style="text-align: center;display: table-cell;vertical-align: middle;">
+                                <img :src="appUser.headIconUrl" style="width:75px;height:75px;"><br/>
+                                <h3>{{appUser.nickname}}</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-12 btm20px">
+                            <h3>1、基本信息</h3>
+                        </div>
+                        <div class="col-md-12 btm20px">
+                            <table class="table table-bordered" style="font-weight: bold;">
+                                <tr>
+                                    <td class="well" width="25%">用户类型</td>
+                                    <td width="25%"><strong>{{appUser.type}}</strong></td>
+                                    <td class="well" width="25%">手机号码</td>
+                                    <td width="25%"><strong>{{appUser.phone}}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="well">介绍</td>
+                                    <td><strong>{{appUser.description}}</strong></td>
+                                    <td class="well">会员状态</td>
+                                    <td>
+                                        <strong v-if="appUser.isMute==0 && appUser.isFreeze==0">正常</strong>
+                                        <strong v-if="appUser.isMute==1 && appUser.isFreeze==0">禁言</strong>
+                                        <strong v-if="appUser.isMute==0 && appUser.isFreeze==1">已冻结</strong>
+                                        <strong v-if="appUser.isMute==1 && appUser.isFreeze==1">冻结&禁言</strong>
+                                        {{appUser.isFreeze}}{{appUser.isMute}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="well">关注@</td>
+                                    <td><strong>{{}}人</strong></td>
+                                    <td class="well">粉丝@</td>
+                                    <td><strong>{{}}人</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="well">生日</td>
+                                    <td><strong>{{appUser.birthday}}</strong>
+                                    </td>
+                                    <td class="well">地区</td>
+                                    <td><strong>{{appUser.area}}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="well">注册时间</td>
+                                    <td>{{appUser.registerTime}}</td>
+                                    <td class="well">最后登陆</td>
+                                    <td>{{appUser.lastLoginTime}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="well">性别</td>
+                                    <td>{{appUser.gender}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-12 btm20px">
+                            <h3>2、活跃指数</h3>
+                        </div>
+                        <div class="col-md-12 btm20px">
+                            <table class="table table-bordered" style="font-weight: bold;">
+                                <tr>
+                                    <td class="well" width="10%">发布微读</td>
+                                    <td width="10%"><strong>{{appUser.weReadTimes}}条</strong></td>
+                                    <td class="well" width="10%">发布视频</td>
+                                    <td width="10%"><strong>{{appUser.videoCount}}条</strong></td>
+                                    <td class="well" width="10%">发布文章</td>
+                                    <td width="10%"><strong>{{appUser.articleCount}}条</strong></td>
+                                    <td class="well" width="10%">发布歌曲</td>
+                                    <td width="10%"><strong>{{appUser.songCount}}条</strong></td>
+                                    <td class="well" width="10%">发布小视频</td>
+                                    <td width="10%"><strong>{{appUser.tinyVideoCount}}条</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="well" width="10%">app转发次数</td>
+                                    <td width="10%"><strong>{{appUser.appShareCount}}次</strong></td>
+                                    <td class="well" width="10%">微信转发次数</td>
+                                    <td width="10%"><strong>{{appUser.wechatShareCount}}次</strong></td>
+                                    <td class="well" width="10%">朋友圈转发次数</td>
+                                    <td width="10%"><strong>{{appUser.momentsShareCount}}次</strong></td>
+                                    <td class="well" width="10%">微博转发次数</td>
+                                    <td width="10%"><strong>{{appUser.microBlogShareCount}}次</strong></td>
+                                    <td class="well" width="10%">qq转发次数</td>
+                                    <td width="10%"><strong>{{appUser.qqShareCount}}次</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="well" width="10%">app今日阅读条数</td>
+                                    <td width="10%"><strong>{{appUser.todayReadCount}}条</strong></td>
+                                    <td class="well" width="10%">app累计阅读条数</td>
+                                    <td width="10%"><strong>{{appUser.totalReadCount}}条</strong></td>
+                                    <td class="well" width="10%">平均日阅读条数</td>
+                                    <td width="10%"><strong>{{appUser.avgDayReadCount}}条</strong></td>
+                                    <td class="well" width="10%">累计评论条数</td>
+                                    <td width="10%"><strong>{{appUser.commentTimes}}条</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="well" width="10%">今日停留（分钟）</td>
+                                    <td width="10%"><strong>{{appUser.todayStayMinutes}}分钟</strong></td>
+                                    <td class="well" width="10%">累计停留（分钟）</td>
+                                    <td width="10%"><strong>{{appUser.totalStayMinutes}}分钟</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="col-md-12 btm20px">
+                            <h3>3、用户操作</h3>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-9">
+                                <div class="col-md-4">
+                                    <label class="layui-form-label">禁言理由</label>
+                                    <div class="layui-input-block">
+                                        <textarea placeholder="请输入内容" class="layui-textarea" v-model="appUser.muteReason"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-warning" onclick="mute();" >用户禁言</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="layui-form-label">冻结理由</label>
+                                    <div class="layui-input-block">
+                                        <textarea placeholder="请输入内容" class="layui-textarea" v-model="appUser.freezeReason"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-danger" onclick="freeze();" >冻结账户</button><!--{{appUser.freezeReason}}-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </form>
+
+        <!--<form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">登陆账号</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.account" placeholder="登陆账号"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">密码</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.password" placeholder="密码"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户类型（游客 GUEST、普通用户 NORMAL_USER、业委会达人 DQ_EXPERT、业委会歌手 DQ_SINGER、业委会号
+                    DQ_OFFICIAL_ACCOUNT、管理员 ADMIN）
+                </div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.type"
+                           placeholder="用户类型（游客 GUEST、普通用户 NORMAL_USER、业委会达人 DQ_EXPERT、业委会歌手 DQ_SINGER、业委会号 DQ_OFFICIAL_ACCOUNT、管理员 ADMIN） "/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">申请成为 type中的一个角色,默认NONE,不申请</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.applyFor"
+                           placeholder="申请成为 type中的一个角色,默认NONE,不申请"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">升级申请时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.applyForTime" placeholder="升级申请时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">手机</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.phone" placeholder="手机"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">昵称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.nickname" placeholder="昵称"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户头像url</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.headIconUrl" placeholder="用户头像url"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">注册时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.registerTime" placeholder="注册时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">最后一次登陆时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.lastLoginTime" placeholder="最后一次登陆时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计浏览次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.viewTimes" placeholder="累计浏览次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计评论次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.commentTimes" placeholder="累计评论次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计发微读数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.weReadTimes" placeholder="累计发微读数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计小视频数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.tinyVideoCount" placeholder="累计小视频数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计视频数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.videoCount" placeholder="累计视频数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计歌曲数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.songCount" placeholder="累计歌曲数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计文章数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.articleCount" placeholder="累计文章数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计图集数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.picGroupCount" placeholder="累计图集数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">手机唯一识别码</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.phoneUniqueCode" placeholder="手机唯一识别码"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">token</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.token" placeholder="token"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户生日</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.birthday" placeholder="用户生日"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">是否冻结 1 是 0否</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.isFreeze" placeholder="是否冻结 1 是 0否"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">冻结原因</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.freezeReason" placeholder="冻结原因"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">是否禁言 1 是 0否</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.isMute" placeholder="是否禁言 1 是 0否"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">禁言原因</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.muteReason" placeholder="禁言原因"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">介绍</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.description" placeholder="介绍"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">app转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.appShareCount" placeholder="app转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">微信转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.wechatShareCount" placeholder="微信转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">朋友圈转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.momentsShareCount" placeholder="朋友圈转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">微博转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.microBlogShareCount" placeholder="微博转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">qq转发次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.qqShareCount" placeholder="qq转发次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">app今日阅读次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.todayReadCount" placeholder="app今日阅读次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">app累计阅读次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.totalReadCount" placeholder="app累计阅读次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">app平均日阅读次数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.avgDayReadCount" placeholder="app平均日阅读次数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">今日停留（分钟）</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.todayStayMinutes" placeholder="今日停留（分钟）"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">累计停留（分钟）</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.totalStayMinutes" placeholder="累计停留（分钟）"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">使用app天数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.totalAppUseDays" placeholder="使用app天数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">地区</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.area" placeholder="地区"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">性别 MALE FEMALE</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.gender" placeholder="性别 MALE FEMALE"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">创建时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.createTime" placeholder="创建时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">修改时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.modifyTime" placeholder="修改时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>-->
+    </div>
+
+    <!--新增虚拟用户-->
+    <div v-show="showAddVirtualUser" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">昵称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.nickname" placeholder="昵称"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户头像url</div>
+                <!--<div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="appUser.headIconUrl" placeholder="用户头像url"/>
+                </div>-->
+                <div class="col-sm-10">
+                    <input type="text" id="userHeadIconPictureUrl" class="form-control" style="width: 90%;display: inline-block;" v-model="appUser.headIconUrl" readonly="readonly"/>
+                    <button id="userHeadIconPictureUploadBtn" class="btn btn-primary" type="button">上传</button>
+                    <input id="userHeadIconPictureUploadInputFile" type="file" accept="image/png,image/jpeg,image/gif" style="display: none"/>
+                    <img :src="appUser.headIconUrl" id="userHeadIconPictureImg" alt="" style="width: 200px;display: block"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">性别</div>
+                <div class="col-sm-10">
+                    <el-select v-model="appUser.gender" filterable placeholder="请选择">
+                        <el-option v-for="item in userGenderList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户分类大类</div>
+                <div class="col-sm-10">
+                    <input type="text" id="userMainCategorySelectPage" class="form-control" placeholder="用户分类大类" style="width:800px;">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/user/appuser.js?_${.now?long}"></script>
+</body>
+</html>

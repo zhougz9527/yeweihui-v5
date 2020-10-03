@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.PaperMemberDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.PaperMemberEntity" id="paperMemberMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="pid" column="pid"/>
+        <result property="uid" column="uid"/>
+        <result property="referUid" column="refer_uid"/>
+        <result property="status" column="status"/>
+        <result property="signTime" column="sign_time"/>
+    </resultMap>
+
+    <select id="getByPidUid" resultType="com.yeweihui.modules.operation.entity.PaperMemberEntity">
+        SELECT
+            paper_member.*
+        FROM
+            paper_member
+            where paper_member.pid = #{pid}
+            and paper_member.uid = #{uid}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            paper_member
+        <include refid="queryParam" />
+    </select>
+
+    <select id="getListByPid" resultType="com.yeweihui.modules.operation.entity.PaperMemberEntity">
+        SELECT
+            paper_member.*,
+            `user`.realname,
+            `user`.avatar_url
+        FROM
+            paper_member
+        left join `user` on `user`.id = paper_member.uid
+        where paper_member.pid = #{pid}
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 函件id -->
+            <if test="pid != null">
+                AND paper_member.pid = #{pid}
+            </if>
+            <!-- 是否签收 0未签收 1已签收 -->
+            <if test="paperMemberStatus != null">
+                AND paper_member.`status` = #{paperMemberStatus}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

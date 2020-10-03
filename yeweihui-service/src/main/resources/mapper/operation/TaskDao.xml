@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.TaskDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.TaskEntity" id="taskMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="uid" column="uid"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="total" column="total"/>
+        <result property="checked" column="checked"/>
+        <result property="status" column="status"/>
+        <result property="endDate" column="end_date"/>
+        <result property="recordStatus" column="record_status"/>
+    </resultMap>
+
+    <!-- 分页 -->
+    <select id="selectPageVO" resultType="com.yeweihui.modules.vo.api.vo.TaskVO">
+        SELECT
+            task.id,
+            task.create_time,
+            task.update_time,
+            task.zone_id,
+            task.uid,
+            task.title,
+            task.content,
+            task.total,
+            task.checked,
+            task.`status`,
+            task.end_date,
+            task.record_status,
+            zones.name zone_name
+        FROM
+            task
+        LEFT JOIN zones ON task.zone_id = zones.id
+        <include refid="queryParam" />
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 关键字（昵称/手机号/真实姓名） -->
+            <!--<if test="keyword != null and keyword != ''">
+                AND (ec_app_user.nickname like CONCAT('%', #{keyword})
+                or ec_app_user.phone like CONCAT('%', #{keyword})
+                or ec_app_user.realname like CONCAT('%', #{keyword}))
+            </if>-->
+
+            <!-- 审核状态 -->
+            <!-- 授权行业主管查看 -->
+            <if test="authZoneIdList != null">
+                AND task.zone_id in
+                <foreach item="authZoneIdList" index="index" collection="authZoneIdList"
+                         open="(" separator="," close=")">
+                    #{authZoneIdList}
+                </foreach>
+            </if>
+            <if test="zoneId != null and zoneId != ''">
+                AND task.zone_id = #{zoneId}
+            </if>
+            <!-- 显示状态 -->
+            <if test="minRecordStatus != null">
+                and task.record_status >= #{minRecordStatus}
+            </if>
+
+        </where>
+    </sql>
+
+</mapper>

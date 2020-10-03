@@ -1,0 +1,90 @@
+server:
+  tomcat:
+    basedir: /home/yeweihui-test/tomcat/admin
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    druid:
+      first:  #数据源1
+      #      url: jdbc:mysql://localhost/yeweihui_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
+#        url: jdbc:mysql://47.111.24.218:3306/yeweihui_prod?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
+        url: jdbc:mysql://rm-bp1k07h3k0tm18j2yuo.mysql.rds.aliyuncs.com:3306/yeweihui_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
+        username: jmkj_admin
+        password: 9c4ce9fdf32c7d7b7b22f1aa583d465@
+
+#        url: jdbc:mysql://129.204.83.206:3306/yeweihui-dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
+#        username: root
+#        password: jinMu@123!456*?
+
+#        username: cutie
+#        password: chenyang007
+      second:  #数据源2
+        url: jdbc:mysql://10.10.168.18:3306/renren_security?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=true
+#        username: renren
+#        password: 123456
+        username: root
+        password: root
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 10000
+      min-evictable-idle-time-millis: 300000
+      #validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        #login-username: admin
+        #login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+
+aliyun:
+  oss:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    accesskey: LTAI4FrKZx5CEuMeSJjrZAPb
+    secret: xJL1c6UXyihvhhNtivqDnoSu9oTm59
+    comm:
+      bucket: ywh-bfly-comm
+    private:
+      bucket: ywh-bfly-private
+
+wx:
+  miniapp:
+    configs:
+      - appid: wx5e7524c02dade60a #微信小程序的appid
+        secret: 1bebca5499dfe479b15e15cfc74cf1f7 #微信小程序的Secret
+        token: #微信小程序消息服务器配置的token
+        aesKey: #微信小程序消息服务器配置的EncodingAESKey
+        msgDataFormat: JSON
+  public:
+    configs:
+      appid: wx76a3568799db3640
+      secret: 7eda5b694d93cf2e5f8595bc10856581
+
+
+bfly-wx:
+  miniapp:
+    configs:
+      - appid: wxc4d2707a8de14c89 #微信小程序的appid
+        secret: af0277f866c00381a37f380faec7f0c9 #微信小程序的Secret
+        token: bfly #微信小程序消息服务器配置的token
+        aesKey: Z1d9Dr6362Zm6E9SbbaiWjFrXzyn4yy59BhazrNelsw #微信小程序消息服务器配置的EncodingAESKey
+        msgDataFormat: JSON
+        publicAppid:
+        publicSecret:
+
+#pdf
+FONT: font/simhei.ttf

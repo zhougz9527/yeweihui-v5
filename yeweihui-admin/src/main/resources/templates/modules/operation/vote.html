@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>事务表决表</title>
+		<#include "/header.html"/>
+
+    <style>
+        /* 和bootstrap样式冲突*/
+        .el-upload__input {
+            display: none!important;
+        }
+        .upload-tip {
+            color:red;
+            font-size:14px;
+            font-weight:700;
+        }
+    </style>
+
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div class="form-group col-sm-2">
+                <div class="col-sm-2 control-label">小区</div>
+                <div class="col-sm-10">
+                    <el-select v-model="q.zoneId" placeholder="请选择" clearable filterable>
+                        <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="q.keyword" @keyup.enter="query" placeholder="经办人/经办人手机">
+            </div>
+            <a class="btn btn-default" @click="query">查询</a>
+
+			<#if shiro.hasPermission("operation:vote:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("operation:vote:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("operation:vote:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+            <#if shiro.hasPermission("operation:vote:hide")>
+            <a class="btn btn-primary" @click="hide"><i class="fa fa-trash-o"></i>隐藏</a>
+            </#if>
+            <#if shiro.hasPermission("operation:vote:recovery")>
+            <a class="btn btn-primary" @click="recovery"><i class="fa fa-trash-o"></i>恢复</a>
+            </#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <!--<div class="form-group">
+                <div class="col-sm-2 control-label">创建时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.createTime" placeholder="创建时间" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">更新时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.updateTime" placeholder="更新时间" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">小区id</div>
+                <div class="col-sm-10">
+                    &lt;!&ndash;<input type="text" class="form-control" v-model="vote.zoneId" placeholder="小区id"/>&ndash;&gt;
+                    <el-select v-model="vote.zoneId" placeholder="请选择" clearable filterable disabled>
+                        <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">发起人id</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.uid" placeholder="发起人id" readonly/>
+                </div>
+            </div>-->
+            <div class="form-group">
+                <div class="col-sm-2 control-label">表决主题</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.title" placeholder="请输入表决主题"/>
+                </div>
+            </div>
+            <div class="form-group" v-if="viewMode">
+                <div class="col-sm-2 control-label">发起人</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.realname" placeholder="发起人" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">表决方式</div>
+                <div class="col-sm-10">
+                    <!--<input type="text" class="form-control" v-model="vote.itemType" placeholder="选择类型 0单项 1多选"/>-->
+                    <el-select v-model="vote.itemType" placeholder="请选择" filterable @change="itemTypeSelectOne">
+                        <el-option v-for="item in itemTypeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div v-show="vote.itemType == 1" >
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">选项1</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="vote.item1" placeholder="选项1"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">选项2</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="vote.item2" placeholder="选项2"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">选项3</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="vote.item3" placeholder="选项3"/>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">表决类别</div>
+                <div class="col-sm-10">
+                    <!--<input type="text" class="form-control" v-model="vote.type" placeholder="投票类型 1实名 2匿名"/>-->
+                    <el-select v-model="vote.type" placeholder="请选择" filterable>
+                        <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">截止时间</div>
+                <div class="col-sm-10">
+                    <!--<input type="text" class="form-control" v-model="vote.endTime" placeholder="截止时间"/>-->
+                    <el-date-picker
+                            v-model="vote.endTime"
+                            align="right"
+                            type="date"
+                            placeholder="选择日期"
+                            :picker-options="pickerOptions"
+                            :clearable="false"
+                            value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd">
+                    </el-date-picker>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">表决内容</div>
+                <div class="col-sm-10">
+                    <textarea placeholder="请输入表决内容" class="form-control" v-model="vote.content"></textarea>
+<!--                    <input type="text" class="form-control" v-model="vote.content" placeholder="请输入表决内容"/>-->
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">附件</div>
+                <div class="col-sm-10">
+                    <el-upload
+                            action="../../sys/oss/upload"
+                            :on-preview="handlePictureCardPreview"
+                            :on-remove="handleRemove"
+                            :on-success="handleSuccess"
+                            :on-progress="handleProgress"
+                            :before-upload="handleBeforeUpload"
+                            :file-list="vote.fileList"
+                            :limit=9
+                            accept=".doc, .docx, .ppt, .pptx, .xls, .xlsx, .pdf, image/jpeg,image/jpg,image/png"
+                            list-type="picture">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">*支持图片,word,excel,ppt,pdf，最大不超过2M，最多上传9个文件
+                            <p class="upload-tip">请耐心等待，完成上传后再进行下一步操作</p>
+                        </div>
+                    </el-upload>
+                    <el-dialog :visible.sync="dialogVisible" :before-close="closeDialog">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">表决人</div>
+                <div class="col-sm-10">
+                    <el-select v-model="vote.verifyType" placeholder="请选择"
+                               :disabled="vote.id != null"
+                                @change="resetVoteMemberList">
+                        <el-option
+                                v-for="item in voteMemberTypeOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-cascader
+                            v-show="vote.verifyType === 1"
+                            v-model="voteMemberList"
+                            :options="voteMemberOptions"
+                            :disabled="vote.id != null"
+                            filterable
+                            clearable>
+                    </el-cascader>
+                    <el-cascader
+                            v-show="vote.verifyType === 2"
+                            v-model="voteMemberList"
+                            :options="voteMemberOptions"
+                            :props="cascaderProps"
+                            :disabled="vote.id != null"
+                            filterable
+                            clearable>
+                    </el-cascader>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">抄送人员</div>
+                <div class="col-sm-10">
+                    <li v-for="(value, key, index) in vote.copy2VoteMemberEntityList" style="float:left; padding-right:10px; padding-bottom: 5px;">
+                        <el-tag type="info" @close="handleClose3(value.uid)" :key="value.uid" closable>{{ value.memberRealname }}</el-tag><!--【{{ value.mobile }}】-->
+                    </li>
+                </div>
+                <button class="btn btn-primary" type="button" @click="getCourier2">选择</button>
+            </div>
+
+
+
+
+            <!--<div class="form-group">
+                <div class="col-sm-2 control-label">参与表决人数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.num" placeholder="参与表决人数" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">同意人数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.yesNum" placeholder="同意人数" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">反对人数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.noNum" placeholder="反对人数" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">弃权人数</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.quitNum" placeholder="弃权人数" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">投票状态</div>
+                <div class="col-sm-10">
+                    &lt;!&ndash;<input type="text" class="form-control" v-model="vote.status" placeholder="投票状态 1同意过半 2反对过半 3撤销 4选择确定"/>&ndash;&gt;
+                    <el-select v-model="vote.status" placeholder="请选择" filterable disabled>
+                        <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">添加时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="vote.createAt" placeholder="添加时间" readonly/>
+                </div>
+            </div>-->
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" v-if="!viewMode" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <div class="col-sm-10">
+                    <p class="upload-tip">请在附件上传100%后再点击“确定”</p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--业委会成员抄送绑定-->
+    <div class="modal fade" id="courierModal2" tabindex="-1" role="basic">
+        <div class="modal-dialog" role="document" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <strong style="font-size: 15px;">业委会成员选择</strong>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <form action="" method="post" id="commonForm2">
+                            <div class="form-group">
+                                <label class="control-label">业委会成员选择搜索：</label>
+                                <div class="form-group col-sm-2">
+                                    <div class="col-sm-2 control-label">小区</div>
+                                    <div class="col-sm-10">
+                                        <el-select v-model="courierQuery.zoneId" placeholder="请选择" clearable filterable>
+                                            <el-option v-for="item in zonesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                                <input name="keyword" type="text" class="form-control" style="display: inline-block;width: 20%;" v-model="courierQuery.keyword" placeholder="姓名/手机号">
+                                <a class="btn btn-primary btn-sm" style="margin-left:5px;" @click="reloadCourierGrid2">
+                                    <i class="fa fa-search"></i>&nbsp;<span>搜索</span>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row">
+                        <div class="jqGrid_wrapper">
+                            <table id="courierModalGrid2"></table>
+                            <div id="courierModalPager2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="utton" class="btn btn-primary" @click="selectcCourier2">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/operation/vote.js"></script>
+</body>
+</html>

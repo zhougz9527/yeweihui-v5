@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.MenuMapDao">
+
+<select id="selectMenuMapIdIn" resultType="com.yeweihui.modules.operation.entity.MenuMapEntity">
+    select * from menu_map
+    where 1=1
+    <if test="null != menuMapIdList and menuMapIdList.size() > 0">
+        and id in
+        <foreach collection="menuMapIdList" item="item" index="index" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+        ;
+    </if>
+</select>
+
+</mapper>

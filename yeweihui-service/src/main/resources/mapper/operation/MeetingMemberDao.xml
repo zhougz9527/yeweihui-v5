@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.MeetingMemberDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.MeetingMemberEntity" id="meetingMemberMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="mid" column="mid"/>
+        <result property="uid" column="uid"/>
+        <result property="referUid" column="refer_uid"/>
+        <result property="type" column="type"/>
+        <result property="signTime" column="sign_time"/>
+        <result property="signNameTime" column="sign_name_time"/>
+        <result property="status" column="status"/>
+        <result property="signInUrl" column="sign_in_url"/>
+        <result property="signEndUrl" column="sign_end_url"/>
+    </resultMap>
+
+    <!-- 普通列表 -->
+    <select id="simpleList" resultType="com.yeweihui.modules.operation.entity.MeetingMemberEntity">
+        SELECT
+            meeting_member.id,
+            meeting_member.create_time,
+            meeting_member.update_time,
+            meeting_member.mid,
+            meeting_member.uid,
+            meeting_member.refer_uid,
+            meeting_member.type,
+            meeting_member.sign_time,
+            meeting_member.sign_name_time,
+            meeting_member.`status`,
+            meeting_member.sign_in_url,
+            meeting_member.sign_end_url,
+            `user`.realname member_realname,
+            `user`.avatar_url avatar_url
+        FROM
+            meeting_member
+        left join `user` on meeting_member.uid = `user`.id
+        where meeting_member.mid = #{mid}
+        and meeting_member.type = #{meetingMemberType}
+    </select>
+
+    <select id="getByMidUid" resultType="com.yeweihui.modules.operation.entity.MeetingMemberEntity">
+        SELECT
+            meeting_member.id,
+            meeting_member.create_time,
+            meeting_member.update_time,
+            meeting_member.mid,
+            meeting_member.uid,
+            meeting_member.refer_uid,
+            meeting_member.type,
+            meeting_member.sign_time,
+            meeting_member.sign_name_time,
+            meeting_member.`status`,
+            meeting_member.sign_in_url,
+            meeting_member.sign_end_url
+        FROM
+            meeting_member
+        where
+        meeting_member.mid = #{mid}
+        and meeting_member.uid = #{uid}
+        and meeting_member.type = #{meetingMemberType}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+        meeting_member
+        <include refid="queryParam" />
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 会议id -->
+            <if test="mid != null">
+                AND meeting_member.mid = #{mid}
+            </if>
+            <!-- 会议参与类型 1参会 2抄送 -->
+            <if test="meetingMemberType != null">
+                AND meeting_member.type = #{meetingMemberType}
+            </if>
+            <!-- 会议参与状态 1已签到 2已签字 -->
+            <if test="meetingMemberStatus != null">
+                AND meeting_member.`status` = #{meetingMemberStatus}
+            </if>
+            <!-- 会议参与用户id -->
+            <if test="uid != null">
+                AND meeting_member.uid = #{uid}
+            </if>
+            <!-- 已签到判断 -->
+            <if test="signFlag != null and signFlag == 'true'.toString()">
+                AND meeting_member.sign_time is not null
+            </if>
+        </where>
+    </sql>
+
+
+
+
+</mapper>

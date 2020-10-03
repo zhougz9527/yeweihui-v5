@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.MeetingDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.MeetingEntity" id="meetingMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="uid" column="uid"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="title" column="title"/>
+        <result property="num" column="num"/>
+        <result property="signNum" column="sign_num"/>
+        <result property="location" column="location"/>
+        <result property="startAt" column="start_at"/>
+        <result property="endDate" column="endDate"/>
+        <result property="type" column="type"/>
+        <result property="spendTime" column="spend_time"/>
+        <result property="content" column="content"/>
+        <result property="status" column="status"/>
+        <result property="recordStatus" column="record_status"/>
+    </resultMap>
+
+    <!-- 分页 -->
+    <select id="selectPageVO" resultType="com.yeweihui.modules.vo.api.vo.MeetingVO">
+        SELECT
+            meeting.id,
+            meeting.create_time,
+            meeting.update_time,
+            meeting.uid,
+            meeting.zone_id,
+            meeting.title,
+            meeting.num,
+            meeting.sign_num,
+            meeting.location,
+            meeting.start_at,
+            meeting.end_date,
+            meeting.type,
+            meeting.spend_time,
+            meeting.content,
+            meeting.`status`,
+            meeting.record_status,
+            zones.name zone_name,
+            <if test="participateMeetingUid != null">
+                meeting_member.status member_status,
+            </if>
+            `user`.realname,
+            `user`.avatar_url
+        FROM
+            meeting
+        LEFT JOIN zones ON meeting.zone_id = zones.id
+        left join `user` on meeting.uid = `user`.id
+        <if test="participateMeetingUid != null">
+            left join meeting_member on meeting_member.mid = meeting.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by meeting.id desc
+        </if>
+    </select>
+
+    <select id="selectPageEn" resultType="com.yeweihui.modules.operation.entity.MeetingEntity">
+        SELECT
+            meeting.id,
+            meeting.create_time,
+            meeting.update_time,
+            meeting.uid,
+            meeting.zone_id,
+            meeting.title,
+            meeting.num,
+            meeting.sign_num,
+            meeting.location,
+            meeting.start_at,
+            meeting.end_date,
+            meeting.type,
+            meeting.spend_time,
+            meeting.content,
+            meeting.`status`,
+            meeting.record_status,
+        zones.name zone_name,
+        <if test="participateMeetingUid != null">
+            meeting_member.status member_status,
+            meeting_member.uid member_uid,
+        </if>
+        `user`.realname,
+        `user`.avatar_url
+        FROM
+            meeting
+        LEFT JOIN zones ON meeting.zone_id = zones.id
+        left join `user` on meeting.uid = `user`.id
+        <if test="participateMeetingUid != null">
+            left join meeting_member on meeting_member.mid = meeting.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by meeting.id desc
+        </if>
+    </select>
+
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+        meeting
+        LEFT JOIN zones ON meeting.zone_id = zones.id
+        left join `user` on meeting.uid = `user`.id
+        <if test="participateMeetingUid != null">
+            left join meeting_member on meeting_member.mid = meeting.id
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+
+    <select id="simpleList" resultType="com.yeweihui.modules.operation.entity.MeetingEntity">
+        SELECT
+        meeting.id,
+        meeting.create_time,
+        meeting.update_time,
+        meeting.uid,
+        meeting.zone_id,
+        meeting.title,
+        meeting.num,
+        meeting.sign_num,
+        meeting.location,
+        meeting.start_at,
+        meeting.end_date,
+        meeting.type,
+        meeting.spend_time,
+        meeting.content,
+        meeting.`status`,
+        meeting.record_status,
+        zones.name zone_name,
+        <if test="participateMeetingUid != null">
+            meeting_member.status member_status,
+            meeting_member.uid member_uid,
+        </if>
+        `user`.realname,
+        `user`.avatar_url
+        FROM
+        meeting
+        LEFT JOIN zones ON meeting.zone_id = zones.id
+        left join `user` on meeting.uid = `user`.id
+        <if test="participateMeetingUid != null">
+            left join meeting_member on meeting_member.mid = meeting.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by meeting.id desc
+        </if>
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 小区id -->
+            <if test="zoneId != null">
+                AND meeting.zone_id = #{zoneId}
+            </if>
+            <!-- 授权行业主管查看 -->
+            <if test="authZoneIdList != null">
+                AND meeting.zone_id in
+                <foreach item="authZoneIdList" index="index" collection="authZoneIdList"
+                         open="(" separator="," close=")">
+                    #{authZoneIdList}
+                </foreach>
+            </if>
+            <!-- 授权查看的小区id -->
+            <if test="authZoneId != null and authZoneId != 0">
+                AND meeting.zone_id = #{authZoneId}
+            </if>
+            <!-- 关键字（经办人） -->
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    meeting.title like CONCAT('%', #{keyword}, '%')
+                    or `user`.nickname like CONCAT('%', #{keyword}, '%')
+                    or `user`.realname like CONCAT('%', #{keyword}, '%')
+                    or `user`.mobile like CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+
+            <!-- 会议发起人id -->
+            <if test="uid != null">
+                AND meeting.uid = #{uid}
+            </if>
+
+            <!-- 会议类型 0普通 1现场 -->
+            <if test="type != null">
+                And meeting.type = #{type}
+            </if>
+
+            <!-- 会议状态 0待签到 1进行中 2待签字 3结束 4取消" -->
+            <if test="meetingStatusList != null and meetingStatusList.size() >0">
+                and meeting.status IN
+                <foreach collection="meetingStatusList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 会议状态 0待签到 1进行中 2待签字 3结束 4取消 -->
+            <if test="meetingStatus != null">
+                AND meeting.status = #{meetingStatus}
+            </if>
+            <!-- 参与会议用户id -->
+            <if test="participateMeetingUid != null">
+                AND meeting_member.uid = #{participateMeetingUid}
+            </if>
+            <!-- 会议参与类型 1参会 2抄送 -->
+            <if test="meetingMemberType != null">
+                AND meeting_member.type = #{meetingMemberType}
+            </if>
+            <!-- 会议参与状态列表 0待开会1已签到2已签字 -->
+            <if test="meetingMemberStatusList != null and meetingMemberStatusList.size() >0">
+                and meeting_member.status IN
+                <foreach collection="meetingMemberStatusList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 会议参与状态 1已签到 2已签字 -->
+            <if test="meetingMemberStatus != null">
+                AND meeting_member.status = #{meetingMemberStatus}
+            </if>
+            <!-- 会议参与状态 1已签到 2已签字 -->
+            <if test="afterStartTime != null and afterStartTime == 'true'.toString()">
+                AND meeting.start_at <![CDATA[ <= ]]> now()
+            </if>
+            <if test="expireTime != null">
+                AND DATE_ADD(meeting.end_date, INTERVAL 48 HOUR) <![CDATA[ < ]]> #{expireTime}
+            </if>
+            <!-- 显示状态 -->
+            <if test="minRecordStatus != null">
+                and meeting.record_status >= #{minRecordStatus}
+            </if>
+
+        </where>
+    </sql>
+
+</mapper>

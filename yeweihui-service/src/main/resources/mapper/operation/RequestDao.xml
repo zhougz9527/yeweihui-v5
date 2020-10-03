@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.RequestDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.RequestEntity" id="requestMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="uid" column="uid"/>
+        <result property="step" column="step"/>
+        <result property="stepTotal" column="step_total"/>
+        <result property="type" column="type"/>
+        <result property="uname" column="uname"/>
+        <result property="useDate" column="use_date"/>
+        <result property="documentName" column="document_name"/>
+        <result property="num" column="num"/>
+        <result property="fileType" column="file_type"/>
+        <result property="seal" column="seal"/>
+        <result property="notice" column="notice"/>
+        <result property="status" column="status"/>
+        <result property="recordStatus" column="record_status"/>
+    </resultMap>
+
+    <!--分页-->
+    <select id="selectPageVO" resultType="com.yeweihui.modules.vo.api.vo.RequestVO">
+        SELECT
+            request.id,
+            request.create_time,
+            request.update_time,
+            request.zone_id,
+            request.uid,
+            request.step,
+            request.step_total,
+            request.type,
+            request.uname,
+            request.use_date,
+            request.document_name,
+            request.num,
+            request.file_type,
+            request.seal,
+            request.notice,
+            request.`status`,
+            request.record_status,
+            zones.`name` zone_name,
+            <if test="verifyUid != null">
+                request_member.status member_status,
+            </if>
+            `user`.realname,
+            `user`.avatar_url
+        FROM
+        request
+        LEFT JOIN zones ON request.zone_id = zones.id
+        LEFT JOIN `user` ON `user`.id = request.uid
+        <if test="verifyUid != null">
+            LEFT JOIN request_member on request_member.rid = request.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by request.id desc
+        </if>
+    </select>
+
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            request
+        LEFT JOIN zones ON request.zone_id = zones.id
+        <if test="verifyUid != null">
+            LEFT JOIN request_member on request_member.rid = request.id
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+    <select id="simpleList" resultType="com.yeweihui.modules.operation.entity.RequestEntity">
+        select * from request
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by request.id desc
+        </if>
+    </select>
+
+    <select id="selectPageEn" resultType="com.yeweihui.modules.operation.entity.RequestEntity">
+        SELECT
+            request.id,
+            request.create_time,
+            request.update_time,
+            request.zone_id,
+            request.uid,
+            request.step,
+            request.step_total,
+            request.type,
+            request.uname,
+            request.use_date,
+            request.document_name,
+            request.num,
+            request.file_type,
+            request.seal,
+            request.notice,
+            request.`status`,
+            request.record_status,
+        zones.`name` zone_name,
+            <if test="verifyUid != null">
+                request_member.status member_status,
+            </if>
+            `user`.realname,
+            `user`.avatar_url
+        FROM
+            request
+        LEFT JOIN zones ON request.zone_id = zones.id
+        LEFT JOIN `user` ON `user`.id = request.uid
+        <if test="verifyUid != null">
+            LEFT JOIN request_member on request_member.rid = request.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by request.id desc
+        </if>
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 关键字（昵称/手机号/真实姓名） -->
+            <!--<if test="keyword != null and keyword != ''">
+                AND (ec_app_user.nickname like CONCAT('%', #{keyword})
+                or ec_app_user.phone like CONCAT('%', #{keyword})
+                or ec_app_user.realname like CONCAT('%', #{keyword}))
+            </if>-->
+
+            <!-- 小区id -->
+            <if test="zoneId != null">
+                AND request.zone_id = #{zoneId}
+            </if>
+            <!-- 授权行业主管查看 -->
+            <if test="authZoneIdList != null">
+                AND request.zone_id in
+                <foreach item="authZoneIdList" index="index" collection="authZoneIdList"
+                         open="(" separator="," close=")">
+                    #{authZoneIdList}
+                </foreach>
+            </if>
+            <!-- 授权查看的小区id -->
+            <if test="authZoneId != null and authZoneId != 0">
+                AND request.zone_id = #{authZoneId}
+            </if>
+            <!-- 关键字（经办人） -->
+            <if test="keyword != null and keyword != ''">
+                AND (`user`.nickname like CONCAT('%', #{keyword}, '%')
+                or `user`.realname like CONCAT('%', #{keyword}, '%')
+                or `user`.mobile like CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+            <!-- 类型 1审批 2抄送 -->
+            <if test="requestMemberType != null">
+                AND request_member.type = #{requestMemberType}
+            </if>
+            <!-- 状态 0未审核 1通过 2未通过 -->
+            <if test="requestMemberStatus != null">
+                AND request_member.status = #{requestMemberStatus}
+            </if>
+            <!-- 参与状态 0未审核 1通过 2未通过 -->
+            <if test="requestMemberStatusList != null and requestMemberStatusList.size() >0">
+                and request_member.status IN
+                <foreach collection="requestMemberStatusList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 状态 0审核中 1审核通过 2撤销 3未通过 -->
+            <if test="requestStatusList != null and requestStatusList.size() >0">
+                and request.status IN
+                <foreach collection="requestStatusList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 发起人uid -->
+            <if test="uid != null">
+                AND request.uid = #{uid}
+            </if>
+            <!-- 审批人/抄送人uid -->
+            <if test="verifyUid != null">
+                AND request_member.uid = #{verifyUid}
+            </if>
+
+            <!-- 用章主状态 状态 0审核中 1审核通过 2撤销 3未通过 -->
+            <if test="requestStatus != null">
+                AND request.status = #{requestStatus}
+            </if>
+            <!-- 24小时前的 -->
+            <if test="expireTime != null">
+                AND DATE_ADD(request.use_date, INTERVAL 1 DAY) <![CDATA[ < ]]> #{expireTime}
+            </if>
+            <!-- 显示状态 -->
+            <if test="minRecordStatus != null">
+                and request.record_status >= #{minRecordStatus}
+            </if>
+            <!-- 当前时间大于（截止时间+24小时） -->
+            <if test="endTime != null">
+                and DATE_ADD(request.use_date, INTERVAL 1 DAY) <![CDATA[ >= ]]> #{endTime}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

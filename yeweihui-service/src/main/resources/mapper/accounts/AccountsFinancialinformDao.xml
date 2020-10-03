@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.accounts.dao.AccountsFinancialinformDao">
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, voucher_id AS voucherId, digest, subject_id AS subjectId, auxiliary, receipts_money AS receiptsMoney, disbursements_money AS disbursementsMoney    </sql>
+
+    <select id="getReceiptsAndDisbursements" parameterType="com.yeweihui.modules.vo.query.ReceiptsAndDisbursementsParam" resultType="java.lang.String">
+    SELECT
+        ROUND(CONVERT(SUM(money),DECIMAL(15,4)),2) money  FROM
+    (SELECT
+    a.id aid,
+    a.zone_id zoneid,
+    af.id afid,
+    af.money,
+    af.subject_id,
+    af.voucher_id,
+    a.start_date,
+    a.end_date,
+    a.`status`,
+    a.last_operating_surplus,
+    a.last_pledge_surplus,
+    s.*
+    FROM
+    accounts a,
+    accounts_financialinform af,
+    accounts_subject s,
+    accounts_voucher av
+        <where>
+        af.subject_id=s.id
+        AND af.voucher_id=av.id
+        AND av.accounts_id=a.id
+            <if test="id != null">
+                AND a.id=#{id}
+            </if>
+            <if test="type != null">
+                AND s.type=#{type}
+            </if>
+            <if test="rdtype != null">
+                AND s.rdtype=#{rdtype}
+            </if>
+            <if test="accountsDate != null">
+                AND (
+                (a.start_date = #{accountsDate} AND a.end_date is null)
+                OR
+                (a.start_date <![CDATA[ <= ]]> #{accountsDate} AND #{accountsDate} <![CDATA[ <= ]]> a.end_date)
+                )
+            </if>
+            <if test="yearDate != null">
+                AND YEAR(a.end_date)= #{yearDate}
+            </if>
+            <if test="zoneId !=null">
+                AND a.zone_id=#{zoneId}
+            </if>
+            <if test="status !=null">
+                AND a.status=#{status}
+            </if>
+
+        </where>
+    ORDER BY a.end_date DESC
+    )aa
+    </select>
+    <select id="getSurplusByType" parameterType="com.yeweihui.modules.vo.query.ReceiptsAndDisbursementsParam" resultType="java.lang.String">
+        SELECT
+        ROUND(CONVERT(ss.surplus +bb.money,DECIMAL(15,4)),2) AS money
+        FROM
+        (
+        SELECT
+        ROUND(
+        <choose>
+            <when test="type != null and type == 1">
+                last_operating_surplus
+            </when>
+            <when test="type != null and type == 2">
+                last_pledge_surplus
+            </when>
+            <otherwise>
+                last_operating_surplus + last_pledge_surplus
+            </otherwise>
+        </choose>
+        ,2)AS surplus
+        FROM
+        accounts a
+        <where>
+
+            <if test="zoneId !=null">
+                AND a.zone_id=#{zoneId}
+            </if>
+            <if test="status !=null">
+                AND a.status=#{status}
+            </if>
+
+        </where>
+        ORDER BY
+        a.start_date ASC
+        LIMIT 1
+
+
+        ) ss,
+        (
+        SELECT
+        CASE
+        WHEN money IS NULL THEN
+        0
+        ELSE
+        money
+        END AS money
+        FROM(
+        SELECT ROUND((sum(case rdtype when 1 then money else 0 end))-(sum(case rdtype when 2 then money else 0 end)),2) AS money
+        FROM
+        (SELECT
+            a.id aid,
+            af.id afid,
+            af.money,
+            af.subject_id,
+            af.voucher_id,
+            a.start_date,
+            a.end_date,
+            a.`status`,
+            a.last_operating_surplus,
+            a.last_pledge_surplus,
+            s.*
+        FROM
+            accounts a,
+            accounts_financialinform af,
+            accounts_subject s,
+            accounts_voucher av
+        <where>
+            af.subject_id=s.id
+            AND af.voucher_id=av.id
+            AND av.accounts_id=a.id
+            <if test="type != null">
+                AND s.type=#{type}
+            </if>
+            <if test="accountsDate != null">
+                AND (
+                (a.start_date = #{accountsDate} AND a.end_date is null)
+                OR
+                (a.end_date &lt;=#{accountsDate})
+                )
+            </if>
+            <if test="yearDate != null">
+                AND YEAR(a.end_date) &lt;= #{yearDate}
+            </if>
+            <if test="zoneId !=null">
+                AND a.zone_id=#{zoneId}
+            </if>
+            <if test="status !=null">
+                AND a.status=#{status}
+            </if>
+        </where>
+        )aa
+        )cc
+        )bb
+    </select>
+    <select id="getReceiptsAndDisbursementsBYSubject" parameterType="com.yeweihui.modules.vo.query.ReceiptsAndDisbursementsParam" resultType="com.yeweihui.modules.vo.api.vo.SubjectVO">
+    SELECT
+	ss.*, ROUND(CONVERT(dd.money,DECIMAL(15,4)),2) money,dd.NAME  FROM(
+		SELECT
+			CASE
+		WHEN a2.id IS NOT NULL THEN
+			a2.id
+		ELSE
+			a1.id
+		END AS id,
+		a1.`name` pname,
+		a1.rdtype,
+		a1.type,
+        a1.scount,
+		a2.`name` sname
+	FROM
+		(
+        SELECT
+        dd.*, qq.scount
+        FROM
+        (
+        SELECT
+        *
+        FROM
+        accounts_subject
+        <where>
+        parent_id = '0'
+        <if test="type != null">
+            AND type=#{type}
+        </if>
+        <if test="rdtype != null">
+            AND rdtype=#{rdtype}
+        </if>
+        </where>
+        ) dd
+        LEFT JOIN (
+        SELECT
+        count(*) scount,
+        parent_id
+        FROM
+        accounts_subject
+        WHERE
+        parent_id > '0'
+        GROUP BY
+        parent_id
+        ) qq ON qq.parent_id = dd.id
+        ) a1
+        LEFT JOIN accounts_subject a2 ON a1.id = a2.parent_id
+        ORDER BY
+        id
+	) ss
+    LEFT JOIN (
+	SELECT
+		id,
+		NAME,
+		SUM(money) money
+	FROM
+		(
+			SELECT
+				a.id aid,
+				af.id afid,
+				af.money,
+				af.subject_id,
+				af.voucher_id,
+				a.start_date,
+				a.end_date,
+				a.`status`,
+				a.last_operating_surplus,
+				a.last_pledge_surplus,
+				s.*
+			FROM
+				accounts a,
+				accounts_financialinform af,
+				accounts_subject s,
+				accounts_voucher av
+        <where>
+            af.subject_id=s.id
+            AND af.voucher_id=av.id
+            AND av.accounts_id=a.id
+            <if test="type != null">
+                AND s.type=#{type}
+            </if>
+            <if test="rdtype != null">
+                AND s.rdtype=#{rdtype}
+            </if>
+            <if test="accountsDate != null">
+                AND (
+                (a.start_date = #{accountsDate} AND a.end_date is null)
+                OR
+                (a.start_date <![CDATA[ <= ]]> #{accountsDate} AND #{accountsDate} <![CDATA[ <= ]]> a.end_date)
+                )
+            </if>
+            <if test="yearDate != null">
+                AND YEAR(a.end_date)= #{yearDate}
+            </if>
+            <if test="zoneId !=null">
+                AND a.zone_id=#{zoneId}
+            </if>
+            <if test="status !=null">
+                AND a.status=#{status}
+            </if>
+
+        </where>
+			ORDER BY s.id
+		) aa
+	GROUP BY
+		id,
+		NAME
+    ) dd ON ss.id = dd.id   ORDER BY ss.id,dd.NAME
+
+    </select>
+    <select id="selectSubjectDetail" parameterType="com.yeweihui.modules.vo.query.ReceiptsAndDisbursementsParam" resultType="com.yeweihui.modules.vo.api.vo.FinancialinformVO">
+        SELECT
+				a.id aid,
+				af.id ,
+				af.money,
+				af.subject_id,
+				af.voucher_id,
+				af.auxiliary,
+				af.digest,
+				a.start_date,
+				a.end_date,
+				a.`status`,
+                av.date,
+				s.name,
+                s.type,
+                s.rdtype
+			FROM
+				accounts a,
+				accounts_financialinform af,
+				accounts_subject s,
+				accounts_voucher av
+                <where>
+                af.subject_id=s.id
+                AND af.voucher_id=av.id
+                AND av.accounts_id=a.id
+                <if test="type != null">
+                    AND s.type=#{type}
+                </if>
+                <if test="rdtype != null">
+                    AND s.rdtype=#{rdtype}
+                </if>
+                <if test="accountsDate != null">
+                    AND (
+                    (a.start_date = #{accountsDate} AND a.end_date is null)
+                    OR
+                    (a.start_date <![CDATA[ <= ]]> #{accountsDate} AND #{accountsDate} <![CDATA[ <= ]]> a.end_date)
+                    )
+                </if>
+                <if test="yearDate != null">
+                    AND YEAR(a.end_date)= #{yearDate}
+                </if>
+                <if test="zoneId !=null">
+                    AND a.zone_id=#{zoneId}
+                </if>
+                <if test="status !=null">
+                    AND a.status=#{status}
+                </if>
+                    <if test="subjectId !=null">
+                        AND s.id=#{subjectId}
+                    </if>
+                </where>
+        ORDER  BY a.create_time
+    </select>
+    <select id="simpleList" resultType="com.yeweihui.modules.accounts.entity.AccountsFinancialinformEntity">
+        SELECT * FROM `accounts_financialinform`
+        <include refid="queryParam" />
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 凭证ID -->
+            <if test="voucherId != null">
+                AND voucher_id = #{voucherId}
+            </if>
+            <!-- 科目ID -->
+            <if test="subjectIds != null and subjectIds.size > 0">
+                AND subjectIds in(
+                <foreach collection="subjectIds" item="subjectIdItem" index="index" separator="," >
+                    #{subjectIdItem}
+                </foreach>
+                )
+            </if>
+            <!-- 摘要信息 -->
+            <if test="digest != null">
+                AND digest like <![CDATA['%]]>#{digest}<![CDATA[%']]>
+            </if>
+            <!-- 辅助账信息 -->
+            <if test="auxiliary != null">
+                AND auxiliary like <![CDATA['%]]>#{auxiliary}<![CDATA[%']]>
+            </if>
+            <!-- 最小金额 -->
+            <if test="minMoney != null and minMoney > 0">
+                AND money <![CDATA[ >= ]]> #{minMoney}
+            </if>
+            <!-- 最大金额 -->
+            <if test="maxMoney != null and minMoney > 0">
+                AND money <![CDATA[ <= ]]> #{maxMoney}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据财务收支的科目ID获取凭证ID集合 -->
+    <select id="getVoucherIdsBySubjectIds" resultType="java.lang.Long">
+        SELECT distinct voucher_id FROM `accounts_financialinform` where subject_id in (
+        <foreach collection="subjectIds" item="subjectIdItem" index="index" separator="," >
+            #{subjectIdItem}
+        </foreach>
+        )
+    </select>
+    <select id="selectPageEn" resultType="com.yeweihui.modules.vo.api.vo.FinancialinformVO">
+        SELECT
+				af.id ,
+				af.money,
+				af.subject_id,
+				af.auxiliary,
+				af.digest,
+				a.auditor,
+				av.tag_number tagNumber,
+				av.make_username makeUsername,
+				av.date
+			FROM
+				accounts_financialinform af,
+				accounts a,
+				accounts_voucher av
+        <where>
+            af.voucher_id=av.id
+            AND av.accounts_id=a.id
+            AND a.status='3'
+        <!-- 科目ID -->
+            <if test="subjectId != null ">
+                AND af.subject_id =  #{subjectId}
+            </if>
+        <!-- 摘要信息 -->
+        <if test="digest != null and digest !=''">
+            AND af.digest like <![CDATA['%]]>${digest}<![CDATA[%']]>
+        </if>
+        <!-- 辅助账信息 -->
+        <if test="auxiliary != null and auxiliary !=''">
+            AND af.auxiliary like <![CDATA['%]]>${auxiliary}<![CDATA[%']]>
+        </if>
+        <!-- 凭证ID -->
+        <if test="voucherId != null">
+            AND av.voucher_id = #{voucherId}
+        </if>
+            <if test="startDate != null">
+                AND av.date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null ">
+                AND av.date &lt;=  #{endDate}
+            </if>
+            <if test="zoneId !=null">
+                AND a.zone_id=#{zoneId}
+            </if>
+            <if test="tagNumber !=null and tagNumber !=''">
+                AND av.tag_number=#{tagNumber}
+            </if>
+        </where>
+    </select>
+
+</mapper>

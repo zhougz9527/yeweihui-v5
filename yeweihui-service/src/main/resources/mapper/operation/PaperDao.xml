@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.PaperDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.PaperEntity" id="paperMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="uid" column="uid"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="total" column="total"/>
+        <result property="checked" column="checked"/>
+        <result property="status" column="status"/>
+        <result property="recordStatus" column="record_status"/>
+    </resultMap>
+
+    <!-- 分页 -->
+    <select id="selectPageVO" resultType="com.yeweihui.modules.vo.api.vo.PaperVO">
+        SELECT
+            paper.id,
+            paper.create_time,
+            paper.update_time,
+            paper.zone_id,
+            paper.uid,
+            paper.title,
+            paper.content,
+            paper.total,
+            paper.checked,
+            paper.`status`,
+            paper.record_status,
+            <if test="receiverUid != null">
+                paper_member.status member_status,
+            </if>
+            zones.`name` zone_name,
+            `user`.avatar_url,
+            `user`.realname
+        FROM
+            paper
+        LEFT JOIN zones ON paper.zone_id = zones.id
+        LEFT JOIN `user` ON `user`.id = paper.uid
+        <if test="receiverUid != null">
+            left join paper_member on paper_member.pid = paper.id
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+        paper
+        LEFT JOIN zones ON paper.zone_id = zones.id
+        <if test="receiverUid != null">
+            left join paper_member on paper_member.pid = paper.id
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+    <select id="selectPageEn" resultType="com.yeweihui.modules.operation.entity.PaperEntity">
+        SELECT
+        paper.id,
+        paper.create_time,
+        paper.update_time,
+        paper.zone_id,
+        paper.uid,
+        paper.title,
+        paper.content,
+        paper.total,
+        paper.checked,
+        paper.`status`,
+        paper.record_status,
+        <if test="receiverUid != null">
+            paper_member.status member_status,
+        </if>
+        zones.`name` zone_name,
+        `user`.avatar_url,
+        `user`.realname
+        FROM
+        paper
+        LEFT JOIN zones ON paper.zone_id = zones.id
+        LEFT JOIN `user` ON `user`.id = paper.uid
+        <if test="receiverUid != null">
+            left join paper_member on paper_member.pid = paper.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by paper.id desc
+        </if>
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 关键字（昵称/手机号/真实姓名） -->
+            <!--<if test="keyword != null and keyword != ''">
+                AND (ec_app_user.nickname like CONCAT('%', #{keyword})
+                or ec_app_user.phone like CONCAT('%', #{keyword})
+                or ec_app_user.realname like CONCAT('%', #{keyword}))
+            </if>-->
+
+            <!-- 小区id -->
+            <if test="zoneId != null">
+                AND paper.zone_id = #{zoneId}
+            </if>
+            <!-- 授权行业主管查看 -->
+            <if test="authZoneIdList != null">
+                AND paper.zone_id in
+                <foreach item="authZoneIdList" index="index" collection="authZoneIdList"
+                         open="(" separator="," close=")">
+                    #{authZoneIdList}
+                </foreach>
+            </if>
+            <!-- 授权查看的小区id -->
+            <if test="authZoneId != null and authZoneId != 0">
+                AND paper.zone_id = #{authZoneId}
+            </if>
+            <!-- 关键字（经办人） -->
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    paper.title like CONCAT('%', #{keyword}, '%')
+                    or `user`.nickname like CONCAT('%', #{keyword}, '%')
+                    or `user`.realname like CONCAT('%', #{keyword}, '%')
+                    or `user`.mobile like CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+            <!-- 发函人id -->
+            <if test="uid != null">
+                AND paper.uid = #{uid}
+            </if>
+            <!-- 函件状态 状态 0未签收 1已签收 -->
+            <if test="paperStatus != null">
+                AND paper.status = #{paperStatus}
+            </if>
+            <!-- 是否签收 -->
+            <if test="paperMemberStatus != null">
+                AND paper_member.status = #{paperMemberStatus}
+            </if>
+            <!-- 收函用户id -->
+            <if test="receiverUid != null">
+                AND paper_member.uid = #{receiverUid}
+            </if>
+            <!-- 显示状态 -->
+            <if test="minRecordStatus != null">
+                and paper.record_status >= #{minRecordStatus}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

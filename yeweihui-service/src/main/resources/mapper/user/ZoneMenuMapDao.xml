@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yeweihui.modules.user.dao.ZoneMenuMapDao">
+
+    <resultMap type="com.yeweihui.modules.user.entity.ZoneMenuMapEntity" id="zoneMenuMap">
+        <result property="id" column="id"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="menuMapIds" column="menu_map_ids"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectListByZoneIdAndGroupId" resultType="com.yeweihui.modules.user.entity.ZoneMenuMapEntity">
+        select m.id, m.zone_id, m.menu_map_ids, m.group_id, g.group_name, m.create_time, m.update_time from zone_menu_map as m
+        left join zone_group as g on g.id=m.group_id where m.zone_id = #{zoneId}
+        <if test="groupId != null">
+            AND m.group_id = #{groupId}
+        </if>
+    </select>
+
+    <!--  根据用户小区获取权限菜单  -->
+<!--    <select id="queryUserZoneAllMenuId" resultType="Long">-->
+<!--        select mm.menu_map_ids from `user` u inner join zone_menu_map mm-->
+<!--        on u.zone_id = mm.zone_id where u.id = #{userId}-->
+<!--    </select>-->
+
+    <!--  根据行业主管获取小区权限菜单  -->
+<!--    <select id="queryManagerUserZoneAllMenuId" resultType="Long">-->
+<!--        select distinct menu_map_id from zone_menu_map-->
+<!--    </select>-->
+
+    <!--  根据用户查询用户所在小区的zone_menu_map  -->
+    <select id="findZoneMenuMapByUserId" resultType="com.yeweihui.modules.user.entity.ZoneMenuMapEntity">
+        SELECT mm.* from `user` u inner join zone_menu_map mm on u.zone_id = mm.zone_id where u.id = #{userId} and mm.group_id = #{groupId}
+    </select>
+
+
+
+</mapper>

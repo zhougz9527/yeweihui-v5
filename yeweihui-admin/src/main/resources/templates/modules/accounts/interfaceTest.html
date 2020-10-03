@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+<title>记账模块 - 接口</title>
+<script>
+	if (!!window.ActiveXObject || "ActiveXObject" in window){
+		alert("功能页不支持IE，请更换其他浏览器。");
+		document.execCommand("Stop");
+	}
+</script>
+	
+<link rel="stylesheet" href="/statics/css/bootstrap.min.css">
+<style type="text/css">
+#panelBox {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+	background: #FFFFFF;
+}
+#panelBox_left {
+	width: 20%;
+	height: 100%;
+	border-right: 2px solid #D7D7D7;
+	float: left;
+}
+#panelBox_left::-webkit-scrollbar{
+	display:none;
+}
+#panelBox_right {
+	width: 79%;
+	height: 100%;
+	float: left;
+}
+#panelBox_right > div {
+	width: 95%;
+	height: 100%;
+	margin: 0px 2.5%;
+}
+.o_scroll {
+	overflow: auto;
+}
+.wh_100 {
+	width: 100%;
+	height: 100%;
+}
+.w_100 {
+	width: 100%;
+}
+.w_90 {
+	width: 90%;
+}
+.w_80 {
+	width: 80%;
+}
+.w_70 {
+	width: 70%;
+}
+.w_60 {
+	width: 60%;
+}
+.w_50 {
+	width: 50%;
+}
+.w_47-5 {
+	width: 47.5%;
+}
+.w_45 {
+	width: 45%;
+}
+.w_40 {
+	width: 40%;
+}
+.w_30 {
+	width: 30%;
+}
+.w_15 {
+	width: 15%;
+}
+.h_100 {
+	height: 100%;
+}
+.h_90 {
+	height: 90%;
+}
+.h_80 {
+	height: 80%;
+}
+.h_70 {
+	height: 70%;
+}
+.h_60 {
+	height: 60%;
+}
+.h_50 {
+	height: 50%;
+}
+.h_40 {
+	height: 40%;
+}
+.h_30 {
+	height: 30%;
+}
+.h_20 {
+	height: 20%;
+}
+.h_15 {
+	height: 15%;
+}
+.h_10 {
+	height: 10%;
+}
+.m_l_2-5 {
+	margin-left: 2.5%;
+}
+.m_r_2-5 {
+	margin-right: 2.5%;
+}
+</style>
+
+
+</head>
+<body>
+<div id="panelBox">
+  <div id="panelBox_left"  style="overflow-y: scroll;">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12">
+          <h3 class="text-center">财务记账<br/>
+            <small>接口</small></h3>
+          <ul id="apiTab" class="nav nav-pills nav-stacked">
+            <li class="active"> <a href="#introduce" data-toggle="tab">说明</a> </li>
+            <hr/>
+			<li v-for="apiInfo in apiInfos"> <a v-bind:href="apiInfo.vueEl" data-toggle="tab">{{apiInfo.title}}</a></li>
+            <!--<li class="dropdown">
+							<a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">Java<b class="caret"></b></a>
+          					<ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+            					<li><a href="#jmeter" tabindex="-1" data-toggle="tab">jmeter</a></li>
+            					<li><a href="#ejb" tabindex="-1" data-toggle="tab">ejb</a></li>
+          					</ul>
+        				</li>-->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="panelBox_right" style="overflow-y: scroll;">
+    <div>
+      <div id="apiTabContent" class="tab-content wh_100" style="">
+        <div class="tab-pane fade in active wh_100" id="introduce">
+          <h3>说明</h3>
+          <p>用于测试财务记账相关功能接口。<br/><br/></p>
+			<dl v-for="apiInfo in apiInfos">
+				<dt>{{apiInfo.title}}</dt>
+				<dd><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{apiInfo.describe}}</dd><br/>
+			</dl>
+        </div>
+		<template v-for="apiInfo in apiInfos">
+        <div v-bind:id="apiInfo.name" class="tab-pane fade wh_100">
+          <div class="w_100 h_60 o_scroll">
+            <h3>{{apiInfo.title}}</h3>
+            <p>{{apiInfo.describe}}</p>
+            <br/>
+            <h4>请求参数说明</h4>
+            <form role="form">
+              <table class="table table-condensed">
+                <thead>
+                  <tr class="row">
+                    <th class="col-lg-2">参数名称</th>
+                    <th class="col-lg-2">参数字段</th>
+                    <th class="col-lg-3">参数值</th>
+                    <th class="col-lg-1">是否必须</th>
+                    <th class="col-lg-4">参数说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+				  <template v-for="fieldItem in apiInfo.fieldItems">
+                  <tr v-bind:class="{'row':true,'hide': !apiInfo.isShowPublicParam && apiInfo.name!='universalTest' && !fieldItem.isPrivate}">
+                    <td class="col-lg-2">{{fieldItem.name}}</td>
+                    <td class="col-lg-2">{{fieldItem.field}}</td>
+                    <td class="col-lg-3">
+						<input v-if="(fieldItem.type=='textarea') == false" type="text" class="w_90" v-model="fieldItem.value" v-bind:disabled="fieldItem.disabled" @input="inputValue($event,fieldItem)">
+						<textarea v-else class="w_90" style="" rows="5" v-model="fieldItem.value" v-bind:disabled="fieldItem.disabled"></textarea>
+				    </td>
+                    <td class="col-lg-1"><span v-if="fieldItem.must" style="color:red;">是</span><span v-else>否</span></td>
+                    <td class="col-lg-4">{{fieldItem.describe}}</td>
+                  </tr>
+			      </template>
+                </tbody>
+              </table>
+            </form>
+			  <br/>
+			<h4>Date数据说明</h3>
+            <dl class="dl-horizontal">
+			  <template v-for="dataInfo in apiInfo.resultDataInfos">
+              <dt>{{dataInfo.field}}：</dt><dd>{{dataInfo.describe}}
+				  </dd>
+			  </template>
+            </dl>
+            <br/>
+            <h4>请求结果说明</h4>
+            <dl class="dl-horizontal">
+			  <template v-for="resultInfo in apiInfo.resultInfos">
+              <dt>{{resultInfo.field}}：</dt><dd>{{resultInfo.describe}}
+				  </dd>
+			  </template>
+            </dl>
+            
+          </div>
+          <div class="w_100 h_40">
+            <hr/>
+            <div class="w_100 h_90">
+              <div class="w_40 h_80 m_r_2-5 pull-left">
+                <div class="w_100 h_20">
+                  <h4 class="text-center">请求参数</h4>
+                </div>
+                <textarea class="w_100 h_80" style="resize: none;" readonly="readonly">{{getRequestPamams(apiInfo)}}</textarea>
+              </div>
+              <div class="w_15 h_80 pull-left">
+                <input type="button" class="btn btn-primary btn-lg btn-block center-block" value="提 交 请 求" v-on:click="submitRequest(apiInfo)">
+				<div style="height:10px;"></div>
+				<select name="public-choice" v-model="apiInfo.method" style="width:100%;">                                        
+    				<option :value="method" v-for="method in apiInfo.methods" >{{method}}</option>                                    
+				</select>
+				<div style="height:20px;"></div>
+				<input type="button" class="btn btn-default btn-block btn-sm center-block" value="展开/收起通用参数" v-on:click="showPublicParams(apiInfo)" v-show="apiInfo.name!='universalTest'">
+              </div>
+              <div class="w_40 h_80 m_l_2-5 pull-left">
+                <div class="w_100 h_20">
+                  <h4 class="text-center">请求结果</h4>
+                </div>
+                <textarea class="w_100 h_80" style="resize: none;" readonly="readonly">{{apiInfo.requestResult}}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+		</template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/statics/libs/jquery.min.js"></script>
+<script src="/statics/libs/bootstrap.min.js"></script>
+<script src="/statics/libs/vue.min.js"></script>
+<script src="/statics/js/modules/accounts/axios.min.js"></script>
+<script src="/statics/js/modules/accounts/interfaceTest.js"></script>
+</body>
+</html>

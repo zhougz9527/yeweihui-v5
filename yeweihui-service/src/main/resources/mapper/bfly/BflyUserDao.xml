@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.bfly.dao.BflyUserDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, zone_id AS zoneId, bfly_room_id AS bflyRoomId, nickname, username, phone_num AS phoneNum, id_card AS idCard, address, id_card_url AS idCardUrl, house_certificate_url AS houseCertificateUrl, header_url AS headerUrl, open_id AS openId, union_id AS unionId, last_cert_time AS lastCert_time, housing_area AS housingAera, avatar, wechat_user_json AS wechatUserJson, status, last_login AS lastLogin, is_valid AS isValid, created_at, updated_at
+    </sql>
+
+    <select id="selectPageVO" resultType="com.yeweihui.modules.bfly.entity.BflyUser">
+        SELECT u.id, u.zone_id, u.bfly_room_id, u.nickname, u.username, u.phone_num, u.id_card, u.address, u.id_card_url, u.house_certificate_url, u.header_url, u.open_id, u.union_id, u.avatar, u.wechat_user_json, u.status, u.is_valid, z.name as zoneName, r.court, r.building, r.floor_name, r.unit_name, r.housing_area
+        FROM bfly_user u
+        LEFT JOIN zones z ON z.id=u.zone_id
+        LEFT JOIN bfly_room r ON r.id=u.bfly_room_id
+        WHERE 1=1
+        <if test="zoneId != null and zoneId != 0">
+            AND u.zone_id = #{zoneId}
+        </if>
+        <if test="nickname != null and nickname != ''">
+            AND u.nickname LIKE CONCAT('%', #{nickname}, '%')
+        </if>
+        <if test="phoneNum != null and phoneNum != ''">
+            AND u.phoneNum LIKE CONCAT('%', #{phoneNum}, '%')
+        </if>
+        ORDER BY u.id DESC
+    </select>
+
+    <select id="queryOwnerInfo" resultType="java.util.HashMap">
+        select
+        bu.id                   ID,
+        bu.username             userName,
+        bu.phone_num            phoneNum,
+        bu.id_card              idCard,
+        bu.housing_area         housingArea,
+        bu.is_valid             isValid,
+        bu.status               status,
+        bu.header_url           headerUrl,
+        bu.last_cert_time       lastCertTime,
+        z.name                  zoneName,
+        br.building             building,
+        br.unit_name            unitName,
+        br.floor_name           floorName,
+        br.court                court
+        from
+        bfly_user bu inner join bfly_room br on bu.bfly_room_id = br.id
+        inner join zones z on bu.zone_id = z.id
+        <where>
+            <if test="null != statusArray">
+                bu.status in
+                <foreach collection="statusArray" item="status"
+                         open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="null != zoneId ">
+                and bu.zone_id = #{zoneId}
+            </if>
+            <if test="null != phone and phone != ''">
+                and bu.phone_num like  '%${phone}%'
+            </if>
+            <if test="null != ownerName and ownerName != ''">
+                and bu.username like  '%${ownerName}%'
+            </if>
+        </where>
+        <if test="null != current and null!= size">
+            limit #{current},#{size}
+        </if>
+    </select>
+
+    <select id="queryOwnerInfoCount" resultType="java.lang.Long">
+        select count(1)
+        from
+        bfly_user bu inner join  bfly_room br on bu.bfly_room_id = br.id
+        <where>
+            <if test="null != statusArray">
+                bu.status in
+                <foreach collection="statusArray" item="status"
+                         open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="null != phone and phone != ''">
+                and bu.phone_num like  '%${phone}%'
+            </if>
+            <if test="null != zoneId ">
+                and bu.zone_id = #{zoneId}
+            </if>
+            <if test="null != ownerName and ownerName != ''">
+                and bu.username like  '%${ownerName}%'
+            </if>
+        </where>
+    </select>
+
+    <select id="searchCertAreaAndCount" resultType="java.util.Map">
+        select sum(housing_area) housingArea,
+        count(1) userCount
+        from bfly_user where status = 1
+        and zone_id = #{zoneId}
+    </select>
+
+    <select id="sumMeetingArea" resultType="map">
+        select sum(brvs.housing_area) as total
+        from bfly_user_vote buv join bfly_room_vote_snapshot brvs on brvs.user_vote_id = buv.id
+        where buv.status in (1,2)
+        and buv.bfly_vote_id = #{voteId}
+    </select>
+
+    <select id="findBflyUserByVoteIdAndUserVoteStatus" resultType="com.yeweihui.modules.bfly.entity.BflyUser">
+        select bu.*
+        from bfly_user bu join bfly_user_vote buv ON bu.id = buv.bfly_user_id
+        where
+        buv.`status` = #{userVoteStatus}
+        and buv.bfly_vote_id = #{voteId};
+    </select>
+
+</mapper>

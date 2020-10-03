@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.bfly.dao.BflyVoteDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, zone_id AS zoneId, title, meeting_start_time AS meetingStartTime, meeting_end_time AS meetingEndTime, vote_start_time AS voteStartTime, vote_end_time AS voteEndTime, offline_vote_result_url AS offlineVoteResultUrl, status, created_at, updated_at    </sql>
+
+    <select id="selectAllUserVoteResult" resultType="map">
+        select v.title, v.offline_vote_result_url, sv.title, sv.options, sv.result_option, usv.bfly_user_id, usv.result_option from bfly_vote v inner join bfly_sub_vote sv on v.id = sv.bfly_vote_id inner join bfly_user_sub_vote usv on sv.id = usv.bfly_sub_vote_id where v.id = #{bflyVoteId};
+    </select>
+
+    <select id="queryBflyVoteList" resultType="com.yeweihui.modules.bfly.entity.BflyVote">
+        select
+        bv.id ,
+        z.name zoneName,
+        bv.title ,
+        bv.meeting_start_time,
+        bv.meeting_end_time,
+        bv.vote_start_time,
+        bv.vote_end_time,
+        bv.status,
+        bv.zone_id,
+        bv.is_show,
+        bv.created_at
+        from bfly_vote bv inner join zones z on bv.zone_id = z.id
+        <where>
+            <if test="null!=zondId">
+                and  bv.zone_id = #{zondId}
+            </if>
+            <if test="null != title and title != ''">
+                AND bv.title LIKE '%${title}%'
+            </if>
+            <if test="null  != startDate and startDate !=''">
+                and <![CDATA[  bv.created_at >= str_to_date( #{startDate},'%Y-%m-%d %T') ]]>
+            </if>
+            <if test="null  != endDate and endDate !=''">
+                and <![CDATA[  bv.created_at <= str_to_date( #{endDate},'%Y-%m-%d %T') ]]>
+            </if>
+        </where>
+        order by bv.id desc limit #{current}, #{size}
+    </select>
+
+    <select id="queryCurBflyVoteList" resultType="com.yeweihui.modules.bfly.entity.BflyVote">
+        select
+        bv.id ,
+        z.name zoneName,
+        bv.title ,
+        bv.meeting_start_time,
+        bv.meeting_end_time,
+        bv.vote_start_time,
+        bv.vote_end_time,
+        bv.status,
+        bv.zone_id,
+        bv.is_show,
+        bv.created_at
+        from bfly_vote bv inner join zones z on bv.zone_id = z.id
+        <where>
+            <if test="null != status">
+                and bv.status = #{status}
+            </if>
+            <if test="null!=zondId">
+                and  bv.zone_id = #{zondId}
+            </if>
+            <if test="null != title and title != ''">
+                AND bv.title LIKE '%${title}%'
+            </if>
+            <if test="null  != startDate and startDate !=''">
+                and <![CDATA[  bv.created_at >= str_to_date( #{startDate},'%Y-%m-%d %T') ]]>
+            </if>
+            <if test="null  != endDate and endDate !=''">
+                and <![CDATA[  bv.created_at <= str_to_date( #{endDate},'%Y-%m-%d %T') ]]>
+            </if>
+        </where>
+        order by bv.id desc limit #{current}, #{size}
+    </select>
+
+    <select id="queryBflyVoteListCount" resultType="java.lang.Long">
+        select
+        count(1)
+        from bfly_vote bv inner join zones z on bv.zone_id = z.id
+        <where>
+            <if test="null!=zondId">
+                and  bv.zone_id = #{zondId}
+            </if>
+            <if test="null != title and title != ''">
+                AND bv.title LIKE '%${title}%'
+            </if>
+            <if test="null  != startDate and startDate !=''">
+                and <![CDATA[  bv.created_at >= str_to_date( #{startDate},'%Y-%m-%d %T') ]]>
+            </if>
+            <if test="null  != endDate and endDate !=''">
+                and <![CDATA[  bv.created_at <= str_to_date( #{endDate},'%Y-%m-%d %T') ]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="queryCurBflyVoteListCount" resultType="java.lang.Long">
+        select
+        count(1)
+        from bfly_vote bv inner join zones z on bv.zone_id = z.id
+        <where>
+            <if test="null!=zondId">
+                and  bv.zone_id = #{zondId}
+            </if>
+            <if test="null != title and title != ''">
+                AND bv.title LIKE '%${title}%'
+            </if>
+            <if test="null  != startDate and startDate !=''">
+                and <![CDATA[  bv.created_at >= str_to_date( #{startDate},'%Y-%m-%d %T') ]]>
+            </if>
+            <if test="null  != endDate and endDate !=''">
+                and <![CDATA[  bv.created_at <= str_to_date( #{endDate},'%Y-%m-%d %T') ]]>
+            </if>
+            <if test="null != status">
+                and bv.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateBflyVoteOfflineVoteResultUrl">
+        update bfly_vote set offline_vote_result_url = #{offlineVoteResultUrl} where id = #{id}
+    </update>
+
+</mapper>

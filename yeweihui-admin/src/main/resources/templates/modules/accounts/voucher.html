@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>凭证添加或编辑</title>
+
+    <style>
+        /* 谷歌 */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        /* 火狐 */
+        input {
+            -moz-appearance: textfield;
+        }
+        
+        .el-upload__input{display:none !important;}
+
+        .money_style {
+            margin-left: -10px !important;
+            width: 34px !important;
+        }
+
+        .money_style input {
+            padding: 0px !important;
+            text-align: center !important;
+        }
+    </style>
+    <#include "/header.html" />
+    <script src="${request.contextPath}/statics/libs/axios.min.js"></script>
+    <script src="${request.contextPath}/statics/js/modules/accounts/voucher.js?_${.now?long}"></script>
+
+</head>
+
+<body>
+    <div id="app">
+        <div style="width:95%; margin:0px auto;">
+            <template>
+                <div
+                style="width:100%; height: 100px; line-height: 100px; text-align: center; font-size: 24px; font-weight: bold;">
+                记账凭证</div>
+                <el-row>
+                    <el-col :span="12">
+                        记字第&nbsp;<el-input v-model="accountsVoucher.tagNumber" style="width:60px;" size="mini" :disabled="true"></el-input>
+                            &nbsp;号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            日期&nbsp;<el-date-picker v-model="accountsVoucher.date" size="mini"
+                                type="date" value-format="yyyy-MM-dd" :picker-options="pickerOptions" :disabled="!accountsVoucher.isEdit"></el-date-picker>
+                        
+                    </el-col>
+                    <el-col :span="12">
+                        <div class="grid-content bg-purple-light" v-show="accountsVoucher.isEdit">
+                            <div style="float: right;">
+
+                                <el-button type="primary" size="mini" @click="addRow">新增行</el-button>
+                                <el-button type="danger" size="mini" @click="removeRow">删除行</el-button>
+
+                            </div>
+                        </div>
+                    </el-col>
+                </el-row>
+
+
+            </template>
+            <template>
+                <el-table ref="AFTable" :data="accountsVoucher.accountsFinancialinforms" :row-class-name="rowClassName" style="width: 100%; margin: 10px auto;">
+                    <el-table-column type="selection">
+                    </el-table-column>
+                    <el-table-column prop="digest" label="摘要" align="center" min-width="150">
+                        <template slot-scope="scope">
+                            <el-input type="text" v-model="scope.row.digest" v-if="accountsVoucher.isEdit"></el-input>
+                            <span v-else>{{scope.row.digest}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="会计科目" align="center" min-width="150">
+                        <template slot-scope="scope">
+                            <el-cascader ref="subjectCascader" v-model="scope.row.subjectIds" :options="subjects"
+                                :show-all-levels="false" :props="{ value: 'id', label: 'name',children:'children',expandTrigger: 'hover'}"
+                                @change="subjectChange($event,scope.$index)" v-show="accountsVoucher.isEdit"></el-cascader>
+                                <span v-show="!accountsVoucher.isEdit">{{getSubjectLabels(scope.row.subjectIds)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="auxiliary" label="辅助账" align="center" min-width="150">
+                        <template slot-scope="scope">
+                            <el-input type="text" v-model="scope.row.auxiliary" v-if="accountsVoucher.isEdit"></el-input>
+                                <span v-else>{{scope.row.auxiliary}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="借方金额" align="center">
+                        <el-table-column align="center" :label="monetaryUnit.name" :key="monetaryUnit.field"
+                            :property="monetaryUnit.field" width="35" v-for="monetaryUnit in monetaryUnits">
+                            <template slot-scope="scope" v-if="scope.row.accountsSubject.rdtype == 1">
+                                <!-- {{scope.row.n_0000}} -->
+                                <el-input type="number" v-model="scope.row.moneyInfo[monetaryUnit.field]" size="small"
+                                    class="money_style" @focus="moneyFocus"
+                                    @input="moneyInput($event,monetaryUnit.field,scope.$index)" :maxlength="1"
+                                    :min="1" :max="9" v-if="accountsVoucher.isEdit">
+                                    </el-input>
+                                    <span v-else>{{scope.row.moneyInfo[monetaryUnit.field]}}</span>
+                            </template>
+                        </el-table-column>
+                    </el-table-column>
+                    <el-table-column label="贷方金额" align="center">
+                        <el-table-column align="center" :label="monetaryUnit.name" :key="monetaryUnit.field"
+                            :property="monetaryUnit.field" width="35" v-for="monetaryUnit in monetaryUnits">
+                            <template slot-scope="scope" v-if="scope.row.accountsSubject.rdtype == 2">
+                                <!-- {{scope.row.n_0000}} -->
+                                <el-input type="number" v-model="scope.row.moneyInfo[monetaryUnit.field]" size="small"
+                                    class="money_style" @focus="moneyFocus"
+                                    @input="moneyInput($event,monetaryUnit.field,scope.$index)" :maxlength="1" :min="1"
+                                    :max="9" v-if="accountsVoucher.isEdit">
+                                </el-input>
+                                <span v-else>{{scope.row.moneyInfo[monetaryUnit.field]}}</span>
+                            </template>
+                        </el-table-column>
+                    </el-table-column>
+                    <el-table-column align="right">
+                        <template slot="header" slot-scope="scope">
+                            附单据&nbsp;<el-tag type="info">{{ getAccessoryCountAll() }}</el-tag>&nbsp;张
+                        </template>
+                        <el-table-column label="单据" align="left" min-width="150">
+                            <template slot-scope="scope">
+                                <el-button size="mini" type="primary" align="left"
+                                    @click="accessoryManage($event,scope.$index)" v-show="accountsVoucher.isEdit">管理
+                                    ({{scope.row.accessory.fileInfos.length}} 张)</el-button><br v-show="accountsVoucher.isEdit"/>
+                                <!-- <el-link type="primary" href="javascript:void(0);">管理
+                                ({{scope.row.accessory.fileInfos.length}}张)</el-link> -->
+                                <template v-for="fileInfo in scope.row.accessory.fileInfos">
+                                    <el-link type="info" :href="fileInfo.url" target="_blank">{{fileInfo.name}}
+                                    </el-link><br />
+                                </template>
+                                <!-- <el-button size="mini" align="left" @click="getAccessoryCountAll()"
+                                v-for="fileInfo in scope.row.accessory.fileInfos">
+                                {{fileInfo.name}}
+                            </el-button> -->
+                            </template>
+                        </el-table-column>
+                    </el-table-column>
+                </el-table>
+                <el-dialog title="附件管理" :visible.sync="dialogAccessoryVisible" >
+                    <el-upload class="upload-demo" action="../../sys/oss/upload" :on-preview="handlePreview"
+                        :on-remove="handleRemove" :before-remove="beforeRemove" :on-success="handleSuccess"
+                        :on-exceed="handleExceed" :before-upload="handleBeforeUpload" :file-list="fileList" multiple>
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">上传文件不得超过10MB</div>
+                    </el-upload>
+                </el-dialog>
+            </template>
+            <template>
+                <el-row>
+
+                    <el-col :span="24">制单人：&nbsp;{{accountsVoucher.makeUsername}}</el-col>
+                </el-row>
+            </template>
+            <template>
+                <el-row>
+                    <el-col :span="24">
+                        <div align="center"><br/>
+                            <el-button type="primary" size="medium" @click="goBack" v-show="accountsVoucher.isEdit == false">  返回  </el-button>
+                            <el-button type="primary" size="medium" @click="submit" v-show="accountsVoucher.isEdit">  提交  </el-button>
+                        </div>
+                    </el-col>
+                </el-row>
+            </template>
+        </div>
+    </div>
+</body>
+
+</html>

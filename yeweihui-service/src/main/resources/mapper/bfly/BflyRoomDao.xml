@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeweihui.modules.bfly.dao.BflyRoomDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, operation_uid AS operationUid, court, building, floor_name AS floorName, unit_name AS unitName, housing_area AS housingArea, user_name AS userName, phone_num AS phoneNum, id_card AS idCard, created_at, updated_at
+    </sql>
+
+    <select id="queryZoneStructure" resultType="map">
+        select r.court, r.building from bfly_room r inner join zones z on r.zone_id = z.id where z.name = #{name} and (r.court != "" or r.building != "")
+    </select>
+
+    <select id="queryZoneCourt" resultType="map">
+        select distinct court from bfly_room where zone_id = #{id} order by court
+    </select>
+
+    <select id="queryZoneBuilding" resultType="map">
+        select distinct building from bfly_room where 1=1
+        <if test="id != null and id != 0">
+            and zone_id = #{id}
+        </if>
+        <if test="court != null">
+            and court = #{court}
+        </if>
+    </select>
+
+    <select id="queryZoneFloorName" resultType="map">
+        select id, unit_name, floor_name from bfly_room where 1=1
+        <if test="id != null and id != 0">
+            and zone_id = #{id}
+        </if>
+        <if test="court != null">
+            and court = #{court}
+        </if>
+        <if test="building != null">
+            and building = #{building}
+        </if>
+    </select>
+
+    <select id="stateRoomNumByZoneId" resultType="map">
+        select count(*) as total from bfly_room
+        where 1=1
+        <if test="null != zoneId ">
+            and zone_id = #{zoneId}
+        </if>
+        group by court, building, unit_name, floor_name
+    </select>
+
+
+    <select id="snapshotRoomNumByVoteId" resultType="map">
+        select count(*) as total from bfly_room_vote_snapshot where vote_id = #{voteId} group by court, building, unit_name, floor_name
+    </select>
+
+
+<!--    <select id="stateRoomAreaByZoneId" resultType="map">-->
+<!--        select sum(housing_area) as total from bfly_room where zone_id = #{zoneId} group by court, building, unit_name, floor_name-->
+<!--    </select>-->
+
+    <select id="stateRoomAreaByZoneIdNew" resultType="map">
+        SELECT MAX(r2.housing_area) as total
+        FROM
+        (SELECT max(last_certification_time) as last_certification_time, zone_id, court, building, unit_name, floor_name FROM bfly_room GROUP BY zone_id, court, building, unit_name, floor_name) r1
+            LEFT JOIN bfly_room r2
+        ON r2.zone_id=r1.zone_id and r2.court = r1.court and r2.building = r1.building and r2.unit_name = r1.unit_name and r2.floor_name = r1.floor_name and r2.last_certification_time=r1.last_certification_time
+        WHERE 1=1
+        <if test="null != zoneId">
+            and r1.zone_id = #{zoneId}
+        </if>
+        GROUP BY r2.zone_id, r2.building, r2.court, r2.unit_name, r2.floor_name
+    </select>
+
+    <select id="snapshotRoomAreaByVoteId" resultType="map">
+        SELECT MAX(r2.housing_area) as total
+        FROM
+        (SELECT max(updated_at) as updated_at, vote_id, court, building, unit_name, floor_name
+        FROM
+        bfly_room_vote_snapshot
+        where vote_id = #{voteId}
+        GROUP BY zone_id, court, building, unit_name, floor_name) r1
+        LEFT JOIN bfly_room_vote_snapshot r2
+        ON r2.vote_id=r1.vote_id and r2.court = r1.court and r2.building = r1.building and r2.unit_name = r1.unit_name and r2.floor_name = r1.floor_name and r2.updated_at=r1.updated_at
+        GROUP BY r2.zone_id, r2.building, r2.court, r2.unit_name, r2.floor_name
+    </select>
+
+
+
+    <select id="searchTotalAreaAndCount" resultType="java.util.Map">
+        select sum(housing_area) totalArea,
+        count(1) totalCount
+        from bfly_room
+        where zone_id = #{zoneId}
+    </select>
+
+    <select id="queryFloorNameByCourtAndBuilding" resultType="map">
+<!--        select distinct floor_name, unit_name, id, operation_uid, zone_id, court, building, housing_area, user_name, phone_num, id_card-->
+        select distinct floor_name, unit_name from bfly_room
+        where zone_id = #{zoneId} and court = #{court} and building = #{building}
+    </select>
+    <select id="isCertified" resultType="int">
+        SELECT count(bu.id)
+        from
+            bfly_room br JOIN bfly_user bu on br.id = bu.bfly_room_id
+        where bu.status = 1
+            and br.zone_id = #{zoneId}
+            and br.court = #{court}
+            and br.building = #{building}
+            and br.unit_name = #{unitName}
+            and br.floor_name = #{floorName}
+    </select>
+
+    <select id="selectPageBflyRoom" resultType="com.yeweihui.modules.bfly.entity.BflyRoom">
+        SELECT  r.*, u.status userStatus, z.name zoneName
+        from bfly_room r left join bfly_user u on r.id = u.bfly_room_id
+        inner join zones z on r.zone_id = z.id
+        WHERE 1=1
+        <if test="zoneId != null and zoneId != 0">
+            AND r.zone_id = #{zoneId}
+        </if>
+        <if test="userStatus == -1">
+            AND u.status is null
+        </if>
+        <if test="userStatus != null and userStatus != -1">
+            AND u.status = #{userStatus}
+        </if>
+        <if test="userName != null and userName != ''">
+            AND r.user_name LIKE CONCAT('%', #{userName}, '%')
+        </if>
+        <if test="phoneNum != null and phoneNum != ''">
+            AND r.phone_num LIKE CONCAT('%', #{phoneNum}, '%')
+        </if>
+        ORDER BY r.id DESC
+    </select>
+
+
+</mapper>

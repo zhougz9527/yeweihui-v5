@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.VoteMemberDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.VoteMemberEntity" id="voteMemberMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="vid" column="vid"/>
+        <result property="uid" column="uid"/>
+        <result property="referUid" column="refer_uid"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="item1" column="item1"/>
+        <result property="item2" column="item2"/>
+        <result property="item3" column="item3"/>
+        <result property="item4" column="item4"/>
+        <result property="remark" column="remark"/>
+        <result property="voteTime" column="vote_time"/>
+    </resultMap>
+    <select id="simpleList" resultType="com.yeweihui.modules.operation.entity.VoteMemberEntity">
+        SELECT
+            vote_member.id,
+            vote_member.create_time,
+            vote_member.update_time,
+            vote_member.vid,
+            vote_member.uid,
+            vote_member.refer_uid,
+            vote_member.type,
+            vote_member.`status`,
+            vote_member.item1,
+            vote_member.item2,
+            vote_member.item3,
+            vote_member.item4,
+            vote_member.remark,
+            vote_member.vote_time,
+            vote_member.verify_url,
+            `user`.realname memberRealname,
+            `user`.avatar_url memberAvatarUrl,
+            `user`.role_name memberRoleName
+        FROM
+            vote_member
+        left join user on `user`.id = vote_member.uid
+        <include refid="queryParam" />
+    </select>
+
+    <select id="getByVidUid" resultType="com.yeweihui.modules.operation.entity.VoteMemberEntity">
+        SELECT
+            *
+        FROM
+            vote_member
+        where vote_member.vid = #{vid}
+        and vote_member.uid = #{uid}
+        and vote_member.`type` = #{voteMemberType}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            vote_member
+        <include refid="queryParam" />
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 投票id -->
+            <if test="vid != null">
+                AND vote_member.vid = #{vid}
+            </if>
+            <!-- 类型 1表决 2抄送 -->
+            <if test="voteMemberType != null">
+                AND vote_member.type = #{voteMemberType}
+            </if>
+            <!-- 状态 1同意 2反对 3弃权 4超时 -->
+            <if test="voteMemberStatus != null">
+                AND vote_member.`status` = #{voteMemberStatus}
+            </if>
+
+            <!-- 哪个选项 item1 - item4 -->
+            <if test="itemChoice != null and 'item1'.toString() == itemChoice">
+                AND vote_member.item1 = 1
+            </if>
+            <if test="itemChoice != null and 'item2'.toString() == itemChoice">
+                AND vote_member.item2 = 1
+            </if>
+            <if test="itemChoice != null and 'item3'.toString() == itemChoice">
+                AND vote_member.item3 = 1
+            </if>
+            <if test="itemChoice != null and 'item4'.toString() == itemChoice">
+                AND vote_member.item4 = 1
+            </if>
+
+        </where>
+    </sql>
+
+
+</mapper>

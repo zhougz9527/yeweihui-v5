@@ -1,0 +1,636 @@
+<!--
+ * @Author: xingjing
+ * @Date: 2020-08-21 08:49:27
+ * @LastEditors: xingjing
+ * @LastEditTime: 2020-09-22 09:27:17
+ * @Description: 9527
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <#include "/header.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收支报表</title>
+    <style>
+        #rrapp {
+            overflow: hidden;
+        }
+
+        .grid-btn {
+            overflow: hidden;
+        }
+
+        .panel-content {
+            width: 100%;
+        }
+
+        .panel-content {
+            display: flex;
+            flex-direction: row;
+            line-height: 20px;
+        }
+
+        .panel-content span {
+            display: inline-block;
+        }
+
+        .panel-footer {
+            color: #5FA1EA;
+        }
+
+        .panel-footer span {
+            cursor: pointer;
+        }
+
+        .float-right {
+            float: right;
+            color: #5FA1EA;
+            cursor: pointer;
+        }
+
+        .border_black {
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        .left_color {
+            background-color: #00BAAD;
+        }
+
+        .right_color {
+            background-color: #7AD743;
+        }
+
+        .layui-col-md3 {
+            padding: 10px;
+        }
+
+        .layui-col-md3 .xj-card {
+            text-align: center;
+            border: 1px solid #ffffff;
+            height: 50px;
+            background-color: rgba(255, 255, 255, .8);
+        }
+
+        .layui-card-footer {
+            text-align: right;
+            cursor: pointer;
+            color: #5FA1EA;
+        }
+
+        .pieWrap {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .pie {
+            width: 100%;
+            /*height:300px;*/
+            float: left;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .pie > div{width:400px; height:400px;}
+        .pie > div > div{margin:auto;}
+
+        .layui-layer-page .layui-layer-btn {
+            padding: 0;
+        }
+
+        .layui-layer-page .layui-layer-btn a {
+            margin: 0;
+        }
+
+        .layui-layer-page .layui-layer-btn0 {
+            width: 50%;
+            line-height: 40px;
+            height: 40px;
+            border-color: #fff;
+            background-color: #fff;
+            color: #78CE8C;
+            border-top-width: 1px;
+            border-top-color: #ECECEC;
+            border-right-width: 1px;
+            border-right-color: #ECECEC;
+        }
+
+        .layui-layer-page .layui-layer-btn1 {
+            width: 50%;
+            line-height: 40px;
+            height: 40px;
+            border-color: #fff;
+            background-color: #fff;
+            color: #78CE8C;
+            border-top-width: 1px;
+            border-top-color: #ECECEC;
+            border-left-width: 1px;
+            border-left-color: #ECECEC;
+        }
+
+        .layui-layer-page .layui-layer-btn {
+            display: flex;
+            text-align: center;
+        }
+
+        .form-horizontal>.form-group>.control-label {
+            padding-top: 0px !important;
+        }
+
+        .control-label {
+            padding-top: 0px !important;
+            text-align: right;
+        }
+
+        .continer {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .block {
+            margin: 50px;
+        }
+
+        .block-download {
+            margin-top: 20px;
+            text-align: right;
+            cursor: pointer;
+            color: #5FA1EA;
+        }
+
+        .my_table,.gridtable {
+            border-collapse: collapse;
+            width: 100%;
+            height: 100%;
+        }
+
+        .my_table td,.gridtable td {
+            border: 1px solid #333;
+            text-align: center;
+        }
+        
+        .accountInfoTable{ width:100%;}
+        .accountInfoTable td{ line-height: 24px;}
+        .accountInfoTable td:first-child{text-align: right; width:75px; font-weight:bold; vertical-align: top;}
+
+        .panel-heading {
+            text-align: center;
+        }
+
+        .title-details {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accountList {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .accountList .list {
+            width: 100%;
+            height: 150px;
+            /* background-color: pink; */
+        }
+
+        .accountList .list img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* background-color: pink; */
+        }
+
+        #tableDetails table {
+            border-collapse: collapse;
+            width: 90%;
+            height: 90%;
+        }
+
+        #tableDetails table td {
+            width: 20%;
+            height: 10px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .layui-layer-content {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="rrapp" v-cloak>
+        <div v-show="showList">
+            <div class="grid-btn">
+                <div class="panel panel-default" style="width:auto; float: right;">
+                    <div class="panel-heading" style="background:#ffffff; font-size: 16px; font-weight: bold; ">
+                        本小区公共银行收支的银行账户信息
+                    </div>
+                    <div class="panel-body" id="panelContent">
+                    
+                    	<table border="0" cellpadding="0" cellspacing="0" class="accountInfoTable">
+                    		<tr>
+                    			<td>开户名：</td>
+                    			<td>{{cellList.name}}</td>
+                    		</tr>
+                    		<tr>
+                    			<td>开户行：</td>
+                    			<td>{{cellList.bankname}}</td>
+                    		</tr>
+                    		<tr>
+                    			<td>开户账户：</td>
+                    			<td>{{cellList.cardnumber}}</td>
+                    		</tr>
+                    	</table>
+                        
+                        <div style="opacity: 0;border: none;position: absolute;right: 0;">
+                            <input type="text" id="btn">
+                        </div>
+                    </div>
+
+                    <div class="panel-footer">
+                        <span @click="onLookup()">编辑</span>
+                        <span @click="onCopy">复制</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="layui-row">
+                    <div class="layui-col-lg6 layui-col-md12">
+                    	<div class="layui-row">
+                    		<div class="layui-col">
+                    			<div class="layui-card">
+                            	<div class="layui-card-header">
+                                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                                <span>月度报表</span>
+                                &nbsp;&nbsp;&nbsp;
+                                <span>
+                                    <el-date-picker v-model="q.creatDate" type="month" :picker-options="pickerOptions0"
+                                        placeholder="选择月" value-format="yyyy-MM" format="yyyy-MM" @change="chagnetime">
+                                    </el-date-picker>
+                                </span>
+                                <span class="float-right" @click="edit(0)">查看月度报表</span>
+                            </div>
+                            <div class="layui-card-body">
+                                <div class="border_black left_color" v-if="monthBlance.reports">
+                                    <div class="layui-row">
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本月经营收入</span>
+                                                <br />
+                                                <span>{{monthBlance.reports.operationsReceipts}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本月经营支出</span>
+                                                <br />
+                                                <span>{{monthBlance.reports.operationsDisbursements}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>上月经营结余</span>
+                                                <br />
+                                                <span>{{monthBlance.reports.operationsBlanceL}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本月经营结余</span>
+                                                <br />
+                                                <span>{{monthBlance.reports.operationsBlance}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-row">
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本月押金收入</span>
+                                                <br />
+                                                <span>{{monthBlance.reports.depositReceipts}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本月押金支出</span>
+                                                <br />
+                                                <span>{{monthBlance.reports.depositDisbursements}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>上月押金结余</span>
+                                                <br />
+                                                <span>{{monthBlance.reports.depositBlanceL}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本月押金结余</span>
+                                                <br />
+                                                <span>{{monthBlance.reports.depositBlance}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-card-footer">
+                                    <span @click="getMonthDownload">下载</span>
+                                    <span @click="getPrinting(1)">打印</span>
+                                </div>
+                            </div>
+                        </div>
+                    		</div>
+                    	</div>
+                        <div class="layui-row">
+                        
+                        	<div class="layui-col-md6 layui-col-sm12">
+                        		<div class="pie"><div id="main2"></div></div>
+                        		<div class="pie"><div id="main3"></div></div>
+                        	</div>
+                        	<div class="layui-col-md6 layui-col-sm12">
+                        		<div class="pie"><div id="main1"></div></div>
+                        		<div class="pie"><div id="main4"></div></div>
+                        	</div>
+                        	
+                    		<!-- <div style="text-align: right;cursor: pointer;color:#5FA1EA"><span>查看详情</span></div> -->
+                    	</div>
+                    
+                    </div>
+                    <div class="layui-col-lg6 layui-col-md12 ">
+                        
+                        <div class="layui-row">
+                    		<div class="layui-col">
+                        	<div class="layui-card">
+                            <div class="layui-card-header">
+                                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                                <span>年度报表</span>
+                                &nbsp;&nbsp;&nbsp;
+                                <span>
+                                    <el-date-picker v-model="q.yearDate" type="year" placeholder="选择年"
+                                        :picker-options="pickerOptions0" value-format="yyyy" format="yyyy"
+                                        @change="yearchange">
+                                    </el-date-picker>
+                                </span>
+                                <span class="float-right" @click="edit(1)">查看年度报表</span>
+                            </div>
+                            <div class="layui-card-body">
+                                <div class="border_black right_color" v-if="yearBlance.reports">
+                                    <div class="layui-row">
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本年经营收入</span>
+                                                <br />
+                                                <span>{{yearBlance.reports.operationsReceipts}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本年经营支出</span>
+                                                <br />
+                                                <span>{{yearBlance.reports.operationsDisbursements}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>上年经营结余</span>
+                                                <br />
+                                                <span>{{yearBlance.reports.operationsBlanceL}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本年经营结余</span>
+                                                <br />
+                                                <span>{{yearBlance.reports.operationsBlance}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-row">
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本年押金收入</span>
+                                                <br />
+                                                <span>{{yearBlance.reports.depositReceipts}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本年押金支出</span>
+                                                <br />
+                                                <span>{{yearBlance.reports.depositDisbursements}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>上年押金结余</span>
+                                                <br />
+                                                <span>{{yearBlance.reports.depositBlanceL}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md3 layui-col-xs6">
+                                            <div class="xj-card">
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                                <span>本年押金结余</span>
+                                                <br />
+                                                <span>{{yearBlance.reports.depositBlance}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-card-footer">
+                                    <span @click="getYearDownload">下载</span>
+                                    <span @click="getPrinting(2)">打印</span>
+                                </div>
+                            </div>
+                        </div>
+                    		</div>
+                    	</div>
+                    	<div class="layui-row">
+                        
+                        	<div class="layui-col-md6 layui-col-sm12">
+                        		<div class="pie"><div id="main6"></div></div>
+                        		<div class="pie"><div id="main5"></div></div>
+                        	</div>
+                        	<div class="layui-col-md6 layui-col-sm12">
+                        		<div class="pie"><div id="main7"></div></div>
+                        		<div class="pie"><div id="main8"></div></div>
+                        	</div>
+                        	
+                    		<!-- <div style="text-align: right;cursor: pointer;color:#5FA1EA"><span>查看详情</span></div> -->
+                    	</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-show="showedit" class="panel panel-default">
+            <div class="panel-heading title-details"><span> {{title}} </span> <span><input type="button"
+                        class="btn btn-warning" @click="goback()" value="返回" /></span></div>
+            <div class="continer">
+                <div class="block">
+                    <div v-if="title=='月度报表'">
+                        <el-date-picker v-model="q.monthdetails" type="month" placeholder="请选择时间" value-format="yyyy-MM"
+                            format="yyyy-MM" @change="changeMonth">
+                        </el-date-picker>
+                    </div>
+                    <div v-if="title=='年度报表'">
+                        <el-date-picker v-model="q.yeardetails" type="year" placeholder="请选择时间" value-format="yyyy"
+                            format="yyyy" @change="changeYear">
+                        </el-date-picker>
+                    </div>
+
+                    <div class="block-download">
+                        <span @click="detailsDownload(title)">下载</span>
+                        <span @click="detailsPrinting(title)">打印</span>
+                    </div>
+
+                </div>
+                <div style="width: 50%;">
+                    <div class="panel panel-default">
+                        <div id="pre">
+
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width: 24%;" v-if="title=='月度报表'">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">银行对账单</div>
+                        <div class="panel-body accountList">
+                            <div v-for="item in fileInfosList">
+                                <div class="list" @click="clickEnlarge(item.url)">
+                                    <img :src="item.url" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 24%;" v-if="title=='年度报表'">
+                    <div class="panel panel-default">
+                        <!-- <div class="panel-heading">银行对账单</div>
+                        <div class="panel-body accountList">
+                            <div v-for="item in fileInfosList" class="list">
+                                
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+                <!-- <input type="button" class="btn btn-warning" @click="goback()" value="返回" /> -->
+            </div>
+        </div>
+
+        <div v-show="!showListedit" class="panel panel-default">
+            <div class="panel-heading"></div>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">开户名</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="开户名" v-model="name" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">开户行</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="开户行" v-model="bankname" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">开户账户</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="开户账户" v-model="cardnumber" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 control-label"></div>
+                    <input type="button" class="btn btn-primary" @click="modify" value="确认修改" />
+                    &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="goback()" value="返回" />
+                </div>
+            </form>
+
+
+        </div>
+
+        <div id="tableDetails" style="display: none;">
+            <h2 style="font-size: 18px;margin: 20px 0;">{{subjecttitle}} 明细</h2>
+            <div style="border:5px solid #ccc;padding:10px;width: 100%;height: 100%;">
+                <table class="my_table">
+                    <tr>
+                        <td>日期</td>
+                        <td>摘要</td>
+                        <td>会计科目</td>
+                        <td>辅助账</td>
+                        <td>金额</td>
+                    </tr>
+
+                    <tr v-for="item in reportsdetails">
+                        <td>{{item.date}}</td>
+                        <td>{{item.digest}}</td>
+                        <td>{{subjecttitle}}</td>
+                        <td>{{item.auxiliary}}</td>
+                        <td>{{item.money}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- <el-dialog title="附件管理" :visible.sync="dialogAccessoryVisible" >
+
+        </el-dialog>-->
+
+
+        <div id="bigimg" style="display: none;">
+            <img :src="url" alt="">
+        </div>
+        <!-- <div v-show="!showList">
+            录入
+            <div>
+                <div>记账凭证</div>
+                <div class="slip">
+
+                </div>
+            </div>
+            <div>
+                <input type="button" class="btn btn-warning" @click="goback()" value="返回" />
+            </div>
+        </div> -->
+    </div>
+
+    <script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+    <script src="${request.contextPath}/statics/js/modules/operation/report.js?_${.now?long}"></script>
+    <script src="${request.contextPath}/statics/js/echarts.min.js"></script>
+</body>
+<div id="tipcontent" style="display: none;text-align: center;">
+    <h2 style="font-size: 18px;margin: 20px 0;">下载报表</h2>
+    <div>请选择下载报表的格式</div>
+</div>
+
+
+</html>

@@ -1,0 +1,60 @@
+package com.yeweihui.modules.enums.announce.paper;
+
+import com.yeweihui.common.exception.RRException;
+
+/**
+ * 状态 0未签收 1已签收
+ * Created by Cutie on 2016/12/25.
+ */
+public enum AnnounceStatusEnum {
+    公示中("公示中", 0),
+    完成("完成", 1),
+    撤销("撤销", 2),
+    ;
+
+    private String name;
+    private int code;
+
+    private AnnounceStatusEnum(String name, int code) {
+        this.name = name;
+        this.code = code;
+    }
+    /**
+     * 根据code获取对应状态值
+     */
+    public static String getName(int code) {
+        for (AnnounceStatusEnum ex: AnnounceStatusEnum.values()) {
+            if (ex.getCode()==code) {
+                return ex.getName();
+            }
+        }
+        throw new RRException("找不到对应名称的枚举name");
+    }
+    /**
+     * 根据Name获取对应CODE值
+     */
+    public static int getCode(String name) {
+        for (AnnounceStatusEnum ex: AnnounceStatusEnum.values()) {
+            if (ex.getName().equals(name)) {
+                return ex.getCode();
+            }
+        }
+        throw new RRException("找不到对应名称的枚举code");
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+}

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.AnnounceMemberDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.AnnounceMemberEntity" id="announceMemberMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="aid" column="aid"/>
+        <result property="uid" column="uid"/>
+        <result property="referUid" column="refer_uid"/>
+        <result property="status" column="status"/>
+        <result property="readTime" column="read_time"/>
+    </resultMap>
+
+
+    <select id="simpleList" resultType="com.yeweihui.modules.operation.entity.AnnounceMemberEntity">
+        SELECT
+        announce_member.id,
+        announce_member.create_time,
+        announce_member.update_time,
+        announce_member.aid,
+        announce_member.uid,
+        announce_member.refer_uid,
+        announce_member.`status`,
+        announce_member.read_time,
+        `user`.realname realName,
+        `user`.avatar_url avatarUrl,
+        `user`.role_name roleName
+        FROM
+        announce_member
+        left join user on `user`.id = announce_member.uid
+        <include refid="queryParam" />
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 公示记录id -->
+            <if test="aid != null">
+                AND announce_member.aid = #{aid}
+            </if>
+            <!-- 浏览人id -->
+            <if test="viewUid != null">
+                AND announce_member.uid = #{viewUid}
+            </if>
+            <!-- 报销审核状态 -->
+            <if test="memberStatus != null">
+                AND announce_member.`status` = #{memberStatus}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

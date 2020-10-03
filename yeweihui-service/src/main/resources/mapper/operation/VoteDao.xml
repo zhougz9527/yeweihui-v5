@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.VoteDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.VoteEntity" id="voteMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="uid" column="uid"/>
+        <result property="title" column="title"/>
+        <result property="num" column="num"/>
+        <result property="content" column="content"/>
+        <result property="item1" column="item1"/>
+        <result property="item2" column="item2"/>
+        <result property="item3" column="item3"/>
+        <result property="item4" column="item4"/>
+        <result property="type" column="type"/>
+        <result property="verifyType" column="verify_type"/>
+        <result property="itemType" column="item_type"/>
+        <result property="endTime" column="end_time"/>
+        <result property="yesNum" column="yes_num"/>
+        <result property="noNum" column="no_num"/>
+        <result property="quitNum" column="quit_num"/>
+        <result property="status" column="status"/>
+        <result property="voteItem" column="vote_item"/>
+        <result property="createAt" column="create_at"/>
+        <result property="recordStatus" column="record_status"/>
+    </resultMap>
+
+    <!-- 分页 -->
+    <select id="selectPageVO" resultType="com.yeweihui.modules.vo.api.vo.VoteVO">
+        SELECT
+            vote.id,
+            vote.create_time,
+            vote.update_time,
+            vote.zone_id,
+            vote.uid,
+            vote.title,
+            vote.num,
+            vote.content,
+            vote.item1,
+            vote.item2,
+            vote.item3,
+            vote.item4,
+            vote.type,
+            vote.verify_type,
+            vote.item_type,
+            vote.end_time,
+            vote.yes_num,
+            vote.no_num,
+            vote.quit_num,
+            vote.`status`,
+            vote.vote_item,
+            vote.create_at,
+            vote.record_status,
+            <if test="participateUid != null">
+                vote_member.status member_status,
+            </if>
+            zones.`name` zone_name,
+            `user`.realname,
+            `user`.avatar_url
+        FROM
+            vote
+        left join zones on vote.zone_id = zones.id
+        LEFT JOIN `user` ON `user`.id = vote.uid
+        <if test="participateUid != null">
+            left join vote_member on vote.id = vote_member.vid
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by vote.id desc
+        </if>
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            vote
+        left join zones on vote.zone_id = zones.id
+        <if test="participateUid != null">
+            left join vote_member on vote.id = vote_member.vid
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+    <select id="simpleList" resultType="com.yeweihui.modules.operation.entity.VoteEntity">
+        SELECT
+            vote.*,
+            zones.`name` zone_name
+        FROM
+            vote
+        left join zones on vote.zone_id = zones.id
+        <if test="participateUid != null">
+            left join vote_member on vote.id = vote_member.vid
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+    <select id="selectPageEn" resultType="com.yeweihui.modules.operation.entity.VoteEntity">
+        SELECT
+        vote.id,
+        vote.create_time,
+        vote.update_time,
+        vote.zone_id,
+        vote.uid,
+        vote.title,
+        vote.num,
+        vote.content,
+        vote.item1,
+        vote.item2,
+        vote.item3,
+        vote.item4,
+        vote.type,
+        vote.verify_type,
+        vote.item_type,
+        vote.end_time,
+        vote.yes_num,
+        vote.no_num,
+        vote.quit_num,
+        vote.`status`,
+        vote.vote_item,
+        vote.create_at,
+        vote.record_status,
+        <if test="participateUid != null">
+            vote_member.status member_status,
+        </if>
+        zones.`name` zone_name,
+        `user`.realname,
+        `user`.avatar_url
+        FROM
+        vote
+        left join zones on vote.zone_id = zones.id
+        LEFT JOIN `user` ON `user`.id = vote.uid
+        <if test="participateUid != null">
+            left join vote_member on vote.id = vote_member.vid
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by vote.id desc
+        </if>
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 关键字（昵称/手机号/真实姓名） -->
+            <!--<if test="keyword != null and keyword != ''">
+                AND (ec_app_user.nickname like CONCAT('%', #{keyword})
+                or ec_app_user.phone like CONCAT('%', #{keyword})
+                or ec_app_user.realname like CONCAT('%', #{keyword}))
+            </if>-->
+
+            <!-- 小区id -->
+            <if test="zoneId != null">
+                AND vote.zone_id = #{zoneId}
+            </if>
+            <!-- 授权行业主管查看 -->
+            <if test="authZoneIdList != null">
+                AND vote.zone_id in
+                <foreach item="authZoneIdList" index="index" collection="authZoneIdList"
+                         open="(" separator="," close=")">
+                    #{authZoneIdList}
+                </foreach>
+            </if>
+            <!-- 授权查看的小区id -->
+            <if test="authZoneId != null and authZoneId != 0">
+                AND vote.zone_id = #{authZoneId}
+            </if>
+            <!-- 关键字（昵称/手机号/真实姓名） -->
+            <if test="keyword != null and keyword != ''">
+                AND (`user`.nickname like CONCAT('%', #{keyword}, '%')
+                or `user`.realname like CONCAT('%', #{keyword}, '%')
+                or `user`.mobile like CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+            <!-- 发起用户id -->
+            <if test="uid != null">
+                AND vote.uid = #{uid}
+            </if>
+            <!-- 参会用户id -->
+            <if test="participateUid != null">
+                AND vote_member.uid = #{participateUid}
+            </if>
+
+            <!-- 投票状态 1同意过半 2反对过半 3撤销 4选择确定 -->
+            <if test="voteStatus != null">
+                AND vote.status = #{voteStatus}
+            </if>
+            <!-- 投票参与类型 1表决 2抄送 -->
+            <if test="voteMemberType != null">
+                AND vote_member.type = #{voteMemberType}
+            </if>
+            <!-- 投票参与状态 1同意 2反对 3弃权 4超时 -->
+            <if test="voteMemberStatus != null">
+                AND vote_member.status = #{voteMemberStatus}
+            </if>
+
+            <!-- 投票参与状态列表 1同意 2反对 3弃权 4超时 -->
+            <if test="voteMemberStatusList != null and voteMemberStatusList.size() >0">
+                and vote_member.status IN
+                <foreach collection="voteMemberStatusList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+            <!-- 投票状态 1同意过半 2反对过半 3撤销 4选择确定 -->
+            <if test="voteStatusList != null and voteStatusList.size() >0">
+                and vote.status IN
+                <foreach collection="voteStatusList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+            <!-- 获取超时的 -->
+            <if test="expire != null and expire == 'true'.toString()">
+                <!-- AND CONCAT(vote.end_time,' 23:59:59') <![CDATA[ < ]]> now() -->
+                AND DATE_ADD(vote.end_time,INTERVAL 1 DAY) <![CDATA[ < ]]> now()
+            </if>
+            <!-- 显示状态 -->
+            <if test="minRecordStatus != null">
+                and vote.record_status >= #{minRecordStatus}
+            </if>
+        </where>
+    </sql>
+
+
+</mapper>

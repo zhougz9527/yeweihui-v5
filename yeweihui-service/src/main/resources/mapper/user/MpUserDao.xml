@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.user.dao.MpUserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.user.entity.MpUserEntity" id="mpUserMap">
+        <result property="unionId" column="union_id"/>
+        <result property="uid" column="uid"/>
+        <result property="openidMp" column="openid_mp"/>
+        <result property="openidPublic" column="openid_public"/>
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.NoticeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.yeweihui.modules.operation.entity.NoticeEntity" id="noticeMap">
+        <result property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="title" column="title"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="uid" column="uid"/>
+        <result property="readCount" column="read_count"/>
+        <result property="status" column="status"/>
+        <result property="recordStatus" column="record_status"/>
+        <result property="content" column="content"/>
+    </resultMap>
+
+    <!-- 分页 -->
+    <select id="selectPageVO" resultType="com.yeweihui.modules.vo.api.vo.NoticeVO">
+        SELECT
+            notice.id,
+            notice.create_time,
+            notice.update_time,
+            notice.title,
+            notice.zone_id,
+            notice.content,
+            notice.uid,
+            notice.read_count,
+            notice.`status`,
+            notice.total,
+            notice.record_status,
+            notice.content,
+            zones.name zone_name,
+            `user`.realname,
+            <if test="readUid != null">
+                notice_member.status member_status,
+            </if>
+            `user`.realname,
+            `user`.avatar_url
+        FROM
+            notice
+        LEFT JOIN zones ON notice.zone_id = zones.id
+        left join `user` on `user`.id = notice.uid
+        <if test="readUid != null">
+            left join notice_member on notice_member.nid = notice.id
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            notice
+        LEFT JOIN zones ON notice.zone_id = zones.id
+        <if test="readUid != null">
+            left join notice_member on notice_member.nid = notice.id
+        </if>
+        <include refid="queryParam" />
+    </select>
+
+    <select id="selectPageEn" resultType="com.yeweihui.modules.operation.entity.NoticeEntity">
+        SELECT
+        notice.id,
+        notice.create_time,
+        notice.update_time,
+        notice.title,
+        notice.zone_id,
+        notice.uid,
+        notice.read_count,
+        notice.`status`,
+        notice.record_status,
+        notice.content,
+        notice.notice_zone_id_tag,
+        zones.name zone_name,
+        `user`.realname,
+        <if test="readUid != null">
+            notice_member.status member_status,
+        </if>
+        `user`.avatar_url
+        FROM
+        notice
+        LEFT JOIN zones ON notice.zone_id = zones.id
+        left join `user` on `user`.id = notice.uid
+        <if test="readUid != null">
+            left join notice_member on notice_member.nid = notice.id
+        </if>
+        <include refid="queryParam" />
+        <if test="sidx == null or sidx == '' ">
+            order by notice.id desc
+        </if>
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- 关键字（昵称/手机号/真实姓名） -->
+            <if test="keyword != null and keyword != ''">
+                AND (
+                notice.title like CONCAT('%', #{keyword}, '%')
+                or `user`.nickname like CONCAT('%', #{keyword}, '%')
+                or `user`.realname like CONCAT('%', #{keyword}, '%')
+                or `user`.mobile like CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+
+            <!-- 小区id -->
+            <if test="zoneId != null">
+                AND notice.notice_zone_id_tag like concat('%#', #{zoneId},'#%')
+            </if>
+            <!-- 授权行业主管查看 看他管辖的所有小区 -->
+            <if test="whole != true and authZoneIdList != null">
+                AND
+                <foreach item="item" index="index" collection="authZoneIdList"
+                         open="(" separator=" or " close=")">
+                    notice.notice_zone_id_tag like concat('%#', #{item},'#%')
+                </foreach>
+            </if>
+            <!-- 授权查看的小区id authZoneId -> {Long@12673}34 -->
+            <if test="(whole == true or authZoneIdList == null) and authZoneId != null and authZoneId != 0">
+                AND notice.notice_zone_id_tag like concat('%#', #{authZoneId},'#%')
+            </if>
+
+            <!-- 发起用户id -->
+            <if test="whole != true and uid != null">
+                AND notice.uid = #{uid}
+            </if>
+            <!-- 阅读用户id -->
+            <if test="readUid != null">
+                AND notice_member.uid = #{readUid}
+            </if>
+            <!-- 状态 -->
+<!--            <if test="noticeStatus != null">-->
+<!--                AND notice.status = #{noticeStatus}-->
+<!--            </if>-->
+            <!-- 阅读参与状态 1未读 2已读 -->
+            <if test="noticeMemberStatus != null">
+                AND notice_member.status = #{noticeMemberStatus}
+            </if>
+
+            <!-- 显示状态 -->
+            <if test="minRecordStatus != null">
+                and notice.record_status >= #{minRecordStatus}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

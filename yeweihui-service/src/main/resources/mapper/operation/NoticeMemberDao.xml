@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yeweihui.modules.operation.dao.NoticeMemberDao">
+
+    <select id="simpleList" resultType="com.yeweihui.modules.operation.entity.NoticeMemberEntity">
+        SELECT
+            notice_member.id,
+            notice_member.create_time,
+            notice_member.update_time,
+            notice_member.nid,
+            notice_member.uid,
+            notice_member.refer_uid,
+            notice_member.`status`,
+            notice_member.last_read_time,
+            `user`.realname memberRealname,
+            `user`.avatar_url memberAvatarUrl,
+            `user`.role_name memberRoleName,
+            `user`.zone_id memberZoneId
+        FROM
+            notice_member
+        left join user on `user`.id = notice_member.uid
+        <include refid="queryParam" />
+    </select>
+
+    <!--查询条件-->
+    <sql id="queryParam">
+        <where>
+            <!-- notice id -->
+            <if test="nid != null">
+                AND notice_member.nid = #{nid}
+            </if>
+            <!-- 状态 1同意 2反对 3弃权 4超时 -->
+            <if test="noticeMemberStatus != null">
+                AND notice_member.`status` = #{noticeMemberStatus}
+            </if>
+        </where>
+    </sql>
+
+
+</mapper>
