@@ -9,9 +9,9 @@ spring:
       first:  #数据源1
       #      url: jdbc:mysql://localhost/yeweihui_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
 #        url: jdbc:mysql://47.111.24.218:3306/yeweihui_prod?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
-        url: jdbc:mysql://rm-bp1k07h3k0tm18j2yuo.mysql.rds.aliyuncs.com:3306/yeweihui_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
-        username: jmkj_admin
-        password: 9c4ce9fdf32c7d7b7b22f1aa583d465@
+#        url: jdbc:mysql://rm-bp1k07h3k0tm18j2yuo.mysql.rds.aliyuncs.com:3306/yeweihui_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
+#        username: jmkj_admin
+#        password: 9c4ce9fdf32c7d7b7b22f1aa583d465@
 
 #        url: jdbc:mysql://129.204.83.206:3306/yeweihui-dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
 #        username: root
@@ -19,6 +19,10 @@ spring:
 
 #        username: cutie
 #        password: chenyang007
+         url: jdbc:mysql://localhost:3306/yeweihui?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
+         username: admin
+         password: 123456
+
       second:  #数据源2
         url: jdbc:mysql://10.10.168.18:3306/renren_security?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=true
 #        username: renren

@@ -8,9 +8,12 @@ spring:
 #      username: cutie
 #      password: chenyang007
       #        url: jdbc:mysql://127.0.0.1:3306/yeweihui_prod?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
-      url: jdbc:mysql://106.15.74.23:3306/yeweihui_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Hongkong&verifyServerCertificate=false
-      username: root
-      password: Fish&Chips161728
+#      url: jdbc:mysql://106.15.74.23:3306/yeweihui_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Hongkong&verifyServerCertificate=false
+#      username: root
+#      password: Fish&Chips161728
+      url: jdbc:mysql://localhost:3306/yeweihui?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
+      username: admin
+      password: 123456
       initial-size: 10
       max-active: 100
       min-idle: 10
