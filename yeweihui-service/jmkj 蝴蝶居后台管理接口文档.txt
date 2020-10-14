@@ -1,0 +1,289 @@
+蝴蝶居
+
+
+所有接口均传递token
+
+
+
+jmkj/updateTime  更新当月登录时间
+
+传参
+
+time int 秒数
+
+返回
+
+true/false
+
+-------------------------------------------------------------------------
+
+jmkj/updateNum  更新当月登录次数
+
+传递参数
+
+无
+
+返回
+
+true/false
+
+-------------------------------------------------------------------------
+
+jmkj/myData 获取上月在线时长和上月登录次数
+
+传递参数
+
+无
+
+返回
+
+onLineTime int 在线时长
+loginTimes int 登录次数
+
+-------------------------------------------------------------------------
+
+jmkj/getPerformanceOfDutiesList 履职数据 操作性任务查询 履职量
+
+传递参数
+
+zoneId    int 小区id
+timeStart long 起始时间（时间戳）
+timeEnd   long 结束时间（时间戳）
+
+返回
+{
+  realname  String 用户名字
+  avatarUrl String 用户头像
+  num       int 用户履职量
+  ranking   int 用户排名
+  
+  listData:
+  {
+    uid       int 用户id
+	realname  String 用户名字
+    avatarUrl String 用户头像
+    num       int 用户履职量
+	 
+  }
+  
+}
+
+-------------------------------------------------------------------------
+
+jmkj/getPerformanceRateBeans 履职数据 操作性任务查询 履职率
+
+传递参数
+
+zoneId    int 小区id
+timeStart long 起始时间（时间戳）
+timeEnd   long 结束时间（时间戳）
+
+返回
+{
+  realname    String 用户名字
+  avatarUrl   String 用户头像
+  proportion  float 用户履职率 会以小数形式返回
+  ranking     int 用户排名
+  
+  listData:
+  {
+    uid         int 用户id
+	realname    String 用户名字
+    avatarUrl   String 用户头像
+    proportion  float 用户履职率 会以小数形式返回
+	 
+  }
+  
+}
+
+-------------------------------------------------------------------------
+
+jmkj/OverdueQuantity 履职数据 操作性任务查询 逾期量
+
+传递参数
+
+zoneId    int 小区id
+timeStart long 起始时间（时间戳）
+timeEnd   long 结束时间（时间戳）
+
+返回
+{
+  realname  String 用户名字
+  avatarUrl String 用户头像
+  num       int 用户逾期量
+  ranking   int 用户排名
+  
+  listData:
+  {
+    uid       int 用户id
+	realname  String 用户名字
+    avatarUrl String 用户头像
+    num       int 用户逾期量
+	 
+  }
+  
+}
+
+-------------------------------------------------------------------------
+
+jmkj/OverdueRate 履职数据 操作性任务查询 逾期率
+
+传递参数
+
+zoneId    int 小区id
+timeStart long 起始时间（时间戳）
+timeEnd   long 结束时间（时间戳）
+
+返回
+{
+  realname    String 用户名字
+  avatarUrl   String 用户头像
+  proportion  float 用户逾期率 会以小数形式返回
+  ranking     int 用户排名
+  
+  listData:
+  {
+    uid         int 用户id
+	realname    String 用户名字
+    avatarUrl   String 用户头像
+    proportion  float 用户逾期率 会以小数形式返回
+	 
+  }
+  
+}
+
+-------------------------------------------------------------------------
+
+jmkj/operationNum 履职数据 操作性任务查询 新建总量
+
+传递参数
+
+zoneId    int 小区id
+timeStart long 起始时间（时间戳）
+timeEnd   long 结束时间（时间戳）
+
+返回
+{
+  realname  String 用户名字
+  avatarUrl String 用户头像
+  num       int 用户新建总量
+  ranking   int 用户排名
+  
+  listData:
+  {
+    uid       int 用户id
+	realname  String 用户名字
+    avatarUrl String 用户头像
+    num       int 用户新建总量
+	 
+  }
+  
+}
+
+-------------------------------------------------------------------------
+
+jmkj/BrowseComplete 履职数据 浏览任务 完成总量
+
+传递参数
+
+zoneId    int 小区id
+timeStart long 起始时间（时间戳）
+timeEnd   long 结束时间（时间戳）
+
+返回
+{
+  realname  String 用户名字
+  avatarUrl String 用户头像
+  num       int 用户完成总量
+  ranking   int 用户排名
+  
+  listData:
+  {
+    uid       int 用户id
+	realname  String 用户名字
+    avatarUrl String 用户头像
+    num       int 用户完成总量
+	 
+  }
+  
+}
+
+-------------------------------------------------------------------------
+
+jmkj/NewBrowse 履职数据 浏览任务 新建总量
+
+传递参数
+
+zoneId    int 小区id
+timeStart long 起始时间（时间戳）
+timeEnd   long 结束时间（时间戳）
+
+返回
+{
+  realname  String 用户名字
+  avatarUrl String 用户头像
+  num       int 用户新建总量
+  ranking   int 用户排名
+  
+  listData:
+  {
+    uid       int 用户id
+	realname  String 用户名字
+    avatarUrl String 用户头像
+    num       int 用户新建总量
+	 
+  }
+
+  -------------------------------------------------------------------------
+
+  jmkj/OnlineDuration 履职数据 在线时长
+
+  传递参数
+
+  zoneId    int 小区id
+  timeStart long 起始时间（时间戳）
+  timeEnd   long 结束时间（时间戳）
+
+  返回
+  {
+    realname  String 用户名字
+    avatarUrl String 用户头像
+    num       int 用户在线时长
+    ranking   int 用户排名
+
+    listData:
+    {
+      uid       int 用户id
+  	  realname  String 用户名字
+      avatarUrl String 用户头像
+      num       int 用户在线时长
+
+    }
+
+      -------------------------------------------------------------------------
+
+      jmkj/OnlineDuration 履职数据 登录次数
+
+      传递参数
+
+      zoneId    int 小区id
+      timeStart long 起始时间（时间戳）
+      timeEnd   long 结束时间（时间戳）
+
+      返回
+      {
+        realname  String 用户名字
+        avatarUrl String 用户头像
+        num       int 用户登录次数
+        ranking   int 用户排名
+
+        listData:
+        {
+          uid       int 用户id
+      	  realname  String 用户名字
+          avatarUrl String 用户头像
+          num       int 用户登录次数
+
+        }
+  
+}

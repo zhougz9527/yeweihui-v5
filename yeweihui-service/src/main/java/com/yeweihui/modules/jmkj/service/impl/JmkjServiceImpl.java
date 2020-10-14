@@ -119,29 +119,8 @@ public class JmkjServiceImpl implements JmkjService{
 
 
     @Override
-    public Object operationTask(int type,long uid,Long zoneId,Long timeStart,Long timeEnd) {
+    public Object getPerformanceOfDutiesList(long uid,Long zoneId,Long timeStart,Long timeEnd) {
 
-
-        if(type==1){
-
-            return getPerformanceOfDutiesList(uid,zoneId,timeStart,timeEnd);
-
-        }else if (type==2){
-
-            return getPerformanceRateBeans(uid,zoneId,timeStart,timeEnd);
-
-        }else {
-
-            return null;
-        }
-
-
-    }
-
-    /**
-     * 操作性任务-履职量
-     * */
-    public Object getPerformanceOfDutiesList(long uid,Long zoneId,Long timeStart,Long timeEnd){
 
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
@@ -166,11 +145,11 @@ public class JmkjServiceImpl implements JmkjService{
         map.put("listData",PerformanceOfDutiesBeans);
 
         return map;
+
+
     }
 
-    /**
-     * 操作性任务-履职率
-     * */
+    @Override
     public Object getPerformanceRateBeans(long uid,Long zoneId,Long timeStart,Long timeEnd){
 
         if (timeStart==null)timeStart=0l;
@@ -194,6 +173,202 @@ public class JmkjServiceImpl implements JmkjService{
         }
 
         map.put("listData",PerformanceRateBeans);
+
+        return map;
+    }
+
+    @Override
+    public Object OverdueQuantity(long uid, Long zoneId, Long timeStart, Long timeEnd) {
+
+        if (timeStart==null)timeStart=0l;
+        if (timeEnd==null)timeEnd=new Date().getTime();
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OverdueQuantity(zoneId,new Date(timeStart),new Date(timeEnd));
+
+        Map<String,Object> map = new HashMap<>();
+
+
+        for (int i=0;i<PerformanceOfDutiesBeans.size();i++){
+
+            if (uid==PerformanceOfDutiesBeans.get(i).getUid().longValue()){
+
+                map.put("realname",PerformanceOfDutiesBeans.get(i).getRealname());
+                map.put("avatarUrl",PerformanceOfDutiesBeans.get(i).getAvatarUrl());
+                map.put("num",PerformanceOfDutiesBeans.get(i).getNum());
+                map.put("ranking",i+1);
+                break;
+            }
+        }
+
+        map.put("listData",PerformanceOfDutiesBeans);
+
+        return map;
+    }
+
+    @Override
+    public Object OverdueRate(long uid, Long zoneId, Long timeStart, Long timeEnd) {
+
+        if (timeStart==null)timeStart=0l;
+        if (timeEnd==null)timeEnd=new Date().getTime();
+
+        List<PerformanceRateBean> PerformanceRateBeans = jmkjSql.OverdueRate(zoneId,new Date(timeStart),new Date(timeEnd));
+
+        Map<String,Object> map = new HashMap<>();
+
+
+        for (int i=0;i<PerformanceRateBeans.size();i++){
+
+            if (uid==PerformanceRateBeans.get(i).getUid().longValue()){
+
+                map.put("realname",PerformanceRateBeans.get(i).getRealname());
+                map.put("avatarUrl",PerformanceRateBeans.get(i).getAvatarUrl());
+                map.put("proportion",PerformanceRateBeans.get(i).getProportion());
+                map.put("ranking",i+1);
+                break;
+            }
+        }
+
+        map.put("listData",PerformanceRateBeans);
+
+        return map;
+    }
+
+    @Override
+    public Object operationNum(long uid, Long zoneId, Long timeStart, Long timeEnd) {
+
+        if (timeStart==null)timeStart=0l;
+        if (timeEnd==null)timeEnd=new Date().getTime();
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.operationNum(zoneId,new Date(timeStart),new Date(timeEnd));
+
+        Map<String,Object> map = new HashMap<>();
+
+
+        for (int i=0;i<PerformanceOfDutiesBeans.size();i++){
+
+            if (uid==PerformanceOfDutiesBeans.get(i).getUid().longValue()){
+
+                map.put("realname",PerformanceOfDutiesBeans.get(i).getRealname());
+                map.put("avatarUrl",PerformanceOfDutiesBeans.get(i).getAvatarUrl());
+                map.put("num",PerformanceOfDutiesBeans.get(i).getNum());
+                map.put("ranking",i+1);
+                break;
+            }
+        }
+
+        map.put("listData",PerformanceOfDutiesBeans);
+
+        return map;
+    }
+
+    @Override
+    public Object BrowseComplete(long uid, Long zoneId, Long timeStart, Long timeEnd) {
+
+        if (timeStart==null)timeStart=0l;
+        if (timeEnd==null)timeEnd=new Date().getTime();
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.BrowseComplete(zoneId,new Date(timeStart),new Date(timeEnd));
+
+        Map<String,Object> map = new HashMap<>();
+
+
+        for (int i=0;i<PerformanceOfDutiesBeans.size();i++){
+
+            if (uid==PerformanceOfDutiesBeans.get(i).getUid().longValue()){
+
+                map.put("realname",PerformanceOfDutiesBeans.get(i).getRealname());
+                map.put("avatarUrl",PerformanceOfDutiesBeans.get(i).getAvatarUrl());
+                map.put("num",PerformanceOfDutiesBeans.get(i).getNum());
+                map.put("ranking",i+1);
+                break;
+            }
+        }
+
+        map.put("listData",PerformanceOfDutiesBeans);
+
+        return map;
+    }
+
+    @Override
+    public Object NewBrowse(long uid, Long zoneId, Long timeStart, Long timeEnd) {
+
+        if (timeStart==null)timeStart=0l;
+        if (timeEnd==null)timeEnd=new Date().getTime();
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.NewBrowse(zoneId,new Date(timeStart),new Date(timeEnd));
+
+        Map<String,Object> map = new HashMap<>();
+
+
+        for (int i=0;i<PerformanceOfDutiesBeans.size();i++){
+
+            if (uid==PerformanceOfDutiesBeans.get(i).getUid().longValue()){
+
+                map.put("realname",PerformanceOfDutiesBeans.get(i).getRealname());
+                map.put("avatarUrl",PerformanceOfDutiesBeans.get(i).getAvatarUrl());
+                map.put("num",PerformanceOfDutiesBeans.get(i).getNum());
+                map.put("ranking",i+1);
+                break;
+            }
+        }
+
+        map.put("listData",PerformanceOfDutiesBeans);
+
+        return map;
+    }
+
+    @Override
+    public Object OnlineDuration(long uid, Long zoneId, Long timeStart, Long timeEnd) {
+
+        if (timeStart==null)timeStart=0l;
+        if (timeEnd==null)timeEnd=new Date().getTime();
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineDuration(zoneId,new Date(timeStart),new Date(timeEnd));
+
+        Map<String,Object> map = new HashMap<>();
+
+
+        for (int i=0;i<PerformanceOfDutiesBeans.size();i++){
+
+            if (uid==PerformanceOfDutiesBeans.get(i).getUid().longValue()){
+
+                map.put("realname",PerformanceOfDutiesBeans.get(i).getRealname());
+                map.put("avatarUrl",PerformanceOfDutiesBeans.get(i).getAvatarUrl());
+                map.put("num",PerformanceOfDutiesBeans.get(i).getNum());
+                map.put("ranking",i+1);
+                break;
+            }
+        }
+
+        map.put("listData",PerformanceOfDutiesBeans);
+
+        return map;
+    }
+
+    @Override
+    public Object OnlineNum(long uid, Long zoneId, Long timeStart, Long timeEnd) {
+
+        if (timeStart==null)timeStart=0l;
+        if (timeEnd==null)timeEnd=new Date().getTime();
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineNum(zoneId,new Date(timeStart),new Date(timeEnd));
+
+        Map<String,Object> map = new HashMap<>();
+
+
+        for (int i=0;i<PerformanceOfDutiesBeans.size();i++){
+
+            if (uid==PerformanceOfDutiesBeans.get(i).getUid().longValue()){
+
+                map.put("realname",PerformanceOfDutiesBeans.get(i).getRealname());
+                map.put("avatarUrl",PerformanceOfDutiesBeans.get(i).getAvatarUrl());
+                map.put("num",PerformanceOfDutiesBeans.get(i).getNum());
+                map.put("ranking",i+1);
+                break;
+            }
+        }
+
+        map.put("listData",PerformanceOfDutiesBeans);
 
         return map;
     }
