@@ -10,6 +10,7 @@ import com.yeweihui.common.validator.ValidatorUtils;
 import com.yeweihui.modules.bfly.entity.BflyVote;
 import com.yeweihui.modules.bfly.service.BflyVoteService;
 import com.yeweihui.modules.enums.BizTypeEnum;
+import com.yeweihui.modules.jmkj.service.impl.JmkjServiceImpl;
 import com.yeweihui.modules.operation.entity.VoteEntity;
 import com.yeweihui.modules.operation.service.HisViewLogService;
 import com.yeweihui.modules.operation.service.VoteService;
@@ -41,6 +42,10 @@ import java.util.List;
 @RequestMapping("/api/operation/vote")
 @Api(tags="事务表决")
 public class ApiVoteController {
+
+    @Autowired
+    JmkjServiceImpl jmkjServiceImpl;
+
     @Autowired
     private VoteService voteService;
     @Autowired
@@ -66,6 +71,9 @@ public class ApiVoteController {
                   @PathVariable("id") Long id,
                   @PathVariable(name = "type", required = false) String type){
         VoteEntity vote = voteService.info(id, userEntity);
+
+        vote.setTimeQuitNum(jmkjServiceImpl.TimeVote(vote.getId()));
+        vote.setNoTimeQuitNum(jmkjServiceImpl.NoTimeVote(vote.getId()));
 
         if (userEntity != null && type != null && "history".equals(type)) {
             hisViewLogService.save(BizTypeEnum.VOTE, userEntity, id);

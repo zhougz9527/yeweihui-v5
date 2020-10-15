@@ -29,4 +29,8 @@ public interface JmkjService {
     Object OnlineNum(long uid,Long zoneId,Long timeStart,Long timeEnd);
 
     Object IndustryDirector(IndustryDirectorParameterBean IndustryDirectorParameterBean);
+
+    int TimeVote(long vid);
+
+    int NoTimeVote(long vid);
 }

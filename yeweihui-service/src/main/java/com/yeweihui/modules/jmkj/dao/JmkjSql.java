@@ -560,4 +560,15 @@ public interface JmkjSql {
             "LEFT JOIN sys_role ON `user`.role_id=`sys_role`.role_id where true ${ew.sqlSegment}")
     List<IndustryDirectorBean> IndustryDirector(Page<IndustryDirectorBean> StudentPage, @Param("ew") Wrapper<IndustryDirectorBean> var2);
 
+    /** 事务表决正常弃权人数 */
+    @Select("select count(*) " +
+            "FROM vote_member LEFT JOIN vote ON vote_member.vid = vote.id " +
+            "WHERE vote_member.vid=#{vid} AND vote_member.`status`=3 AND vote_member.vote_time<=vote.end_time")
+    int TimeVote(@Param("vid")Long vid);
+
+    /** 事务表决超时弃权人数 */
+    @Select("select count(*) " +
+            "FROM vote_member LEFT JOIN vote ON vote_member.vid = vote.id " +
+            "WHERE vote_member.vid=#{vid} AND vote_member.`status`=3 AND vote_member.vote_time>vote.end_time")
+    int NoTimeVote(@Param("vid")Long vid);
 }

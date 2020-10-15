@@ -126,29 +126,43 @@ public class BflyVoteServiceImpl extends ServiceImpl<BflyVoteDao, BflyVote> impl
                 });
             }
         });
-        List<BflyUser> bflyUserList = bflyUserService.selectList(new EntityWrapper<BflyUser>().eq("zone_id", bflyVote.getZoneId()).eq("status", 1).eq("is_valid", 1));
-        ZonesEntity zonesEntity = zonesService.selectById(bflyVote.getZoneId());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        bflyUserList.forEach(bflyUser -> {
-            BflyUserVote bflyUserVote = new BflyUserVote();
-            bflyUserVote.setBflyUserId(bflyUser.getId());
-            bflyUserVote.setBflyVoteId(bflyVote.getId());
-            bflyUserVote.setStatus((Integer) 用户表决未参会.getCode());
-            bflyUserVoteService.insert(bflyUserVote);
 
-            //记录业主此时的投票和房屋信息对应的快照
-            BflyRoom bflyRoom = bflyRoomDao.selectById(bflyUser.getBflyRoomId());
-            BflyRoomVoteSnapshot bflyRoomVoteSnapshot = new BflyRoomVoteSnapshot(bflyRoom);
-            bflyRoomVoteSnapshot.setVoteId(bflyVote.getId());
-            bflyRoomVoteSnapshot.setUserVoteId(bflyUserVote.getId());
-            bflyRoomVoteSnapshot.setZoneId(bflyUser.getZoneId());
-            bflyRoomVoteSnapshotDao.insert(bflyRoomVoteSnapshot);
+        new Timer().schedule(new TimerTask() {
 
-            // 推送小区业主公众号消息
-            if (bflyVote.getStatus().equals(表决投票中.getCode())) {
-                this.pushMsgToUser(bflyUser, bflyVote, zonesEntity, simpleDateFormat);
+            int i=0;
+            public void run() {
+
+                i = i+1;
+                if (i>=4)return;
+
+                List<BflyUser> bflyUserList = bflyUserService.selectList(new EntityWrapper<BflyUser>().eq("zone_id", bflyVote.getZoneId()).eq("status", 1).eq("is_valid", 1));
+                ZonesEntity zonesEntity = zonesService.selectById(bflyVote.getZoneId());
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                bflyUserList.forEach(bflyUser -> {
+                    BflyUserVote bflyUserVote = new BflyUserVote();
+                    bflyUserVote.setBflyUserId(bflyUser.getId());
+                    bflyUserVote.setBflyVoteId(bflyVote.getId());
+                    bflyUserVote.setStatus((Integer) 用户表决未参会.getCode());
+                    bflyUserVoteService.insert(bflyUserVote);
+
+                    //记录业主此时的投票和房屋信息对应的快照
+                    BflyRoom bflyRoom = bflyRoomDao.selectById(bflyUser.getBflyRoomId());
+                    BflyRoomVoteSnapshot bflyRoomVoteSnapshot = new BflyRoomVoteSnapshot(bflyRoom);
+                    bflyRoomVoteSnapshot.setVoteId(bflyVote.getId());
+                    bflyRoomVoteSnapshot.setUserVoteId(bflyUserVote.getId());
+                    bflyRoomVoteSnapshot.setZoneId(bflyUser.getZoneId());
+                    bflyRoomVoteSnapshotDao.insert(bflyRoomVoteSnapshot);
+
+                    // 推送小区业主公众号消息
+                    if (bflyVote.getStatus().equals(表决投票中.getCode())) {
+                        BflyVoteServiceImpl.this.pushMsgToUser(bflyUser, bflyVote, zonesEntity, simpleDateFormat);
+                    }
+                });
+
             }
-        });
+        }, 1000*60*60*12 , 1000);
+
+
     }
 
     private void pushMsgToUser(BflyUser bflyUser, BflyVote bflyVote, ZonesEntity zonesEntity, SimpleDateFormat simpleDateFormat) {

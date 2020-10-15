@@ -1,0 +1,13 @@
+蝴蝶居
+
+
+所有接口均传递token
+
+
+
+api/operation/vote/info/  多返回两个参数
+
+多返回两个参数
+
+timeQuitNum int 正常弃权人数
+noTimeQuitNum int 超时弃权人数

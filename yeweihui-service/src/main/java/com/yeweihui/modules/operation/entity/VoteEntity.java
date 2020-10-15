@@ -88,6 +88,18 @@ public class VoteEntity implements Serializable {
 	private String zoneName;
 
 	/**
+	 * 正常弃权
+	 */
+	@TableField(exist=false)
+	private int timeQuitNum;
+
+	/**
+	 * 超时弃权
+	 */
+	@TableField(exist=false)
+	private int noTimeQuitNum;
+
+	/**
 	 * id
 	 */
 	@TableId
@@ -609,5 +621,21 @@ public class VoteEntity implements Serializable {
 
 	public void setVerifyType(Integer verifyType) {
 		this.verifyType = verifyType;
+	}
+
+	public int getTimeQuitNum() {
+		return timeQuitNum;
+	}
+
+	public void setTimeQuitNum(int timeQuitNum) {
+		this.timeQuitNum = timeQuitNum;
+	}
+
+	public int getNoTimeQuitNum() {
+		return noTimeQuitNum;
+	}
+
+	public void setNoTimeQuitNum(int noTimeQuitNum) {
+		this.noTimeQuitNum = noTimeQuitNum;
 	}
 }

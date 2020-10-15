@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.yeweihui.modules.jmkj.Entity.*;
 import com.yeweihui.modules.jmkj.dao.JmkjSql;
 import com.yeweihui.modules.jmkj.service.JmkjService;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -387,6 +386,16 @@ public class JmkjServiceImpl implements JmkjService{
         Page<IndustryDirectorBean> mPage = new Page<IndustryDirectorBean>(IndustryDirectorParameterBean.getPages(), IndustryDirectorParameterBean.getSize());
 
         return mPage.setRecords(jmkjSql.IndustryDirector(mPage,IndustryDirectorWrapper));
+    }
+
+    @Override
+    public int TimeVote(long vid) {
+        return jmkjSql.TimeVote(vid);
+    }
+
+    @Override
+    public int NoTimeVote(long vid) {
+        return jmkjSql.NoTimeVote(vid);
     }
 
 
