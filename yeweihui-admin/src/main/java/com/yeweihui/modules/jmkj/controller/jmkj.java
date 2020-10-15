@@ -1,14 +1,12 @@
 package com.yeweihui.modules.jmkj.controller;
 
 import com.yeweihui.common.utils.R;
+import com.yeweihui.modules.jmkj.Entity.IndustryDirectorParameterBean;
 import com.yeweihui.modules.jmkj.service.impl.JmkjServiceImpl;
 import com.yeweihui.modules.sys.shiro.ShiroUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -175,5 +173,12 @@ public class jmkj {
     ){
 
         return R.ok().put("data",jmkjServiceImpl.OnlineNum(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+    }
+
+    @PostMapping(value = "/IndustryDirector")
+    @ApiOperation(value = "行业主管列表")
+    public R IndustryDirector(@RequestBody IndustryDirectorParameterBean IndustryDirectorParameterBean){
+
+        return R.ok().put("data",jmkjServiceImpl.IndustryDirector(IndustryDirectorParameterBean));
     }
 }

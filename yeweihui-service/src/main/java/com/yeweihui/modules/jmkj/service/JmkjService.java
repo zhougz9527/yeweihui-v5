@@ -1,5 +1,7 @@
 package com.yeweihui.modules.jmkj.service;
 
+import com.yeweihui.modules.jmkj.Entity.IndustryDirectorParameterBean;
+
 public interface JmkjService {
 
     boolean updateTime(Long uid,Long time);
@@ -25,4 +27,6 @@ public interface JmkjService {
     Object OnlineDuration(long uid,Long zoneId,Long timeStart,Long timeEnd);
 
     Object OnlineNum(long uid,Long zoneId,Long timeStart,Long timeEnd);
+
+    Object IndustryDirector(IndustryDirectorParameterBean IndustryDirectorParameterBean);
 }

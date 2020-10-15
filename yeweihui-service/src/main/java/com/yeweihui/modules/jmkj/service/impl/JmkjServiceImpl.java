@@ -1,10 +1,11 @@
 package com.yeweihui.modules.jmkj.service.impl;
 
-import com.yeweihui.modules.jmkj.Entity.JmkjLoginStatusBean;
-import com.yeweihui.modules.jmkj.Entity.PerformanceOfDutiesBean;
-import com.yeweihui.modules.jmkj.Entity.PerformanceRateBean;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.yeweihui.modules.jmkj.Entity.*;
 import com.yeweihui.modules.jmkj.dao.JmkjSql;
 import com.yeweihui.modules.jmkj.service.JmkjService;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -372,4 +373,21 @@ public class JmkjServiceImpl implements JmkjService{
 
         return map;
     }
+
+    @Override
+    public Object IndustryDirector(IndustryDirectorParameterBean IndustryDirectorParameterBean) {
+
+        EntityWrapper<IndustryDirectorBean> IndustryDirectorWrapper = new EntityWrapper<IndustryDirectorBean>();
+        IndustryDirectorWrapper.eq("sys_role.group","行业主管");
+
+        if (IndustryDirectorParameterBean.getTelephone()!=null)IndustryDirectorWrapper.eq("`user`.mobile",IndustryDirectorParameterBean.getTelephone());
+        if (IndustryDirectorParameterBean.getName()!=null)IndustryDirectorWrapper.eq("`user`.realname",IndustryDirectorParameterBean.getTelephone());
+        if (IndustryDirectorParameterBean.getLevel()==null)IndustryDirectorWrapper.eq("`division_manager`.level",IndustryDirectorParameterBean.getLevel());
+
+        Page<IndustryDirectorBean> mPage = new Page<IndustryDirectorBean>(IndustryDirectorParameterBean.getPages(), IndustryDirectorParameterBean.getSize());
+
+        return mPage.setRecords(jmkjSql.IndustryDirector(mPage,IndustryDirectorWrapper));
+    }
+
+
 }

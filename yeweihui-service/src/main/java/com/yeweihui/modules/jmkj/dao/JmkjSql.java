@@ -1,5 +1,8 @@
 package com.yeweihui.modules.jmkj.dao;
 
+import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.yeweihui.modules.jmkj.Entity.IndustryDirectorBean;
 import com.yeweihui.modules.jmkj.Entity.JmkjLoginStatusBean;
 import com.yeweihui.modules.jmkj.Entity.PerformanceOfDutiesBean;
 import com.yeweihui.modules.jmkj.Entity.PerformanceRateBean;
@@ -548,5 +551,13 @@ public interface JmkjSql {
     /**
      * 行业主管列表
      * */
+    @Select("select " +
+            "division_manager.id as id," +
+            "`user`.realname as realname," +
+            "division_manager.`level` as `level`," +
+            "division_manager.division_id as divisionId " +
+            "FROM division_manager LEFT JOIN `user` ON division_manager.user_id=`user`.id " +
+            "LEFT JOIN sys_role ON `user`.role_id=`sys_role`.role_id where true ${ew.sqlSegment}")
+    List<IndustryDirectorBean> IndustryDirector(Page<IndustryDirectorBean> StudentPage, @Param("ew") Wrapper<IndustryDirectorBean> var2);
 
 }

@@ -2,12 +2,10 @@ package com.yeweihui.modules.division.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.IService;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.yeweihui.common.utils.PageUtils;
 import com.yeweihui.common.utils.Query;
 import com.yeweihui.modules.division.dao.DivisionManagerDao;
-import com.yeweihui.modules.division.entity.CityEntity;
 import com.yeweihui.modules.division.entity.DivisionManagerEntity;
 import com.yeweihui.modules.division.service.DivisionManagerService;
 import org.apache.commons.lang.StringUtils;
