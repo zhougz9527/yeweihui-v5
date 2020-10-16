@@ -129,6 +129,7 @@ public class JmkjServiceImpl implements JmkjService{
 
         EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
 
+        if (mAdministrationFrom!=null)
         if (zoneId==1){
 
             IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
@@ -188,6 +189,7 @@ public class JmkjServiceImpl implements JmkjService{
 
         EntityWrapper<PerformanceRateBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceRateBean>();
 
+        if (mAdministrationFrom!=null)
         if (zoneId==1){
 
             IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
@@ -245,6 +247,7 @@ public class JmkjServiceImpl implements JmkjService{
 
         EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
 
+        if (mAdministrationFrom!=null)
         if (zoneId==1){
 
             IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
@@ -302,6 +305,7 @@ public class JmkjServiceImpl implements JmkjService{
 
         EntityWrapper<PerformanceRateBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceRateBean>();
 
+        if (mAdministrationFrom!=null)
         if (zoneId==1){
 
             IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
@@ -359,6 +363,7 @@ public class JmkjServiceImpl implements JmkjService{
 
         EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
 
+        if (mAdministrationFrom!=null)
         if (zoneId==1){
 
             IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
@@ -415,6 +420,7 @@ public class JmkjServiceImpl implements JmkjService{
         AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
         EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
 
+        if (mAdministrationFrom!=null)
         if (zoneId==1){
 
             IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
@@ -471,6 +477,7 @@ public class JmkjServiceImpl implements JmkjService{
         AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
         EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
 
+        if (mAdministrationFrom!=null)
         if (zoneId==1){
 
             IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
@@ -527,6 +534,7 @@ public class JmkjServiceImpl implements JmkjService{
         AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
         EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
 
+        if (mAdministrationFrom!=null)
         if (zoneId==1){
 
             IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
@@ -583,6 +591,7 @@ public class JmkjServiceImpl implements JmkjService{
         AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
         EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
 
+        if (mAdministrationFrom!=null)
         if (zoneId==1){
 
             IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
