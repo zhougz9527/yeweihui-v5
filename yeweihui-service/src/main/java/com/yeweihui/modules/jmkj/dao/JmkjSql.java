@@ -545,7 +545,7 @@ public interface JmkjSql {
             "GROUP BY tablea.uid " +
             ")a " +
             "ORDER BY a.num DESC")
-    List<PerformanceOfDutiesBean> OnlineDuration(@Param("timeStart")Date timeStart,@Param("timeEnd")Date timeEnd,@Param("ew") Wrapper<PerformanceOfDutiesBean> var2);
+    List<PerformanceOfDutiesBean> OnlineDuration(@Param("timeStart")long timeStart,@Param("timeEnd")long timeEnd,@Param("ew") Wrapper<PerformanceOfDutiesBean> var2);
 
     /**
      * 获取登录次数
@@ -574,7 +574,7 @@ public interface JmkjSql {
             "GROUP BY tablea.uid " +
             ")a " +
             "ORDER BY a.num DESC")
-    List<PerformanceOfDutiesBean> OnlineNum(@Param("timeStart")Date timeStart,@Param("timeEnd")Date timeEnd,@Param("ew") Wrapper<PerformanceOfDutiesBean> var2);
+    List<PerformanceOfDutiesBean> OnlineNum(@Param("timeStart")long timeStart,@Param("timeEnd")long timeEnd,@Param("ew") Wrapper<PerformanceOfDutiesBean> var2);
 
     /**
      * 行业主管列表

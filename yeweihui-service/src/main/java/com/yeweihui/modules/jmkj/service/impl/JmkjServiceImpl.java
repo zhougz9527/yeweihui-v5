@@ -560,7 +560,7 @@ public class JmkjServiceImpl implements JmkjService{
             IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
         }
 
-        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineDuration(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineDuration(timeStart.longValue(),timeEnd.longValue(),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
@@ -617,7 +617,7 @@ public class JmkjServiceImpl implements JmkjService{
             IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
         }
 
-        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineNum(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineNum(timeStart.longValue(),timeEnd.longValue(),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
