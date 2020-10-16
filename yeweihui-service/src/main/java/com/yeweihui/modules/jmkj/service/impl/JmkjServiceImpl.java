@@ -125,7 +125,36 @@ public class JmkjServiceImpl implements JmkjService{
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
 
-        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.getPerformanceOfDutiesList(zoneId,new Date(timeStart),new Date(timeEnd));
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
+
+        EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
+
+        if (zoneId==1){
+
+            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+
+        }else if (zoneId==2){
+
+            IndustryDirectorWrapper.eq("zones.community_id",mAdministrationFrom.getCommunityId());
+
+        }else if (zoneId==3){
+
+            IndustryDirectorWrapper.eq("zones.subdistrict_id",mAdministrationFrom.getSubdistrictId());
+
+        }else if (zoneId==4){
+
+            IndustryDirectorWrapper.eq("zones.district_id",mAdministrationFrom.getDistrictId());
+
+        }else if (zoneId==5){
+
+            IndustryDirectorWrapper.eq("zones.city_id",mAdministrationFrom.getCityId());
+
+        }else if (zoneId==6){
+
+            IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
+        }
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.getPerformanceOfDutiesList(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
@@ -155,7 +184,36 @@ public class JmkjServiceImpl implements JmkjService{
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
 
-        List<PerformanceRateBean> PerformanceRateBeans = jmkjSql.getPerformanceRateBeans(zoneId,new Date(timeStart),new Date(timeEnd));
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
+
+        EntityWrapper<PerformanceRateBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceRateBean>();
+
+        if (zoneId==1){
+
+            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+
+        }else if (zoneId==2){
+
+            IndustryDirectorWrapper.eq("zones.community_id",mAdministrationFrom.getCommunityId());
+
+        }else if (zoneId==3){
+
+            IndustryDirectorWrapper.eq("zones.subdistrict_id",mAdministrationFrom.getSubdistrictId());
+
+        }else if (zoneId==4){
+
+            IndustryDirectorWrapper.eq("zones.district_id",mAdministrationFrom.getDistrictId());
+
+        }else if (zoneId==5){
+
+            IndustryDirectorWrapper.eq("zones.city_id",mAdministrationFrom.getCityId());
+
+        }else if (zoneId==6){
+
+            IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
+        }
+
+        List<PerformanceRateBean> PerformanceRateBeans = jmkjSql.getPerformanceRateBeans(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
@@ -183,7 +241,36 @@ public class JmkjServiceImpl implements JmkjService{
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
 
-        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OverdueQuantity(zoneId,new Date(timeStart),new Date(timeEnd));
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
+
+        EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
+
+        if (zoneId==1){
+
+            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+
+        }else if (zoneId==2){
+
+            IndustryDirectorWrapper.eq("zones.community_id",mAdministrationFrom.getCommunityId());
+
+        }else if (zoneId==3){
+
+            IndustryDirectorWrapper.eq("zones.subdistrict_id",mAdministrationFrom.getSubdistrictId());
+
+        }else if (zoneId==4){
+
+            IndustryDirectorWrapper.eq("zones.district_id",mAdministrationFrom.getDistrictId());
+
+        }else if (zoneId==5){
+
+            IndustryDirectorWrapper.eq("zones.city_id",mAdministrationFrom.getCityId());
+
+        }else if (zoneId==6){
+
+            IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
+        }
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OverdueQuantity(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
@@ -211,7 +298,36 @@ public class JmkjServiceImpl implements JmkjService{
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
 
-        List<PerformanceRateBean> PerformanceRateBeans = jmkjSql.OverdueRate(zoneId,new Date(timeStart),new Date(timeEnd));
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
+
+        EntityWrapper<PerformanceRateBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceRateBean>();
+
+        if (zoneId==1){
+
+            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+
+        }else if (zoneId==2){
+
+            IndustryDirectorWrapper.eq("zones.community_id",mAdministrationFrom.getCommunityId());
+
+        }else if (zoneId==3){
+
+            IndustryDirectorWrapper.eq("zones.subdistrict_id",mAdministrationFrom.getSubdistrictId());
+
+        }else if (zoneId==4){
+
+            IndustryDirectorWrapper.eq("zones.district_id",mAdministrationFrom.getDistrictId());
+
+        }else if (zoneId==5){
+
+            IndustryDirectorWrapper.eq("zones.city_id",mAdministrationFrom.getCityId());
+
+        }else if (zoneId==6){
+
+            IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
+        }
+
+        List<PerformanceRateBean> PerformanceRateBeans = jmkjSql.OverdueRate(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
@@ -239,7 +355,36 @@ public class JmkjServiceImpl implements JmkjService{
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
 
-        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.operationNum(zoneId,new Date(timeStart),new Date(timeEnd));
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
+
+        EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
+
+        if (zoneId==1){
+
+            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+
+        }else if (zoneId==2){
+
+            IndustryDirectorWrapper.eq("zones.community_id",mAdministrationFrom.getCommunityId());
+
+        }else if (zoneId==3){
+
+            IndustryDirectorWrapper.eq("zones.subdistrict_id",mAdministrationFrom.getSubdistrictId());
+
+        }else if (zoneId==4){
+
+            IndustryDirectorWrapper.eq("zones.district_id",mAdministrationFrom.getDistrictId());
+
+        }else if (zoneId==5){
+
+            IndustryDirectorWrapper.eq("zones.city_id",mAdministrationFrom.getCityId());
+
+        }else if (zoneId==6){
+
+            IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
+        }
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.operationNum(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
@@ -267,7 +412,35 @@ public class JmkjServiceImpl implements JmkjService{
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
 
-        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.BrowseComplete(zoneId,new Date(timeStart),new Date(timeEnd));
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
+        EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
+
+        if (zoneId==1){
+
+            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+
+        }else if (zoneId==2){
+
+            IndustryDirectorWrapper.eq("zones.community_id",mAdministrationFrom.getCommunityId());
+
+        }else if (zoneId==3){
+
+            IndustryDirectorWrapper.eq("zones.subdistrict_id",mAdministrationFrom.getSubdistrictId());
+
+        }else if (zoneId==4){
+
+            IndustryDirectorWrapper.eq("zones.district_id",mAdministrationFrom.getDistrictId());
+
+        }else if (zoneId==5){
+
+            IndustryDirectorWrapper.eq("zones.city_id",mAdministrationFrom.getCityId());
+
+        }else if (zoneId==6){
+
+            IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
+        }
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.BrowseComplete(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
@@ -295,7 +468,35 @@ public class JmkjServiceImpl implements JmkjService{
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
 
-        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.NewBrowse(zoneId,new Date(timeStart),new Date(timeEnd));
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
+        EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
+
+        if (zoneId==1){
+
+            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+
+        }else if (zoneId==2){
+
+            IndustryDirectorWrapper.eq("zones.community_id",mAdministrationFrom.getCommunityId());
+
+        }else if (zoneId==3){
+
+            IndustryDirectorWrapper.eq("zones.subdistrict_id",mAdministrationFrom.getSubdistrictId());
+
+        }else if (zoneId==4){
+
+            IndustryDirectorWrapper.eq("zones.district_id",mAdministrationFrom.getDistrictId());
+
+        }else if (zoneId==5){
+
+            IndustryDirectorWrapper.eq("zones.city_id",mAdministrationFrom.getCityId());
+
+        }else if (zoneId==6){
+
+            IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
+        }
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.NewBrowse(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
@@ -323,7 +524,35 @@ public class JmkjServiceImpl implements JmkjService{
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
 
-        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineDuration(zoneId,new Date(timeStart),new Date(timeEnd));
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
+        EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
+
+        if (zoneId==1){
+
+            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+
+        }else if (zoneId==2){
+
+            IndustryDirectorWrapper.eq("zones.community_id",mAdministrationFrom.getCommunityId());
+
+        }else if (zoneId==3){
+
+            IndustryDirectorWrapper.eq("zones.subdistrict_id",mAdministrationFrom.getSubdistrictId());
+
+        }else if (zoneId==4){
+
+            IndustryDirectorWrapper.eq("zones.district_id",mAdministrationFrom.getDistrictId());
+
+        }else if (zoneId==5){
+
+            IndustryDirectorWrapper.eq("zones.city_id",mAdministrationFrom.getCityId());
+
+        }else if (zoneId==6){
+
+            IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
+        }
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineDuration(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
@@ -351,7 +580,35 @@ public class JmkjServiceImpl implements JmkjService{
         if (timeStart==null)timeStart=0l;
         if (timeEnd==null)timeEnd=new Date().getTime();
 
-        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineNum(zoneId,new Date(timeStart),new Date(timeEnd));
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uid);
+        EntityWrapper<PerformanceOfDutiesBean> IndustryDirectorWrapper = new EntityWrapper<PerformanceOfDutiesBean>();
+
+        if (zoneId==1){
+
+            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+
+        }else if (zoneId==2){
+
+            IndustryDirectorWrapper.eq("zones.community_id",mAdministrationFrom.getCommunityId());
+
+        }else if (zoneId==3){
+
+            IndustryDirectorWrapper.eq("zones.subdistrict_id",mAdministrationFrom.getSubdistrictId());
+
+        }else if (zoneId==4){
+
+            IndustryDirectorWrapper.eq("zones.district_id",mAdministrationFrom.getDistrictId());
+
+        }else if (zoneId==5){
+
+            IndustryDirectorWrapper.eq("zones.city_id",mAdministrationFrom.getCityId());
+
+        }else if (zoneId==6){
+
+            IndustryDirectorWrapper.eq("zones.province_id",mAdministrationFrom.getProvinceId());
+        }
+
+        List<PerformanceOfDutiesBean> PerformanceOfDutiesBeans = jmkjSql.OnlineNum(new Date(timeStart),new Date(timeEnd),IndustryDirectorWrapper);
 
         Map<String,Object> map = new HashMap<>();
 
