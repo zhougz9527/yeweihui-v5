@@ -11,3 +11,21 @@ api/operation/vote/info/  多返回两个参数
 
 timeQuitNum int 正常弃权人数
 noTimeQuitNum int 超时弃权人数
+
+
+--------------------------------------------------------------
+
+api/jmkj/administratorList 获取该用户上下级行业主管列表
+
+返回参数
+
+[
+  {
+    id          int 行业主管id
+    userId      int 用户id
+    level       String 代表行政级别
+    divisionId  String 相对应行政级别表的id
+    realname    String 用户名字
+    avatarUrl   String 用户头像
+  }
+]

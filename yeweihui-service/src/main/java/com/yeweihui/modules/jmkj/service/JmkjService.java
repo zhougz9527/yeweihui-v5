@@ -33,4 +33,6 @@ public interface JmkjService {
     int TimeVote(long vid);
 
     int NoTimeVote(long vid);
+
+    Object administratorList(Long uId);
 }

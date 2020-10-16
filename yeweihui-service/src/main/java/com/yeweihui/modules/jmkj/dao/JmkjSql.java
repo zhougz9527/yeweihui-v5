@@ -263,7 +263,7 @@ public interface JmkjSql {
             "FROM `bill_member` LEFT JOIN `user` ON `bill_member`.uid=`user`.id " +
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
             "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where `bill_member`.verify_time IS NULL AND AND (`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where `bill_member`.verify_time IS NULL AND (`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
 
             "UNION ALL " +
 
@@ -615,5 +615,31 @@ public interface JmkjSql {
     AdministrationFrom getAdministrationFrom(@Param("uId") Long uId);
 
 
+    /**
+     * 获取用户的行业主管信息
+     * */
+    @Select("select * from division_manager where user_id=#{uId}")
+    DivisionManagerBean getDivisionManagerBean(@Param("uId")Long uId);
+
+    /**
+     * 获取行业主管信息列表
+     * */
+    @Select("select " +
+            "division_manager.id as id," +
+            "division_manager.user_id` as user_id`," +
+            "division_manager.`level` as `level`," +
+            "division_manager.`division_id` as division_id," +
+            "`user`.realname as realname," +
+            "`user`.avatar_url as avatarUrl " +
+            "from division_manager " +
+            "LEFT JOIN `user` ON division_manager.user_id=`user`.id " +
+            "where `level`=#{level} AND division_id=#{divisionId}")
+    List<DivisionManagerBean> getDivisionManagerBeanList(@Param("level")String level,@Param("divisionId")Long divisionId);
+
+    /**
+     * 获取行政列表
+     * */
+    @Select("SELECT * FROM view_region WHERE type=#{typd} AND typeId=#{typeId}")
+    List<ViewRegionBean> getViewRegionBeanList(@Param("typd")int typd,@Param("typeId")Long typeId);
 
 }

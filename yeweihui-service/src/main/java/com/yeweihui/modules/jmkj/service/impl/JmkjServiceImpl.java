@@ -664,5 +664,103 @@ public class JmkjServiceImpl implements JmkjService{
         return jmkjSql.NoTimeVote(vid);
     }
 
+    @Override
+    public Object administratorList(Long uId) {
+
+        AdministrationFrom mAdministrationFrom = jmkjSql.getAdministrationFrom(uId);
+
+        DivisionManagerBean mDivisionManagerBean = jmkjSql.getDivisionManagerBean(uId);
+
+        List<DivisionManagerBean> mDivisionManagerBeanList = new ArrayList<>();
+
+        if (mDivisionManagerBean==null){
+
+            mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("province",mAdministrationFrom.getProvinceId())); //省
+            mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("city",mAdministrationFrom.getCityId())); //市
+            mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("district",mAdministrationFrom.getDistrictId())); //区
+            mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("subdistrict",mAdministrationFrom.getSubdistrictId())); //街道
+            mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("community",mAdministrationFrom.getCommunityId())); //社区
+
+        }else{
+
+            switch (mDivisionManagerBean.getLevel()){
+
+                case "province":
+
+                    getDivisionManagerBeanList(mDivisionManagerBeanList,2,mDivisionManagerBean.getDivisionId());
+                    break;
+
+                case "city":
+
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("province",mAdministrationFrom.getProvinceId())); //省
+                    getDivisionManagerBeanList(mDivisionManagerBeanList,3,mDivisionManagerBean.getDivisionId());
+                    break;
+
+                case "district":
+
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("province",mAdministrationFrom.getProvinceId())); //省
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("city",mAdministrationFrom.getCityId())); //市
+                    getDivisionManagerBeanList(mDivisionManagerBeanList,4,mDivisionManagerBean.getDivisionId());
+                    break;
+
+                case "subdistrict":
+
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("province",mAdministrationFrom.getProvinceId())); //省
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("city",mAdministrationFrom.getCityId())); //市
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("district",mAdministrationFrom.getDistrictId())); //区
+                    getDivisionManagerBeanList(mDivisionManagerBeanList,5,mDivisionManagerBean.getDivisionId());
+                    break;
+
+                case "community":
+
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("province",mAdministrationFrom.getProvinceId())); //省
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("city",mAdministrationFrom.getCityId())); //市
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("district",mAdministrationFrom.getDistrictId())); //区
+                    mDivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList("subdistrict",mAdministrationFrom.getSubdistrictId())); //街道
+                    getDivisionManagerBeanList(mDivisionManagerBeanList,6,mDivisionManagerBean.getDivisionId());
+                    break;
+            }
+
+        }
+
+        return mDivisionManagerBeanList;
+    }
+
+    /**
+     * 递归查询行政级别下的所有子级
+     * */
+    public void getDivisionManagerBeanList(List<DivisionManagerBean> DivisionManagerBeanList,int type,Long nmzlId){
+
+        if (type==6)return;
+
+        String level = null;
+        switch (type){
+            
+            case 1:
+                level="province";
+                break;
+            case 2:
+                level="city";
+                break;
+            case 3:
+                level="district";
+                break;
+            case 4:
+                level="subdistrict";
+                break;
+            case 5:
+                level="community";
+                break;
+        }
+        
+        
+        List<ViewRegionBean> mViewRegionBeanList = jmkjSql.getViewRegionBeanList(type,nmzlId);
+
+        for (ViewRegionBean mViewRegionBean:mViewRegionBeanList){
+
+            DivisionManagerBeanList.addAll(jmkjSql.getDivisionManagerBeanList(level,mViewRegionBean.getId()));
+            getDivisionManagerBeanList(DivisionManagerBeanList,type+1,mViewRegionBean.getId());
+        }
+    }
 
 }

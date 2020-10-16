@@ -36,6 +36,7 @@ import com.yeweihui.modules.vo.api.vo.LoginVO;
 import com.yeweihui.modules.vo.api.vo.RoleZoneInfoVO;
 import com.yeweihui.modules.vo.api.vo.UserListDivideGroup;
 import com.yeweihui.modules.vo.query.UserQueryParam;
+import com.yeweihui.third.sms.SendSmsUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
@@ -610,6 +611,15 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         userEntity.setId(userId);
         userEntity.setVerifyStatus(verifyStatus);
         this.updateById(userEntity);
+
+        if (verifyStatus==1){
+
+            new SendSmsUtils().sendSmsNoParam("17710505670","SMS_191818116");
+
+        }else if (verifyStatus==3){
+
+            //new SendSmsUtils().sendSmsNoParam("17710505670","SMS_191818114");SMS_191818116
+        }
     }
 
     @Override
