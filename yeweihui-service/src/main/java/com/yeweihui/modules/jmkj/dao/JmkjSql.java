@@ -498,7 +498,7 @@ public interface JmkjSql {
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
             "from `announce` LEFT JOIN `user` ON `announce`.uid=`user`.id " +
-            "LEFT JOIN `zones` ON notice.zone_id = zones.id " +
+            "LEFT JOIN `zones` ON `announce`.zone_id = zones.id " +
             "where (`announce`.create_time>=#{timeStart} AND `announce`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
 
             "UNION ALL " +
@@ -508,7 +508,7 @@ public interface JmkjSql {
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
             "from `notice` LEFT JOIN `user` ON `notice`.uid=`user`.id " +
-            "LEFT JOIN `zones` ON notice.zone_id = zones.id " +
+            "LEFT JOIN `zones` ON `notice`.zone_id = zones.id " +
             "where (`notice`.create_time>=#{timeStart} AND `notice`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
 
             ")tablea " +

@@ -1,7 +1,7 @@
 $(function () {
   $('#jqGrid').jqGrid({
     url: baseURL + 'jmkj/IndustryDirector',
-    mtype:'post',
+    type:'post',
     datatype: 'json',
     colModel: [
       { label: 'id', name: 'id', index: 'id', width: 50, key: true },

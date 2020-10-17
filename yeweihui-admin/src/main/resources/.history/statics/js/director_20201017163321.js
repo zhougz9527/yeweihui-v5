@@ -1,7 +1,6 @@
 $(function () {
   $('#jqGrid').jqGrid({
-    url: baseURL + 'jmkj/IndustryDirector',
-    mtype:'post',
+    url: baseURL + 'jmkj/OnlineNum',
     datatype: 'json',
     colModel: [
       { label: 'id', name: 'id', index: 'id', width: 50, key: true },
@@ -71,7 +70,6 @@ var vm = new Vue({
   el: '#rrapp',
   data: {
     showList: true,
-    title: null,
     userNum: '',
     userName: '',
     rank: '',

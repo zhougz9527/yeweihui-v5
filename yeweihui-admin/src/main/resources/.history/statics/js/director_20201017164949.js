@@ -1,11 +1,10 @@
 $(function () {
   $('#jqGrid').jqGrid({
-    url: baseURL + 'jmkj/IndustryDirector',
-    mtype:'post',
+    url: baseURL + 'division/district/list',
     datatype: 'json',
     colModel: [
       { label: 'id', name: 'id', index: 'id', width: 50, key: true },
-      { label: '用户名', name: 'realname', index: 'real_name', width: 80 },
+      { label: '用户名', name: 'name', index: 'name', width: 80 },
       {
         label: '管理级别',
         name: 'updateTime',

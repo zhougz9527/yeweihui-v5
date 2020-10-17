@@ -1,7 +1,6 @@
 $(function () {
   $('#jqGrid').jqGrid({
-    url: baseURL + 'jmkj/IndustryDirector',
-    mtype:'post',
+    url: baseURL + 'jmkj/OnlineNum',
     datatype: 'json',
     colModel: [
       { label: 'id', name: 'id', index: 'id', width: 50, key: true },
@@ -24,7 +23,7 @@ $(function () {
       },
     ],
     viewrecords: true,
-    height: 500,
+    height: 630,
     rowNum: 10,
     rowList: [10, 30, 50],
     rownumbers: true,
@@ -70,8 +69,6 @@ var ztree;
 var vm = new Vue({
   el: '#rrapp',
   data: {
-    showList: true,
-    title: null,
     userNum: '',
     userName: '',
     rank: '',

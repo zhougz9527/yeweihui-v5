@@ -63,7 +63,8 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        return R.ok().put("data",jmkjServiceImpl.getPerformanceOfDutiesList(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+//        return R.ok().put("data",jmkjServiceImpl.getPerformanceOfDutiesList(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.getPerformanceOfDutiesList(50,zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -77,7 +78,8 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        return R.ok().put("data",jmkjServiceImpl.getPerformanceRateBeans(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        //return R.ok().put("data",jmkjServiceImpl.getPerformanceRateBeans(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.getPerformanceRateBeans(50,zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -91,7 +93,8 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        return R.ok().put("data",jmkjServiceImpl.OverdueQuantity(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        //return R.ok().put("data",jmkjServiceImpl.OverdueQuantity(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OverdueQuantity(50,zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -105,7 +108,8 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        return R.ok().put("data",jmkjServiceImpl.OverdueRate(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        //return R.ok().put("data",jmkjServiceImpl.OverdueRate(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OverdueRate(50,zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -119,7 +123,8 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        return R.ok().put("data",jmkjServiceImpl.operationNum(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        //return R.ok().put("data",jmkjServiceImpl.operationNum(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.operationNum(294,zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -133,7 +138,8 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        return R.ok().put("data",jmkjServiceImpl.BrowseComplete(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        //return R.ok().put("data",jmkjServiceImpl.BrowseComplete(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.BrowseComplete(294,zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -147,7 +153,8 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        return R.ok().put("data",jmkjServiceImpl.NewBrowse(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+       //return R.ok().put("data",jmkjServiceImpl.NewBrowse(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.NewBrowse(294,zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -161,7 +168,8 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        return R.ok().put("data",jmkjServiceImpl.OnlineDuration(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        //return R.ok().put("data",jmkjServiceImpl.OnlineDuration(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OnlineDuration(50,zoneId,timeStart,timeEnd));
     }
 
     @GetMapping(value = "/OnlineNum")
@@ -172,13 +180,26 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        return R.ok().put("data",jmkjServiceImpl.OnlineNum(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+       // return R.ok().put("data",jmkjServiceImpl.OnlineNum(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OnlineNum(50,zoneId,timeStart,timeEnd));
     }
 
-    @PostMapping(value = "/IndustryDirector")
+    @GetMapping(value = "/IndustryDirector")
     @ApiOperation(value = "行业主管列表")
-    public R IndustryDirector(@RequestBody IndustryDirectorParameterBean IndustryDirectorParameterBean){
+    public R IndustryDirector(            @RequestParam(value = "size") int size,
+                                          @RequestParam(value = "pages") int pages,
+                                          @RequestParam(value = "Telephone",required=false) String Telephone,
+                                          @RequestParam(value = "name",required=false) String name,
+                                          @RequestParam(value = "level",required=false) String level){
 
-        return R.ok().put("data",jmkjServiceImpl.IndustryDirector(IndustryDirectorParameterBean));
+        IndustryDirectorParameterBean mIndustryDirectorParameterBean = new IndustryDirectorParameterBean();
+
+        mIndustryDirectorParameterBean.setSize(size);
+        mIndustryDirectorParameterBean.setPages(pages);
+        mIndustryDirectorParameterBean.setTelephone(Telephone);
+        mIndustryDirectorParameterBean.setName(name);
+        mIndustryDirectorParameterBean.setLevel(level);
+
+        return R.ok().put("data",jmkjServiceImpl.IndustryDirector(mIndustryDirectorParameterBean));
     }
 }

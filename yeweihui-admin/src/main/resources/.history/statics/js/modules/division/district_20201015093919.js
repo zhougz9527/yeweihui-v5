@@ -12,7 +12,7 @@ $(function () {
             { label: '创建用户', name: 'createUser', index: 'create_user', width: 80},
         ],
 		viewrecords: true,
-        height: 500, 
+        height: 500,
         rowNum: 10,
 		rowList : [10,30,50],
         rownumbers: true, 
