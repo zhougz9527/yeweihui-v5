@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>业委会用户</title>
+    <#include "/header.html"/>
+    <link rel="stylesheet" type="text/css" href="${request.contextPath}/statics/css/director.css">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div>
+        <div class="inlinde-block">
+            <div class="inlinde-block">用户号:</div>
+            <el-input v-model="" placeholder=""></el-input>
+            <div class="inlinde-block">用户名:</div>
+            <el-input v-model="" placeholder=""></el-input>
+            <div class="inlinde-block">管理级别:</div>
+            <el-select v-model="optionActive" clearable placeholder="请选择">
+                <el-option
+                        v-for="item in options"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                </el-option>
+            </el-select>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;查看</a>
+            <a class="btn btn-primary" @click="reset"><i class="fa fa-plus"></i>&nbsp;重置</a>
+        </div>
+    </div>
+    <div>
+        <el-table
+            ref="multipleTable"
+            :data="tableData"
+            tooltip-effect="dark"
+            style="width: 100%"
+            @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="55" v-for="i in tableTitle">
+            </el-table-column>
+        </el-table>
+    </div>
+
+</div>
+
+<script src="${request.contextPath}/statics/js/director.js?_${.now?long}"></script>
+</body>
+</html>

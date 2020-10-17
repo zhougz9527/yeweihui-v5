@@ -19,7 +19,7 @@ spring:
 
 #        username: cutie
 #        password: chenyang007
-         url: jdbc:mysql://localhost:3306/yeweihui?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
+         url: jdbc:mysql://122.51.51.37:8500/yeweihui?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
          username: admin
          password: 123456
 

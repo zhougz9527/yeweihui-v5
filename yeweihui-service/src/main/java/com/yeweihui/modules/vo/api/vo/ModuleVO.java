@@ -1,6 +1,7 @@
 package com.yeweihui.modules.vo.api.vo;
 
-import com.gexin.fastjson.JSON;
+
+import com.alibaba.fastjson.JSON;
 
 import java.io.Serializable;
 import java.util.HashMap;

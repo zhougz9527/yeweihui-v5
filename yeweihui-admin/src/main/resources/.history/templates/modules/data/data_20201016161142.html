@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>业委会用户</title>
+    <#include "/header.html"/>
+    <link rel="stylesheet" type="text/css" href="${request.contextPath}/statics/css/data.css">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div>
+        <div class="inlinde-block">
+            <el-date-picker
+                    v-model="time"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    :picker-options="pickerOptions">
+            </el-date-picker>
+        </div>
+        <div class="inlinde-block">
+            <div class="inlinde-block">区域:</div>
+            <el-select v-model="optionActive" clearable placeholder="请选择">
+                <el-option
+                        v-for="item in options"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                </el-option>
+            </el-select>
+            <#if shiro.hasPermission("user:user:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;查看</a>
+            </#if>
+        </div>
+    </div>
+    <div>
+        <el-tabs class="margin30" type="border-card" value="履职量"  @tab-click="handleTabs">
+            <el-tab-pane disabled>
+                <span slot="label">操作性任务</span>
+            </el-tab-pane>
+            <el-tab-pane v-for="it in tabberListOne" :key="it.id" :name="it.name">
+                <span slot="label">{{it.name}}</span>
+                <div class="flex">
+                    <div class="left" v-if="tabOneList.realname">
+                        <div>
+                            <img class="header" :src="tabOneList.avatarUrl" alt="">
+                            <span class="name">{{tabOneList.realname}}</span>
+                        </div>
+                        <div class="title">it.name</div>
+                        <div class="num">{{(it.name=='履职率'||it.name=='逾期率')?tabOneList.proportion:tabOneList.num}}</div>
+                        <div class="title">您的排名</div>
+                        <div class="num">{{tabOneList.ranking}}</div>
+                    </div>
+                    <div v-else class="left">
+                        <div class="num">无数据</div>
+                    </div>
+                    <div class="right">
+                        <ul class="infinite-list" style="overflow:auto">
+                            <li v-for="(i,index) in tabOneList.listData" :key="index" class="infinite-list-item">
+                                <img class="first" src="../../../statics/images/1.jpg" v-if="index===0" alt="">
+                                <img class="second" src="../../../statics/images/2.jpg" v-if="index===1" alt="">
+                                <img class="second" src="../../../statics/images/3.jpg" v-if="index===2" alt="">
+                                <span class="index" v-if="index>2">{{index}}</span>
+                                <img class="header" :src="i.avatarUrl" alt="">
+                                <span class="name">{{i.realname}}</span>
+                                <span class="num">{{it.name}}: {{(it.name=='履职率'||it.name=='逾期率')?i.proportion:i.num}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
+        <el-tabs class="margin30" type="border-card" value="完成量">
+            <el-tab-pane disabled>
+                <span slot="label">浏览性任务</span>
+            </el-tab-pane>
+            <el-tab-pane v-for="it in tabberListTwo" :key="it.id" :name="it.name">
+                <span slot="label">{{it.name}}</span>
+                <div class="flex">
+                    <div class="left">
+                        <div>
+                            <img src="" alt="">
+                            <span>{{it.name}}</span>
+                        </div>
+                        <div>履职量</div>
+                        <div>36</div>
+                        <div>您的排名</div>
+                        <div>3</div>
+                    </div>
+                    <div class="right">
+                        dasd
+                    </div>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
+        <el-tabs class="margin30" type="border-card" value="在线时长">
+            <el-tab-pane disabled>
+                <span slot="label">通用任务</span>
+            </el-tab-pane>
+            <el-tab-pane v-for="it in tabberListThree" :key="it.id" :name="it.name">
+                <span slot="label">{{it.name}}</span>
+                <div class="flex">
+                    <div class="left">
+                        <div>
+                            <img src="" alt="">
+                            <span>{{it.name}}</span>
+                        </div>
+                        <div>履职量</div>
+                        <div>36</div>
+                        <div>您的排名</div>
+                        <div>3</div>
+                    </div>
+                    <div class="right">
+                        dasd
+                    </div>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+
+</div>
+
+<script src="${request.contextPath}/statics/js/data.js?_${.now?long}"></script>
+</body>
+</html>

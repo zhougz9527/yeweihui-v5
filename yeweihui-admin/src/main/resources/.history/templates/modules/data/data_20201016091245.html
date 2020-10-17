@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>业委会用户</title>
+    <#include "/header.html"/>
+    <link rel="stylesheet" type="text/css" href="${request.contextPath}/statics/css/data.css">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div>
+        <div class="inlinde-block">
+            <el-date-picker
+                    v-model="time"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    :picker-options="pickerOptions">
+            </el-date-picker>
+        </div>
+        <div class="inlinde-block">
+            <div class="inlinde-block">区域:</div>
+            <el-select v-model="optionActive" clearable placeholder="请选择">
+                <el-option
+                        v-for="item in options"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                </el-option>
+            </el-select>
+            <#if shiro.hasPermission("user:user:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;查看</a>
+        </#if>
+        </div>
+    </div>
+    <div>
+        <el-tabs type="border-card" v-model="1">
+            <el-tab-pane disabled>
+                <span slot="label">操作性任务</span>
+            </el-tab-pane>
+            <el-tab-pane v-for="it in tabberListOne" :key="it.id">
+                <span slot="label">{{it.name}}</span>
+                <div class="flex">
+                    <div class="left">
+                        <div>
+                            <img src="" alt="">
+                            <span>{{it.name}}</span>
+                        </div>
+                        <div>履职量</div>
+                        <div>36</div>
+                        <div>您的排名</div>
+                        <div>3</div>
+                    </div>
+                    <div class="right">
+                        dasd
+                    </div>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+
+</div>
+
+<script src="${request.contextPath}/statics/js/data.js?_${.now?long}"></script>
+</body>
+</html>

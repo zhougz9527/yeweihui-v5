@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>业委会用户</title>
+    <#include "/header.html"/>
+    <link rel="stylesheet" type="text/css" href="${request.contextPath}/statics/css/data.css">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <#if shiro.hasPermission("user:user:save")>
+                <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+            </#if>
+            <#if shiro.hasPermission("user:user:update")>
+                <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+            </#if>
+            <#if shiro.hasPermission("user:user:delete")>
+                <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+            </#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">创建时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.createTime" placeholder="创建时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">更新时间</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.updateTime" placeholder="更新时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">小区id</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.zoneId" placeholder="小区id"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">角色id</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.roleId" placeholder="角色id"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">角色code</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.roleCode" placeholder="角色code"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">角色名称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.roleName" placeholder="角色名称"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">openid</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.openid" placeholder="openid"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">上线uid</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.pid" placeholder="上线uid"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">昵称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.nickname" placeholder="昵称"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">真实姓名</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.realname" placeholder="真实姓名"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">性别 1男 2女</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.gender" placeholder="性别 1男 2女"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">市</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.city" placeholder="市"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">省</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.province" placeholder="省"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">国家</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.country" placeholder="国家"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">积分</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.integral" placeholder="积分"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">头像</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.avatarUrl" placeholder="头像"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">上次登录</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.lastLogin" placeholder="上次登录"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用户名</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.username" placeholder="用户名"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">密码</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.password" placeholder="密码"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">手机</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.mobile" placeholder="手机"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">状态 0禁用 1正常</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.status" placeholder="状态 0禁用 1正常"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">部门ID</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.deptId" placeholder="部门ID"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">盐</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.salt" placeholder="盐"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">邮箱</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="user.email" placeholder="邮箱"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/user/user.js?_${.now?long}"></script>
+</body>
+</html>

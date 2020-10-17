@@ -25,7 +25,7 @@ public class GetuiUtilsTest {
      */
     @Test
     public void bindAliasTest(){
-        getuiUtils.bindAlias("aliastest1", "e605a0db5ce3cca9b76b012978064940");
+        //getuiUtils.bindAlias("aliastest1", "e605a0db5ce3cca9b76b012978064940");
     }
 
     /**
@@ -33,7 +33,7 @@ public class GetuiUtilsTest {
      */
     @Test
     public void pushToSingleTest(){
-        getuiUtils.pushToSingle("aliastest1", "测试", "测试");
+        //getuiUtils.pushToSingle("aliastest1", "测试", "测试");
     }
 
 }
