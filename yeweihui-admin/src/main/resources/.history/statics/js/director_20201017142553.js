@@ -97,20 +97,18 @@ var vm = new Vue({
   },
   methods: {
     edit() {
-      let dataStr = {
-        size: 10,
-        pages: 1,
-        Telephone: '',
-        name: '',
-        level: '',
-      };
-      
       $.ajax({
         type: 'post', //方法类型
         dataType: 'json',
-        url: baseURL + 'jmkj/IndustryDirector',
+        url: baseURL+'jmkj/IndustryDirector',
         contentType: 'application/json; charset=utf-8',
-        data: JSON.stringify(dataStr),
+        data: {
+          size: 10,
+          pages: 1,
+          Telephone: '',
+          name: '',
+          level: '',
+        },
         success: function (result) {
           if (result.code == 0) {
             console.log(result);

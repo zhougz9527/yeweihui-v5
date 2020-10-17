@@ -110,7 +110,7 @@ var vm = new Vue({
         dataType: 'json',
         url: baseURL + 'jmkj/IndustryDirector',
         contentType: 'application/json; charset=utf-8',
-        data: JSON.stringify(dataStr),
+        data: {JSON.stringify(dataStr)},
         success: function (result) {
           if (result.code == 0) {
             console.log(result);
