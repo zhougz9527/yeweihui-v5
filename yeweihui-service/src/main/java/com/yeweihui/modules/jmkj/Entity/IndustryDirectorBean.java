@@ -16,6 +16,9 @@ public class IndustryDirectorBean {
     @ApiModelProperty("对应行政级别的行政区域表的id")
     private Long divisionId;
 
+    @ApiModelProperty("用户Id")
+    private Long userId;
+
     public Long getId() {
         return id;
     }
@@ -46,5 +49,13 @@ public class IndustryDirectorBean {
 
     public void setDivisionId(Long divisionId) {
         this.divisionId = divisionId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

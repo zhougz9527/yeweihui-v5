@@ -583,6 +583,7 @@ public interface JmkjSql {
             "division_manager.id as id," +
             "`user`.realname as realname," +
             "division_manager.`level` as `level`," +
+            "division_manager.user_id as userId," +
             "division_manager.division_id as divisionId " +
             "FROM division_manager LEFT JOIN `user` ON division_manager.user_id=`user`.id " +
             "LEFT JOIN sys_role ON `user`.role_id=`sys_role`.role_id where true ${ew.sqlSegment}")
