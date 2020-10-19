@@ -125,8 +125,8 @@ var vm = new Vue({
         success: function (r) {
           if (r.code === 0) {
             console.log('r=========', r);
-            vm.onLineTime = r.data.onLineTime;
-            vm.loginTimes = r.data.loginTimes;
+            vm.onLineTime = res.data.onLineTime;
+            vm.loginTimes = res.data.loginTimes;
           }
         },
       });
