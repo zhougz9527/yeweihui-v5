@@ -35,14 +35,14 @@
             vote_member.item3,
             vote_member.item4,
             vote_member.remark,
-            vote_member.vote_time,
+            vote_member.`vote_time` as voteTime,
             vote_member.verify_url,
             `user`.realname memberRealname,
             `user`.avatar_url memberAvatarUrl,
             `user`.role_name memberRoleName
         FROM
             vote_member
-        left join user on `user`.id = vote_member.uid
+        left join `user` on `user`.id = vote_member.uid
         <include refid="queryParam" />
     </select>
 

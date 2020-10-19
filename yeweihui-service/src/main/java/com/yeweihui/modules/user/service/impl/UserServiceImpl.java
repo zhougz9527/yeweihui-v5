@@ -649,7 +649,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             for (DivisionManagerBean datas:mDivisionManagerBeanList){
 
                 UserEntity mUserEntity = this.selectById(datas.getUserId());
-                mUserEntity.setRoleName(mJmkjServiceImpl.getNmsl("division_"+datas.getLevel(),datas.getDivisionId()));
+                mUserEntity.setRoleName( mJmkjServiceImpl.getNmsl("division_"+datas.getLevel(),datas.getDivisionId()));
                 userEntityList.add(mUserEntity);
             }
             userListDivideGroup.setUserEntityList(userEntityList);

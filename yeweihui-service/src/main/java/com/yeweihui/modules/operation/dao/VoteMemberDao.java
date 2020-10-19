@@ -1,7 +1,7 @@
 package com.yeweihui.modules.operation.dao;
 
-import com.yeweihui.modules.operation.entity.VoteMemberEntity;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.yeweihui.modules.operation.entity.VoteMemberEntity;
 import com.yeweihui.modules.vo.query.VoteMemberQueryParam;
 import org.apache.ibatis.annotations.Param;
 

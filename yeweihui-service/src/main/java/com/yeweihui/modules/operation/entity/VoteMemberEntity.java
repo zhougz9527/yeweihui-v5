@@ -95,7 +95,7 @@ public class VoteMemberEntity implements Serializable {
 	/**
 	 * 表决时间
 	 */
-	private Date voteTime;
+	private Object voteTime;
 
 	/**
 	 * 设置：id
@@ -265,13 +265,13 @@ public class VoteMemberEntity implements Serializable {
 	/**
 	 * 设置：表决时间
 	 */
-	public void setVoteTime(Date voteTime) {
+	public void setVoteTime(Object voteTime) {
 		this.voteTime = voteTime;
 	}
 	/**
 	 * 获取：表决时间
 	 */
-	public Date getVoteTime() {
+	public Object getVoteTime() {
 		return voteTime;
 	}
 
