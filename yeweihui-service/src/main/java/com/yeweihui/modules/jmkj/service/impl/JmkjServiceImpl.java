@@ -646,9 +646,12 @@ public class JmkjServiceImpl implements JmkjService{
         EntityWrapper<IndustryDirectorBean> IndustryDirectorWrapper = new EntityWrapper<IndustryDirectorBean>();
         IndustryDirectorWrapper.eq("sys_role.group","行业主管");
 
-        if (IndustryDirectorParameterBean.getTelephone()!=null && !"".equals(IndustryDirectorParameterBean.getTelephone()))IndustryDirectorWrapper.eq("`user`.mobile",IndustryDirectorParameterBean.getTelephone());
-        if (IndustryDirectorParameterBean.getName()!=null && !"".equals(IndustryDirectorParameterBean.getName()))IndustryDirectorWrapper.eq("`user`.realname",IndustryDirectorParameterBean.getTelephone());
-        if (IndustryDirectorParameterBean.getLevel()==null && !"".equals(IndustryDirectorParameterBean.getLevel()))IndustryDirectorWrapper.eq("`division_manager`.level",IndustryDirectorParameterBean.getLevel());
+        if (IndustryDirectorParameterBean.getTelephone()!=null && !"".equals(IndustryDirectorParameterBean.getTelephone()))
+            IndustryDirectorWrapper.eq("`user`.mobile",IndustryDirectorParameterBean.getTelephone());
+        if (IndustryDirectorParameterBean.getName()!=null && !"".equals(IndustryDirectorParameterBean.getName()))
+            IndustryDirectorWrapper.eq("`user`.realname",IndustryDirectorParameterBean.getTelephone());
+        if (IndustryDirectorParameterBean.getLevel()!=null && !"".equals(IndustryDirectorParameterBean.getLevel()))
+            IndustryDirectorWrapper.eq("`division_manager`.level",IndustryDirectorParameterBean.getLevel());
 
         Page<IndustryDirectorBean> mPage = new Page<IndustryDirectorBean>(IndustryDirectorParameterBean.getPages(), IndustryDirectorParameterBean.getSize());
 
