@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * */
 
 @RestController
-@RequestMapping("jmkj")
+@RequestMapping("api/jmkj")
 public class jmkj {
 
     @Autowired
