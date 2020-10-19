@@ -1,4 +1,4 @@
-$(function  () {
+$(function () {
   $('#jqGrid').jqGrid({
     url: baseURL + 'jmkj/IndustryDirector',
     datatype: 'json',
@@ -32,10 +32,10 @@ $(function  () {
     multiselect: true,
     pager: '#jqGridPager',
     jsonReader: {
-      root: 'data.list',
-      page: 'data.currPage',
-      total: 'data.totalPage',
-      records: 'data.totalCount',
+      root: 'page.list',
+      page: 'page.currPage',
+      total: 'page.totalPage',
+      records: 'page.totalCount',
     },
     prmNames: {
       page: 'pages',
@@ -76,9 +76,9 @@ var vm = new Vue({
     rank: '',
     userList: [],
     formData: {
-      userId: '',
-      level: '',
-      divisionId: '',
+      userId: null,
+      level: null,
+      divisionId: null,
     },
 		levelList: [
 			{'en': 'province', 'cn': '省级'},
@@ -427,9 +427,9 @@ var vm = new Vue({
       $('#jqGrid')
         .jqGrid('setGridParam', {
           postData: {
-            'Telephone': vm.userNum,
-            'name': vm.userName,
-            'level': vm.rank,
+            Telephone: vm.userNum,
+            name: vm.userName,
+            level: vm.rank,
           },
           page: page,
         })
@@ -472,9 +472,9 @@ var vm = new Vue({
     },
     mounted() {
       common.getUserListByRoleName(this, '行业主管');
-      // this.getDivisionList().then(() => {
-      //   initJqGrid();
-      // });
+      this.getDivisionList().then(() => {
+        initJqGrid();
+      });
     }
   },
 });

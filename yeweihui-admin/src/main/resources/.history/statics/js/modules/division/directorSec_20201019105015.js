@@ -1,6 +1,6 @@
 function initJqGrid() {
     $("#jqGrid").jqGrid({
-		url: baseURL + 'division/manager/list',
+		url: baseURL + 'jmkj/IndustryDirector',
         datatype: "json",
         colModel: [
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
@@ -22,10 +22,10 @@ function initJqGrid() {
         multiselect: true,
         pager: "#jqGridPager",
         jsonReader : {
-            root: "page.list",
-            page: "page.currPage",
-            total: "page.totalPage",
-            records: "page.totalCount"
+            root: "data.list",
+            page: "data.currPage",
+            total: "data.totalPage",
+            records: "data.totalCount"
         },
         prmNames : {
             page:"page", 

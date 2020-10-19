@@ -1,16 +1,16 @@
 function initJqGrid() {
     $("#jqGrid").jqGrid({
-		url: baseURL + 'division/manager/list',
+		url: baseURL + 'jmkj/IndustryDirector',
         datatype: "json",
         colModel: [
-			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '用户名', name: 'userId', index: 'user_id', width: 80, formatter: vm.userFormatter },
-			{ label: '管理级别', name: 'level', index: 'level', width: 80, formatter: vm.levelFormatter },
-			{ label: '管理区域', name: 'divisionId', index: 'division_id', width: 80, formatter: vm.divisionFormatter },
-			{ label: '更新时间', name: 'updateTime', index: 'update_time', width: 80},
-            { label: '更新用户', name: 'updateUser', index: 'update_user', width: 80},
-            { label: '创建时间', name: 'createTime', index: 'create_time', width: 80},
-            { label: '创建用户', name: 'createUser', index: 'create_user', width: 80},
+			{ label: 'id', realname: 'id', index: 'id', width: 50, key: true },
+			{ label: '用户名', realname: 'userId', index: 'user_id', width: 80, formatter: vm.userFormatter },
+			{ label: '管理级别', realname: 'level', index: 'level', width: 80, formatter: vm.levelFormatter },
+			{ label: '管理区域', realname: 'divisionId', index: 'division_id', width: 80, formatter: vm.divisionFormatter },
+			{ label: '更新时间', realname: 'updateTime', index: 'update_time', width: 80},
+            { label: '更新用户', realname: 'updateUser', index: 'update_user', width: 80},
+            { label: '创建时间', realname: 'createTime', index: 'create_time', width: 80},
+            { label: '创建用户', realname: 'createUser', index: 'create_user', width: 80},
         ],
 		viewrecords: true,
         height: 500,
@@ -22,14 +22,14 @@ function initJqGrid() {
         multiselect: true,
         pager: "#jqGridPager",
         jsonReader : {
-            root: "page.list",
-            page: "page.currPage",
-            total: "page.totalPage",
-            records: "page.totalCount"
+            root: "data.list",
+            page: "data.currPage",
+            total: "data.totalPage",
+            records: "data.totalCount"
         },
         prmNames : {
-            page:"page", 
-            rows:"limit", 
+            page:"pages", 
+            rows:"size", 
             order: "order"
         },
         gridComplete:function(){
@@ -246,8 +246,8 @@ var vm = new Vue({
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{
 					postData:{
-						'userId': vm.q.userId,
-						'userName': vm.q.userName,
+						'Telephone': vm.q.userId,
+						'name': vm.q.userName,
 						'level': vm.q.level
 					},
 					page:page

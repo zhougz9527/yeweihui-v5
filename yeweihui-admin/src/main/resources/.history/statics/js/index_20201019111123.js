@@ -63,14 +63,14 @@ var vm = new Vue({
           type: 1,
           url: 'modules/data/data.html',
         };
-        // let data1 = {
-        //   menuId: 0,
-        //   parentId: 0,
-        //   name: '行业主管',
-        //   orderNum: 0,
-        //   type: 1,
-        //   url: 'modules/director/director.html',
-        // };
+        let data1 = {
+          menuId: 0,
+          parentId: 0,
+          name: '行业主管',
+          orderNum: 0,
+          type: 1,
+          url: 'modules/director/director.html',
+        };
         let data3 = {
           menuId: 0,
           parentId: 0,
@@ -79,17 +79,17 @@ var vm = new Vue({
           type: 1,
           url: 'modules/director/director1.html',
         };
-        // let data2 = {
-        //   menuId: 0,
-        //   parentId: 0,
-        //   name: '版本信息',
-        //   orderNum: 0,
-        //   type: 1,
-        //   url: 'modules/version/version.html',
-        // };
+        let data2 = {
+          menuId: 0,
+          parentId: 0,
+          name: '版本信息',
+          orderNum: 0,
+          type: 1,
+          url: 'modules/version/version.html',
+        };
         vm.menuList.push(data);
-        // vm.menuList.push(data1);
-        // vm.menuList.push(data2);
+        vm.menuList.push(data1);
+        vm.menuList.push(data2);
         vm.menuList.push(data3);
         console.log(vm.menuList);
       });

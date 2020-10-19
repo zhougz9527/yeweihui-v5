@@ -32,10 +32,10 @@ $(function  () {
     multiselect: true,
     pager: '#jqGridPager',
     jsonReader: {
-      root: 'data.list',
-      page: 'data.currPage',
-      total: 'data.totalPage',
-      records: 'data.totalCount',
+      root: 'page.list',
+      page: 'page.currPage',
+      total: 'page.totalPage',
+      records: 'page.totalCount',
     },
     prmNames: {
       page: 'pages',
@@ -71,7 +71,7 @@ var vm = new Vue({
   data: {
     showList: true,
     title: null,
-    userNum: '',
+    userNum: 1,
     userName: '',
     rank: '',
     userList: [],
@@ -427,9 +427,9 @@ var vm = new Vue({
       $('#jqGrid')
         .jqGrid('setGridParam', {
           postData: {
-            'Telephone': vm.userNum,
-            'name': vm.userName,
-            'level': vm.rank,
+            'Telephone': vm.userNum||'',
+            'name': vm.userName||'',
+            'level': vm.rank||'',
           },
           page: page,
         })

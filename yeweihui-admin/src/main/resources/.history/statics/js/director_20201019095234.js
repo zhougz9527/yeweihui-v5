@@ -31,16 +31,16 @@ $(function  () {
     autowidth: true,
     multiselect: true,
     pager: '#jqGridPager',
-    jsonReader: {
-      root: 'data.list',
-      page: 'data.currPage',
-      total: 'data.totalPage',
-      records: 'data.totalCount',
+    jsonReader : {
+        root: "page.list",
+        page: "page.currPage",
+        total: "page.totalPage",
+        records: "page.totalCount"
     },
-    prmNames: {
-      page: 'pages',
-      rows: 'size',
-      order: 'order',
+    prmNames : {
+        page:"page", 
+        rows:"limit", 
+        order: "order"
     },
     gridComplete: function () {
       //隐藏grid底部滚动条
@@ -76,9 +76,9 @@ var vm = new Vue({
     rank: '',
     userList: [],
     formData: {
-      userId: '',
-      level: '',
-      divisionId: '',
+      userId: null,
+      level: null,
+      divisionId: null,
     },
 		levelList: [
 			{'en': 'province', 'cn': '省级'},
@@ -427,9 +427,9 @@ var vm = new Vue({
       $('#jqGrid')
         .jqGrid('setGridParam', {
           postData: {
-            'Telephone': vm.userNum,
-            'name': vm.userName,
-            'level': vm.rank,
+            Telephone: vm.userNum,
+            name: vm.userName,
+            level: vm.rank,
           },
           page: page,
         })

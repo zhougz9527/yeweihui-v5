@@ -1,4 +1,4 @@
-$(function  () {
+$(function () {
   $('#jqGrid').jqGrid({
     url: baseURL + 'jmkj/IndustryDirector',
     datatype: 'json',
@@ -32,14 +32,14 @@ $(function  () {
     multiselect: true,
     pager: '#jqGridPager',
     jsonReader: {
-      root: 'data.list',
-      page: 'data.currPage',
-      total: 'data.totalPage',
-      records: 'data.totalCount',
+      root: 'page.list',
+      page: 'page.currPage',
+      total: 'page.totalPage',
+      records: 'page.totalCount',
     },
     prmNames: {
-      page: 'pages',
-      rows: 'size',
+      page: 'page',
+      rows: 'limit',
       order: 'order',
     },
     gridComplete: function () {
@@ -74,29 +74,6 @@ var vm = new Vue({
     userNum: '',
     userName: '',
     rank: '',
-    userList: [],
-    formData: {
-      userId: '',
-      level: '',
-      divisionId: '',
-    },
-		levelList: [
-			{'en': 'province', 'cn': '省级'},
-			{'en': 'city', 'cn': '市级'},
-			{'en': 'district', 'cn': '区级'},
-			{'en': 'subdistrict', 'cn': '街道级'},
-			{'en': 'community', 'cn': '社区级'}],
-		divisionList: [],
-		provinceList: [],
-		cityList: [],
-		districtList: [],
-		subdistrcitList: [],
-		communityList: [],
-		formData: {
-            userId: null,
-			level: null,
-            divisionId: null
-		},
     options: [
       {
         name: '省级',
@@ -129,13 +106,13 @@ var vm = new Vue({
         name: '',
         level: '',
       };
-
+      
       $.ajax({
         type: 'get', //方法类型
         dataType: 'json',
         url: baseURL + 'jmkj/IndustryDirector',
         contentType: 'application/json; charset=utf-8',
-        data: { ...dataStr },
+        data: {...dataStr},
         success: function (result) {
           if (result.code == 0) {
             console.log(result);
@@ -290,52 +267,35 @@ var vm = new Vue({
         }
       });
     },
-    // update: function () {
-    //   var id = getSelectedRow();
-    //   if (id == null) {
-    //     return;
-    //   }
-
-    //   vm.showList = false;
-    //   vm.title = '修改';
-
-    //   vm.getUser(id);
-    //   //获取角色信息
-    //   this.getRoleList();
-    // },
-    update: function (event) {
+    update: function () {
       var id = getSelectedRow();
       if (id == null) {
         return;
       }
+
       vm.showList = false;
       vm.title = '修改';
-      vm.getInfo(id);
+
+      vm.getUser(id);
+      //获取角色信息
+      this.getRoleList();
     },
-    query: function () {
-      vm.reload();
-    },
-    onReset() {
-      this.userNum = '';
-      this.userName = '';
-      this.rank = '';
-    },
-    del: function (event) {
-      var ids = getSelectedRows();
-      if (ids == null) {
+    del: function () {
+      var userIds = getSelectedRows();
+      if (userIds == null) {
         return;
       }
 
       confirm('确定要删除选中的记录？', function () {
         $.ajax({
           type: 'POST',
-          url: baseURL + 'division/manager/delete',
+          url: baseURL + 'sys/user/delete',
           contentType: 'application/json',
-          data: JSON.stringify(ids),
+          data: JSON.stringify(userIds),
           success: function (r) {
             if (r.code == 0) {
-              alert('操作成功', function (index) {
-                $('#jqGrid').trigger('reloadGrid');
+              alert('操作成功', function () {
+                vm.reload();
               });
             } else {
               alert(r.msg);
@@ -344,30 +304,6 @@ var vm = new Vue({
         });
       });
     },
-    // del: function () {
-    //   var userIds = getSelectedRows();
-    //   if (userIds == null) {
-    //     return;
-    //   }
-
-    //   confirm('确定要删除选中的记录？', function () {
-    //     $.ajax({
-    //       type: 'POST',
-    //       url: baseURL + 'sys/user/delete',
-    //       contentType: 'application/json',
-    //       data: JSON.stringify(userIds),
-    //       success: function (r) {
-    //         if (r.code == 0) {
-    //           alert('操作成功', function () {
-    //             vm.reload();
-    //           });
-    //         } else {
-    //           alert(r.msg);
-    //         }
-    //       },
-    //     });
-    //   });
-    // },
     saveOrUpdate: function () {
       var url = vm.user.id == null ? 'sys/user/save' : 'sys/user/update';
       console.log(vm.user);
@@ -426,11 +362,6 @@ var vm = new Vue({
       var page = $('#jqGrid').jqGrid('getGridParam', 'page');
       $('#jqGrid')
         .jqGrid('setGridParam', {
-          postData: {
-            'Telephone': vm.userNum,
-            'name': vm.userName,
-            'level': vm.rank,
-          },
           page: page,
         })
         .trigger('reloadGrid');
@@ -470,11 +401,5 @@ var vm = new Vue({
 
       return result;
     },
-    mounted() {
-      common.getUserListByRoleName(this, '行业主管');
-      // this.getDivisionList().then(() => {
-      //   initJqGrid();
-      // });
-    }
   },
 });

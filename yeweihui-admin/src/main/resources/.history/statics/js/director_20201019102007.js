@@ -32,10 +32,10 @@ $(function  () {
     multiselect: true,
     pager: '#jqGridPager',
     jsonReader: {
-      root: 'data.list',
-      page: 'data.currPage',
-      total: 'data.totalPage',
-      records: 'data.totalCount',
+      root: 'page.list',
+      page: 'page.currPage',
+      total: 'page.totalPage',
+      records: 'page.totalCount',
     },
     prmNames: {
       page: 'pages',

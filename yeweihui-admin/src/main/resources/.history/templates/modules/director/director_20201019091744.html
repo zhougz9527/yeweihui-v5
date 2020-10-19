@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>行业主管</title>
+    <#include "/header.html"/>
+    <link rel="stylesheet" type="text/css" href="${request.contextPath}/statics/css/director.css">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div>
+        <div class="inlinde-block">
+            <div class="inlinde-block">用户号:</div>
+            <el-input style="width:200px;margin-right:20px" v-model="userNum" placeholder=""></el-input>
+            <div class="inlinde-block">用户名:</div>
+            <el-input style="width:200px;margin-right:20px" v-model="userName" placeholder=""></el-input>
+            <div class="inlinde-block">管理级别:</div>
+            <el-select v-model="rank" clearable placeholder="请选择">
+                <el-option
+                        v-for="item in options"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                </el-option>
+            </el-select>
+            <a class="btn btn-primary" @click="">&nbsp;搜索</a>
+            <a class="btn btn-primary" @click="">&nbsp;重置</a>
+        </div>
+    </div>
+    <div>
+        <a class="btn btn-primary" @click="edit">&nbsp;修改</a>
+        <a class="btn btn-primary" @click="del">&nbsp;删除</a>
+    </div>
+    <div>
+        <div>
+            <table id="jqGrid"></table>
+            <div id="jqGridPager"></div>
+        </div>
+    </div>
+
+
+</div>
+
+<script src="${request.contextPath}/statics/js/director.js?_${.now?long}"></script>
+</body>
+</html>

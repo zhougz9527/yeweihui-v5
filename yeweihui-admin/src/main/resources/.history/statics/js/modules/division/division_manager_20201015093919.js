@@ -14,7 +14,7 @@ function initJqGrid() {
         ],
 		viewrecords: true,
         height: 500,
-        rowNum: 10, 
+        rowNum: 10,
 		rowList : [10,30,50],
         rownumbers: true, 
         rownumWidth: 25, 

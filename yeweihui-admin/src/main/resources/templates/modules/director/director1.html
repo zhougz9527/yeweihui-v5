@@ -1,43 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>行业主管</title>
-    <#include "/header.html"/>
-    <link rel="stylesheet" type="text/css" href="${request.contextPath}/statics/css/director.css">
+    <title>行政主管管理</title>
+		<#include "/header.html"/>
+
+    <style>
+        /* 和bootstrap样式冲突*/
+        .el-upload__input {
+            display: none!important;
+        }
+    </style>
+
 </head>
 <body>
 <div id="rrapp" v-cloak>
-    <div  v-show="showList">
-    <div>
-        <div class="inlinde-block">
-            <div class="inlinde-block">用户号:</div>
-            <el-input style="width:200px;margin-right:20px" v-model="userNum" placeholder=""></el-input>
-            <div class="inlinde-block">用户名:</div>
-            <el-input style="width:200px;margin-right:20px" v-model="userName" placeholder=""></el-input>
-            <div class="inlinde-block">管理级别:</div>
-            <el-select v-model="rank" clearable placeholder="请选择">
-                <el-option
-                        v-for="item in options"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                </el-option>
-            </el-select>
-            <a class="btn btn-primary" @click="query">&nbsp;搜索</a>
-            <a class="btn btn-primary" @click="onReset">&nbsp;重置</a>
-        </div>
+    <div v-show="showList">
+        <el-form ref="form" :model="formData" label-width="80px" :inline="true">
+            <el-form-item label="用户号">
+                <el-input v-model="q.userId" @keyup.enter="query"></el-input>
+            </el-form-item>
+            <el-form-item label="用户名">
+                <el-input v-model="q.userName" @keyup.enter="query"></el-input>
+            </el-form-item>
+            <el-form-item label="管理级别">
+                <el-select v-model="q.level" placeholder="请选择">
+                    <el-option
+                            v-for="item in levelList"
+                            :key="item.en"
+                            :label="item.cn"
+                            :value="item.en">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-row>
+                    <el-col>
+                        <a class="btn btn-default" @click="query">查询</a>
+                        <a class="btn btn-default" @click="onReset">重置</a>
+                    </el-col>
+                </el-row>
+            </el-form-item>
+            <el-form-item>
+                <el-row>
+                    <el-col>
+                        <span style="width: 30px"></span>
+                        <#if shiro.hasPermission("operation:request:save")>
+                        <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>新增</a>
+                        </#if>
+                        <#if shiro.hasPermission("operation:request:update")>
+                        <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>修改</a>
+                        </#if>
+                        <#if shiro.hasPermission("operation:request:delete")>
+                        <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>删除</a>
+                        </#if>
+                    </el-col>
+                </el-row>
+            </el-form-item>
+        </el-form>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
     </div>
-    <div>
-        <a class="btn btn-primary" @click="update">&nbsp;修改</a>
-        <a class="btn btn-primary" @click="del">&nbsp;删除</a>
-    </div>
-    <div>
-        <div>
-            <table id="jqGrid"></table>
-            <div id="jqGridPager"></div>
-        </div>
-    </div>
-</div>
+
     <div v-show="!showList" class="panel panel-default">
         <div class="panel-heading">{{title}}</div>
         <form class="form-horizontal">
@@ -56,7 +79,7 @@
                     </el-select>
                 </div>
             </div>
-            <!-- <div class="form-group">
+            <div class="form-group">
                 <div class="col-sm-2 control-label">管理级别</div>
                 <div class="col-sm-10">
                     <el-select v-model="formData.level" placeholder="请选择"
@@ -97,12 +120,13 @@
                 <div class="col-sm-2 control-label"></div>
                 <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
                 <input type="button" class="btn btn-warning" @click="reload" value="返回"/>
-            </div> -->
+            </div>
         </form>
     </div>
-
 </div>
 
-<script src="${request.contextPath}/statics/js/director.js?_${.now?long}"></script>
+<!-- <script src="${request.contextPath}/statics/js/directorSec.js?_${.now?long}"></script> -->
+<script type="module" src="${request.contextPath}/statics/js/modules/division/directorSec.js?_${.now?long}"></script>
+<!-- <script type="module" src="${request.contextPath}/statics/js/modules/division/division_manager.js?_${.now?long}"></script> -->
 </body>
 </html>

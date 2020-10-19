@@ -64,7 +64,7 @@ public class jmkj {
     ){
 
 //        return R.ok().put("data",jmkjServiceImpl.getPerformanceOfDutiesList(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
-        return R.ok().put("data",jmkjServiceImpl.getPerformanceOfDutiesList(50,zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.getPerformanceOfDutiesList(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -79,7 +79,7 @@ public class jmkj {
     ){
 
         //return R.ok().put("data",jmkjServiceImpl.getPerformanceRateBeans(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
-        return R.ok().put("data",jmkjServiceImpl.getPerformanceRateBeans(50,zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.getPerformanceRateBeans(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -94,7 +94,7 @@ public class jmkj {
     ){
 
         //return R.ok().put("data",jmkjServiceImpl.OverdueQuantity(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
-        return R.ok().put("data",jmkjServiceImpl.OverdueQuantity(50,zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OverdueQuantity(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -109,7 +109,7 @@ public class jmkj {
     ){
 
         //return R.ok().put("data",jmkjServiceImpl.OverdueRate(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
-        return R.ok().put("data",jmkjServiceImpl.OverdueRate(50,zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OverdueRate(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -124,7 +124,7 @@ public class jmkj {
     ){
 
         //return R.ok().put("data",jmkjServiceImpl.operationNum(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
-        return R.ok().put("data",jmkjServiceImpl.operationNum(294,zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.operationNum(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -139,7 +139,7 @@ public class jmkj {
     ){
 
         //return R.ok().put("data",jmkjServiceImpl.BrowseComplete(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
-        return R.ok().put("data",jmkjServiceImpl.BrowseComplete(294,zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.BrowseComplete(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -154,7 +154,7 @@ public class jmkj {
     ){
 
        //return R.ok().put("data",jmkjServiceImpl.NewBrowse(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
-        return R.ok().put("data",jmkjServiceImpl.NewBrowse(294,zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.NewBrowse(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
     }
 
     /**
@@ -168,8 +168,8 @@ public class jmkj {
             @RequestParam(value = "timeEnd",required=false) Long timeEnd
     ){
 
-        //return R.ok().put("data",jmkjServiceImpl.OnlineDuration(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
-        return R.ok().put("data",jmkjServiceImpl.OnlineDuration(50,zoneId,timeStart,timeEnd));
+        //return R.ok().put("data",jmkjServiceImpl.OnlineDuration(ShiroUtils.getUserId().long Value(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OnlineDuration(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
     }
 
     @GetMapping(value = "/OnlineNum")
@@ -181,7 +181,7 @@ public class jmkj {
     ){
 
        // return R.ok().put("data",jmkjServiceImpl.OnlineNum(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
-        return R.ok().put("data",jmkjServiceImpl.OnlineNum(50,zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OnlineNum(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
     }
 
     @GetMapping(value = "/IndustryDirector")

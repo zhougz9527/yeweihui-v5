@@ -1,6 +1,6 @@
 function initJqGrid() {
     $("#jqGrid").jqGrid({
-		url: baseURL + 'division/manager/list',
+		url: baseURL + 'jmkj/IndustryDirector',
         datatype: "json",
         colModel: [
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
