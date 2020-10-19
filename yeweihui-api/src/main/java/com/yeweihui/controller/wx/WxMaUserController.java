@@ -60,6 +60,7 @@ public class WxMaUserController {
     @GetMapping("/login")
     @ApiOperation("登陆接口")
     public R login(@PathVariable String appid, String code) {
+
         if (StringUtils.isBlank(code)) {
 //            return "empty jscode";
             throw new RRException("empty jscode");
