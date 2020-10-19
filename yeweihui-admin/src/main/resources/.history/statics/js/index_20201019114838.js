@@ -176,7 +176,7 @@ var vm = new Vue({
   },
   mounted() {
     let that = this;
-    let timer = setInterval(() => {
+    vm.timer = setInterval(() => {
       that.updateLoginNum();
       console.log('更新登录时间');
     }, 60000);
