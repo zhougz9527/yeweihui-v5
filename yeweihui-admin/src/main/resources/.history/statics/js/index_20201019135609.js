@@ -99,7 +99,25 @@ var vm = new Vue({
           orderNum: 0,
           type: 1,
           url: 'modules/data/data.html',
+          list: {
+            icon: 'fa fa-cog',
+            menuId: 0,
+            parentId: 0,
+            name: '履职数据',
+            orderNum: 0,
+            type: 1,
+            url: 'modules/data/data.html',
+          }
         };
+        // let data = {
+        //   icon: 'fa fa-cog',
+        //   menuId: 0,
+        //   parentId: 0,
+        //   name: '履职数据',
+        //   orderNum: 0,
+        //   type: 1,
+        //   url: 'modules/data/data.html',
+        // };
         // let data1 = {
         //   menuId: 0,
         //   parentId: 0,

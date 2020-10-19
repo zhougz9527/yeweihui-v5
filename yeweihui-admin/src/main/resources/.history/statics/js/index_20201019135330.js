@@ -74,7 +74,6 @@ var vm = new Vue({
         // todo 隱藏某些菜單.
         // vm.menuList = r.menuList;
         let data3 = {
-          icon: 'fa fa-user',
           menuId: 0,
           parentId: 0,
           name: '行业主管',
