@@ -1,6 +1,7 @@
 package com.yeweihui.controller.jmkj.controller;
 
 import com.yeweihui.common.utils.R;
+import com.yeweihui.modules.jmkj.Entity.IndustryDirectorParameterBean;
 import com.yeweihui.modules.jmkj.service.impl.JmkjServiceImpl;
 import com.yeweihui.modules.sys.shiro.ShiroUtils;
 import com.yeweihui.modules.user.service.TokenService;
@@ -38,6 +39,188 @@ public class jmkj {
     public R getToken(){
 
         return R.ok().put("data",tokenService.createToken(50).getToken());
+    }
+
+    /**
+     * 添加当月登录时间
+     * */
+    @GetMapping(value = "/updateTime")
+    @ApiOperation(value = "更新当月登录时间",notes = "time:增加的时间数 单位秒")
+    public R updateTime(@RequestParam(value = "time") Long time){
+
+        return R.ok().put("data",jmkjServiceImpl.updateTime(ShiroUtils.getUserId(),time));
+    }
+
+    /**
+     * 添加当月登录次数
+     * */
+    @GetMapping(value = "/updateNum")
+    @ApiOperation(value = "更新当月登录次数")
+    public R updateNum(){
+
+        return R.ok().put("data",jmkjServiceImpl.updateNum(ShiroUtils.getUserId()));
+    }
+
+    /**
+     * 我的数据
+     * */
+    @GetMapping(value = "/myData")
+
+    @ApiOperation(value = "获取上月在线时长和上月登录次数")
+    public R getMyData(){
+
+        return R.ok().put("data",jmkjServiceImpl.getMyData(ShiroUtils.getUserId()));
+    }
+
+    /**
+     * 履职数据 操作性任务查询 履职量
+     * */
+    @GetMapping(value = "/getPerformanceOfDutiesList")
+    @ApiOperation(value = "履职数据 操作性任务查询 履职量")
+    public R getPerformanceOfDutiesList(
+            @RequestParam(value = "zoneId") Long zoneId,
+            @RequestParam(value = "timeStart",required=false) Long timeStart,
+            @RequestParam(value = "timeEnd",required=false) Long timeEnd
+    ){
+
+//        return R.ok().put("data",jmkjServiceImpl.getPerformanceOfDutiesList(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.getPerformanceOfDutiesList(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
+    }
+
+    /**
+     * 履职数据 操作性任务查询 履职率
+     * */
+    @GetMapping(value = "/getPerformanceRateBeans")
+    @ApiOperation(value = "履职数据 操作性任务查询 履职率")
+    public R getPerformanceRateBeans(
+            @RequestParam(value = "zoneId") Long zoneId,
+            @RequestParam(value = "timeStart",required=false) Long timeStart,
+            @RequestParam(value = "timeEnd",required=false) Long timeEnd
+    ){
+
+        //return R.ok().put("data",jmkjServiceImpl.getPerformanceRateBeans(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.getPerformanceRateBeans(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
+    }
+
+    /**
+     * 履职数据 操作性任务查询 逾期量
+     * */
+    @GetMapping(value = "/OverdueQuantity")
+    @ApiOperation(value = "履职数据 操作性任务查询 逾期量")
+    public R OverdueQuantity(
+            @RequestParam(value = "zoneId") Long zoneId,
+            @RequestParam(value = "timeStart",required=false) Long timeStart,
+            @RequestParam(value = "timeEnd",required=false) Long timeEnd
+    ){
+
+        //return R.ok().put("data",jmkjServiceImpl.OverdueQuantity(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OverdueQuantity(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
+    }
+
+    /**
+     * 履职数据 操作性任务查询 逾期率
+     * */
+    @GetMapping(value = "/OverdueRate")
+    @ApiOperation(value = "履职数据 操作性任务查询 逾期率")
+    public R OverdueRate(
+            @RequestParam(value = "zoneId") Long zoneId,
+            @RequestParam(value = "timeStart",required=false) Long timeStart,
+            @RequestParam(value = "timeEnd",required=false) Long timeEnd
+    ){
+
+        //return R.ok().put("data",jmkjServiceImpl.OverdueRate(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OverdueRate(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
+    }
+
+    /**
+     * 操作性任务新建总量
+     * */
+    @GetMapping(value = "/operationNum")
+    @ApiOperation(value = "履职数据 操作性任务查询 新建总量")
+    public R operationNum(
+            @RequestParam(value = "zoneId") Long zoneId,
+            @RequestParam(value = "timeStart",required=false) Long timeStart,
+            @RequestParam(value = "timeEnd",required=false) Long timeEnd
+    ){
+
+        //return R.ok().put("data",jmkjServiceImpl.operationNum(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.operationNum(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
+    }
+
+    /**
+     * 浏览任务完成总量
+     * */
+    @GetMapping(value = "/BrowseComplete")
+    @ApiOperation(value = "履职数据 浏览任务 完成总量")
+    public R BrowseComplete(
+            @RequestParam(value = "zoneId") Long zoneId,
+            @RequestParam(value = "timeStart",required=false) Long timeStart,
+            @RequestParam(value = "timeEnd",required=false) Long timeEnd
+    ){
+
+        //return R.ok().put("data",jmkjServiceImpl.BrowseComplete(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.BrowseComplete(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
+    }
+
+    /**
+     * 浏览任务新建总量
+     * */
+    @GetMapping(value = "/NewBrowse")
+    @ApiOperation(value = "履职数据 浏览任务 新建总量")
+    public R NewBrowse(
+            @RequestParam(value = "zoneId") Long zoneId,
+            @RequestParam(value = "timeStart",required=false) Long timeStart,
+            @RequestParam(value = "timeEnd",required=false) Long timeEnd
+    ){
+
+        //return R.ok().put("data",jmkjServiceImpl.NewBrowse(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.NewBrowse(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
+    }
+
+    /**
+     * 履职数据 在线时长
+     * */
+    @GetMapping(value = "/OnlineDuration")
+    @ApiOperation(value = "履职数据 在线时长")
+    public R OnlineDuration(
+            @RequestParam(value = "zoneId") Long zoneId,
+            @RequestParam(value = "timeStart",required=false) Long timeStart,
+            @RequestParam(value = "timeEnd",required=false) Long timeEnd
+    ){
+
+        //return R.ok().put("data",jmkjServiceImpl.OnlineDuration(ShiroUtils.getUserId().long Value(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OnlineDuration(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
+    }
+
+    @GetMapping(value = "/OnlineNum")
+    @ApiOperation(value = "履职数据 登录次数")
+    public R OnlineNum(
+            @RequestParam(value = "zoneId") Long zoneId,
+            @RequestParam(value = "timeStart",required=false) Long timeStart,
+            @RequestParam(value = "timeEnd",required=false) Long timeEnd
+    ){
+
+        // return R.ok().put("data",jmkjServiceImpl.OnlineNum(ShiroUtils.getUserId().longValue(),zoneId,timeStart,timeEnd));
+        return R.ok().put("data",jmkjServiceImpl.OnlineNum(ShiroUtils.getUserId(),zoneId,timeStart,timeEnd));
+    }
+
+    @GetMapping(value = "/IndustryDirector")
+    @ApiOperation(value = "行业主管列表")
+    public R IndustryDirector(            @RequestParam(value = "size") int size,
+                                          @RequestParam(value = "pages") int pages,
+                                          @RequestParam(value = "Telephone",required=false) String Telephone,
+                                          @RequestParam(value = "name",required=false) String name,
+                                          @RequestParam(value = "level",required=false) String level){
+
+        IndustryDirectorParameterBean mIndustryDirectorParameterBean = new IndustryDirectorParameterBean();
+
+        mIndustryDirectorParameterBean.setSize(size);
+        mIndustryDirectorParameterBean.setPages(pages);
+        mIndustryDirectorParameterBean.setTelephone(Telephone);
+        mIndustryDirectorParameterBean.setName(name);
+        mIndustryDirectorParameterBean.setLevel(level);
+
+        return R.ok().put("data",jmkjServiceImpl.IndustryDirector(mIndustryDirectorParameterBean));
     }
 
 }
