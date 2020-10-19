@@ -627,9 +627,9 @@ public interface JmkjSql {
      * */
     @Select("select " +
             "division_manager.id as id," +
-            "division_manager.user_id` as user_id`," +
-            "division_manager.`level` as `level`," +
-            "division_manager.`division_id` as division_id," +
+            "division_manager.`user_id` as userId," +
+            "division_manager.`level` as level," +
+            "division_manager.`division_id` as divisionId," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
             "from division_manager " +

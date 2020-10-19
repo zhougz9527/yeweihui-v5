@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.google.common.base.Verify;
 import com.yeweihui.common.annotation.DataFilter;
 import com.yeweihui.common.annotation.ZoneFilter;
 import com.yeweihui.common.exception.RRException;
@@ -640,6 +639,22 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             userListDivideGroup.setUserEntityList(userEntityList);
             userListDivideGroupList.add(userListDivideGroup);
         }else{
+
+            List<DivisionManagerBean> mDivisionManagerBeanList = (List<DivisionManagerBean>)mJmkjServiceImpl.administratorList(uid);
+
+            userListDivideGroup = new UserListDivideGroup();
+            userQueryParam.setGroupName("行业经理");
+            userListDivideGroup.setGroupName(userQueryParam.getGroupName());
+            userEntityList = new ArrayList<>();
+            for (DivisionManagerBean datas:mDivisionManagerBeanList){
+
+                UserEntity mUserEntity = this.selectById(datas.getUserId());
+                mUserEntity.setRoleName(mJmkjServiceImpl.getNmsl("division_"+datas.getLevel(),datas.getDivisionId()));
+                userEntityList.add(mUserEntity);
+            }
+            userListDivideGroup.setUserEntityList(userEntityList);
+            userListDivideGroupList.add(userListDivideGroup);
+
             userListDivideGroup = new UserListDivideGroup();
             userQueryParam.setGroupName("业主委员会");
             userListDivideGroup.setGroupName(userQueryParam.getGroupName());
@@ -658,21 +673,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             userQueryParam.setGroupName("小区业主");
             userListDivideGroup.setGroupName(userQueryParam.getGroupName());
             userEntityList = this.simpleList(userQueryParam);
-            userListDivideGroup.setUserEntityList(userEntityList);
-            userListDivideGroupList.add(userListDivideGroup);
-
-            List<DivisionManagerBean> mDivisionManagerBeanList = (List<DivisionManagerBean>)mJmkjServiceImpl.administratorList(uid);
-
-            userListDivideGroup = new UserListDivideGroup();
-            userQueryParam.setGroupName("行业经理");
-            userListDivideGroup.setGroupName(userQueryParam.getGroupName());
-            userEntityList = new ArrayList<>();
-            for (DivisionManagerBean datas:mDivisionManagerBeanList){
-
-                UserEntity mUserEntity = this.selectById(datas.getId());
-                mUserEntity.setRealname(mJmkjServiceImpl.getNmsl("division_"+datas.getLevel(),datas.getDivisionId()));
-                userEntityList.add(mUserEntity);
-            }
             userListDivideGroup.setUserEntityList(userEntityList);
             userListDivideGroupList.add(userListDivideGroup);
 
