@@ -2,6 +2,7 @@ package com.yeweihui.modules.jmkj.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.yeweihui.common.utils.PageUtils;
 import com.yeweihui.modules.jmkj.Entity.*;
 import com.yeweihui.modules.jmkj.dao.JmkjSql;
 import com.yeweihui.modules.jmkj.service.JmkjService;
@@ -651,7 +652,7 @@ public class JmkjServiceImpl implements JmkjService{
 
         Page<IndustryDirectorBean> mPage = new Page<IndustryDirectorBean>(IndustryDirectorParameterBean.getPages(), IndustryDirectorParameterBean.getSize());
 
-        return mPage.setRecords(jmkjSql.IndustryDirector(mPage,IndustryDirectorWrapper));
+        return new PageUtils(mPage.setRecords(jmkjSql.IndustryDirector(mPage,IndustryDirectorWrapper)));
     }
 
     @Override

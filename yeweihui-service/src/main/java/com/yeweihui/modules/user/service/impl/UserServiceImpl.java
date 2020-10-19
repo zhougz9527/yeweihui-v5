@@ -614,11 +614,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
         if (verifyStatus==1){
 
-            new SendSmsUtils().sendSmsNoParam("17710505670","SMS_191818116");
+            new SendSmsUtils().sendSmsByTem(this.selectById(userId).getMobile(), "SMS_204761640", "{\"type\":\""+ "成功" +"\"}");
 
         }else if (verifyStatus==3){
 
-            //new SendSmsUtils().sendSmsNoParam("17710505670","SMS_191818114");SMS_191818116
+            new SendSmsUtils().sendSmsByTem(this.selectById(userId).getMobile(), "SMS_204761640", "{\"type\":\""+ "失败" +"\"}");
         }
     }
 

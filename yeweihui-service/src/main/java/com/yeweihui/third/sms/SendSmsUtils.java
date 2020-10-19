@@ -39,6 +39,7 @@ public class SendSmsUtils {
      * 根据模板id和模板参数给指定的手机号发送短信
      * 1、验证码模板 SMS_175574332     您的验证码为${verifyCode}，五分钟后失效，请妥善保管
      * 2、通知bd新用户申请小区 SMS_175539736  ${plat}收到新客户的开通申请，请尽快联系。客户姓名：${name}；电话：${phone}；小区名字：${zoneName}；小区地址：${address}。
+     * 3、用户审核模板 SMS_204761640 尊敬的用户，您的审核已经${type}。
      * @param phoneNumbers
      * @param templateCode
      * @param templateParam
