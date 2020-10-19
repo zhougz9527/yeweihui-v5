@@ -767,4 +767,9 @@ public class JmkjServiceImpl implements JmkjService{
         }
     }
 
+    public String getNmsl(String tablename,Long id){
+
+        return jmkjSql.getNmsl(tablename,id);
+    }
+
 }

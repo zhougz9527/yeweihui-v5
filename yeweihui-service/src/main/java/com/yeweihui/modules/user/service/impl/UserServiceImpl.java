@@ -16,6 +16,8 @@ import com.yeweihui.common.utils.StrUtils;
 import com.yeweihui.common.validator.Assert;
 import com.yeweihui.modules.CommonService;
 import com.yeweihui.modules.enums.request.RequestStatusEnum;
+import com.yeweihui.modules.jmkj.Entity.DivisionManagerBean;
+import com.yeweihui.modules.jmkj.service.impl.JmkjServiceImpl;
 import com.yeweihui.modules.sys.entity.SysDeptEntity;
 import com.yeweihui.modules.sys.entity.SysRoleEntity;
 import com.yeweihui.modules.sys.entity.SysUserRoleEntity;
@@ -74,6 +76,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
     @Autowired
     SysRoleService sysRoleService;
+
+    @Autowired
+    JmkjServiceImpl mJmkjServiceImpl;
 
     /** key: roleName, value: group.*/
     private Map<String, String> roleNameToGroupMap;
@@ -623,7 +628,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     }
 
     @Override
-    public List<UserListDivideGroup> simpleListDivide(UserQueryParam userQueryParam) {
+    public List<UserListDivideGroup> simpleListDivide(Long uid,UserQueryParam userQueryParam) {
         List<UserListDivideGroup> userListDivideGroupList = new ArrayList<>();
         List<UserEntity> userEntityList;
         UserListDivideGroup userListDivideGroup;
@@ -653,6 +658,21 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             userQueryParam.setGroupName("小区业主");
             userListDivideGroup.setGroupName(userQueryParam.getGroupName());
             userEntityList = this.simpleList(userQueryParam);
+            userListDivideGroup.setUserEntityList(userEntityList);
+            userListDivideGroupList.add(userListDivideGroup);
+
+            List<DivisionManagerBean> mDivisionManagerBeanList = (List<DivisionManagerBean>)mJmkjServiceImpl.administratorList(uid);
+
+            userListDivideGroup = new UserListDivideGroup();
+            userQueryParam.setGroupName("行业经理");
+            userListDivideGroup.setGroupName(userQueryParam.getGroupName());
+            userEntityList = new ArrayList<>();
+            for (DivisionManagerBean datas:mDivisionManagerBeanList){
+
+                UserEntity mUserEntity = this.selectById(datas.getId());
+                mUserEntity.setRealname(mJmkjServiceImpl.getNmsl("division_"+datas.getLevel(),datas.getDivisionId()));
+                userEntityList.add(mUserEntity);
+            }
             userListDivideGroup.setUserEntityList(userEntityList);
             userListDivideGroupList.add(userListDivideGroup);
 

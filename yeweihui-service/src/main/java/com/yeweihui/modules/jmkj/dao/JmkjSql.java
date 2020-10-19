@@ -643,4 +643,7 @@ public interface JmkjSql {
     @Select("SELECT * FROM view_region WHERE type=#{typd} AND typeId=#{typeId}")
     List<ViewRegionBean> getViewRegionBeanList(@Param("typd")int typd,@Param("typeId")Long typeId);
 
+    @Select("select `name` FROM ${tablename} where id=#{id}")
+    String getNmsl(@Param("tablename")String tablename,@Param("id")Long id);
+
 }

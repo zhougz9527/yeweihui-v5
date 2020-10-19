@@ -152,7 +152,7 @@ public interface UserService extends IService<UserEntity> {
      * @param userQueryParam
      * @return
      */
-    List<UserListDivideGroup> simpleListDivide(UserQueryParam userQueryParam);
+    List<UserListDivideGroup> simpleListDivide(Long uid,UserQueryParam userQueryParam);
 
     /**
      * 新增返回接口，返回用户角色，小区开通日期，服务截止日期
