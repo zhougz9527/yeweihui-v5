@@ -3,7 +3,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.jdbc.Driver
     druid:
-      #      url: jdbc:mysql://localhost/yeweihui_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
+      #url: jdbc:mysql://localhost/yeweihui_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
 #      url: jdbc:mysql://47.111.24.218:3306/yeweihui_prod?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
 #      username: cutie
 #      password: chenyang007
@@ -11,6 +11,10 @@ spring:
 #      url: jdbc:mysql://106.15.74.23:3306/yeweihui_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Hongkong&verifyServerCertificate=false
 #      username: root
 #      password: Fish&Chips161728
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2e528c9f1119cc3bad667daca513975a2898fcc7
       url: jdbc:mysql://122.51.51.37:8500/yeweihui?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
       username: admin
       password: 123456
