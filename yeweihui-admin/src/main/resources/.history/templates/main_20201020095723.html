@@ -44,37 +44,37 @@
                 </el-row>
             </div>
             <div style="margin-top: 20px; font-size: 40px">
-                <el-row :gutter="35">
-                    <el-col span="5">
-                        <el-card class="box-card" style="background-color: #00c0ef; color: white;font-size: 20px"
+                <el-row :gutter="30">
+                    <el-col span="4">
+                        <el-card class="box-card" style="background-color: #00c0ef; color: white;font-size: 25px"
                                  @click.native="linkTo('用章申请','modules/operation/request.html')">
                             <img style="width: 40px" src="${request.contextPath}/statics/images/request.png"/>
                             用章申请
                         </el-card>
                     </el-col>
-                    <el-col span="5">
-                        <el-card class="box-card" style="background-color: #FCC05A; color: white;font-size: 20px"
+                    <el-col span="4">
+                        <el-card class="box-card" style="background-color: #FCC05A; color: white;font-size: 25px"
                                  @click.native="linkTo('事项表决','modules/operation/vote.html')">
                             <img style="width: 40px" src="${request.contextPath}/statics/images/vote.png"/>
                             事项表决
                         </el-card>
                     </el-col>
-                    <el-col span="5">
-                        <el-card class="box-card" style="background-color: #FF8497; color: white;font-size: 20px"
+                    <el-col span="4">
+                        <el-card class="box-card" style="background-color: #FF8497; color: white;font-size: 25px"
                                  @click.native="linkTo('业委会议','modules/operation/meeting.html')">
                             &nbsp;<img style="width: 40px" src="${request.contextPath}/statics/images/meet.png"/>
                             &nbsp;业委会议
                         </el-card>
                     </el-col>
-                    <el-col span="5">
-                        <el-card class="box-card" style="background-color: #B08FFF; color: white;font-size: 20px"
+                    <el-col span="4">
+                        <el-card class="box-card" style="background-color: #B08FFF; color: white;font-size: 25px"
                                  @click.native="linkTo('费用报销','modules/operation/bill.html')">
                             <img style="width: 40px" src="${request.contextPath}/statics/images/bill.png"/>
                             费用报销
                         </el-card>
                     </el-col>
-                    <el-col span="5">
-                        <el-card class="box-card" style="background-color: #29d287; color: white;font-size: 20px"
+                    <el-col span="4">
+                        <el-card class="box-card" style="background-color: #29d287; color: white;font-size: 25px"
                                  @click.native="linkTo('履职数据','modules/data/data.html')">
                             <img style="width: 40px" src="${request.contextPath}/statics/images/5.svg"/>
                             履职数据
@@ -139,7 +139,7 @@
                                 </div>
                                 <div style="text-align: center;">
                                     <u style="font-size: 30px; color: #FD8598;">上月在线时长</u> <br />
-                                    <u style="font-size: 30px; color: #FD8598;">{{ onLineTime?onLineTime+'min':0 }}</u><br />
+                                    <u style="font-size: 30px; color: #FD8598;">{{ onLineTime+'min'||0 }}</u><br />
                                     <u style="font-size: 30px; color: #FD8598;">上月登录次数</u><br />
                                     <u style="font-size: 30px; color: #FD8598;">{{ loginTimes||0 }}</u><br />
                                 </div>
@@ -156,12 +156,6 @@
 <script src="${request.contextPath}/statics/js/mainPage.js"></script>
 </body>
 </html>
-
-<style>
-    .el-col-5{
-        width: 20% !important;
-    }
-</style>
 
 <!--<style>-->
 <!--    .el-header, .el-footer {-->

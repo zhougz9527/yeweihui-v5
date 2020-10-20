@@ -107,10 +107,10 @@ var vm = new Vue({
         data.list.push({
           icon: 'fa fa-cog',
           menuId: 0,
-          orderNum: 0,
+          orderNum: 1,
           parentId: 0,
           name: '履职数据',
-          type: 1,
+          type: 0,
           url: 'modules/data/data.html',
         });
         // url: 'modules/data/data.html',

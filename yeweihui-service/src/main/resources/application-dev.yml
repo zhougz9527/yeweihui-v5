@@ -11,7 +11,7 @@ spring:
 #      url: jdbc:mysql://106.15.74.23:3306/yeweihui_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Hongkong&verifyServerCertificate=false
 #      username: root
 #      password: Fish&Chips161728
-      url: jdbc:mysql://localhost:3306/yeweihui?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
+      url: jdbc:mysql://122.51.51.37:8500/yeweihui?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
       username: admin
       password: 123456
       initial-size: 10

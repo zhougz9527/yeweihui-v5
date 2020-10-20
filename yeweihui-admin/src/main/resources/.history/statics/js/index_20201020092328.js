@@ -98,21 +98,23 @@ var vm = new Vue({
           orderNum: 1,
           parentId: 0,
           parentName: null,
-          name: '数据中心',
+          name: '履职数据',
           perms: null,
           type: 0,
-		  url: '',
-		  list:[]
+          url: '',
         };
-        data.list.push({
+        data.list[0] = {
           icon: 'fa fa-cog',
-          menuId: 0,
-          orderNum: 0,
+          menuId: 666,
+          open: null,
+          orderNum: 1,
           parentId: 0,
+          parentName: null,
           name: '履职数据',
-          type: 1,
+          perms: null,
+          type: 0,
           url: 'modules/data/data.html',
-        });
+        };
         // url: 'modules/data/data.html',
         let arr4 = { ...vm.menuList[4] };
         vm.menuList[4] = data;

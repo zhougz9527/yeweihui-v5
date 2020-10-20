@@ -93,29 +93,20 @@ var vm = new Vue({
         });
         let data = {
           icon: 'fa fa-cog',
-          menuId: 666,
-          open: null,
+		  menuId: 666,
+		  open: null,
           orderNum: 1,
-          parentId: 0,
-          parentName: null,
-          name: '数据中心',
-          perms: null,
+		  parentId: 0,
+		  parentName: null,
+		  name: '履职数据',
+		  perms: null,
           type: 0,
-		  url: '',
-		  list:[]
-        };
-        data.list.push({
-          icon: 'fa fa-cog',
-          menuId: 0,
-          orderNum: 0,
-          parentId: 0,
-          name: '履职数据',
-          type: 1,
-          url: 'modules/data/data.html',
-        });
-        // url: 'modules/data/data.html',
-        let arr4 = { ...vm.menuList[4] };
-        vm.menuList[4] = data;
+          url: '',
+		};
+		data.list = data
+		// url: 'modules/data/data.html',
+		let arr4 = {...vm.menuList[4]}
+		vm.menuList[4] = data
         vm.menuList.push(arr4);
 
         // let data1 = {

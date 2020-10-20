@@ -43,8 +43,10 @@
                         :value="item.id">
                 </el-option>
             </el-select>
+            <!-- <#if shiro.hasPermission("user:user:save")> -->
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;查看</a>
+            <!-- </#if> -->
         </div>
-        <a class="btn btn-primary" @click="add">&nbsp;查看</a>
     </div>
     <div>
         <el-tabs class="margin30" type="border-card" value="履职量"  @tab-click="handleTabs">
@@ -61,7 +63,7 @@
                             <span class="name">{{tabOneList.realname||''}}</span>
                         </div>
                         <div class="title">{{it.name}}</div>
-                        <div class="num" v-if="tabOneList.realname">{{(it.name=='履职率'||it.name=='逾期率')?tabOneList.proportion?(parseInt(tabOneList.proportion*100)+'%'):0+'%':tabOneList.num}}</div>
+                        <div class="num" v-if="tabOneList.realname">{{(it.name=='履职率'||it.name=='逾期率')?tabOneList.proportion:tabOneList.num}}</div>
                         <div class="num" v-else>0</div>
                         <div class="title">您的排名</div>
                         <div class="num">{{tabOneList.ranking||0}}</div>

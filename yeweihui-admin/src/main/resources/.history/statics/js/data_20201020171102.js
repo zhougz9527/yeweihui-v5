@@ -321,10 +321,10 @@ var vm = new Vue({
     q: {
       keyword: null,
       zoneId: null,
-    },
-    index1: 1,
-    index2: 1,
-    index3: 1,
+	},
+	index1:0,
+	index2:0,
+	index3:0,
     showList: true,
     title: null,
     roleList: {},
@@ -354,21 +354,21 @@ var vm = new Vue({
   methods: {
     // tabbar 切换
     handleTabs(e) {
-      console.log(e);
-      vm.$data.index1 = e.index;
+	  console.log(e);
+	  vm.$data.index1 = e.index
       this.getList(vm.$data.index1);
     },
     // tabbar 切换
     handleTabsTwo(e) {
       console.log(e);
-      vm.$data.index2 = e.index;
-      this.getListTwo(vm.$data.index2);
+	  vm.$data.index2 = e.index
+      this.getListTwo(vm.$data.index1);
     },
     // tabbar 切换
     handleTabsThree(e) {
       console.log(e);
-      vm.$data.index3 = e.index;
-      this.getListThree(vm.$data.index3);
+	  vm.$data.index3 = e.index
+      this.getListThree(vm.$data.index1);
     },
     // 查询数据1
     getList(index) {
@@ -450,7 +450,7 @@ var vm = new Vue({
     },
     // 查询数据3
     getListThree(index) {
-      console.log('getListThree', index);
+      console.log('getList', index);
       let url = baseURL;
       switch (Number(index)) {
         case 1:
@@ -474,13 +474,6 @@ var vm = new Vue({
         },
         success: function (result) {
           if (result.code == 0) {
-			let obj = result.data;
-			if(Number(index)===1){
-				obj.num = parseInt(result.data.num / 60);
-				obj.listData = result.data.listData.map(it => {
-					return {...it,num:parseInt(it.num/60)}
-				})
-			}
             vm.$data.tabThreeList = result.data;
             console.log(result, this.tabThreeList);
           }
@@ -491,9 +484,9 @@ var vm = new Vue({
     // 查看
     add() {
       console.log(this.optionActive, this.time);
-      vm.getList(vm.$data.index1);
-      vm.getListTwo(vm.$data.index2);
-      vm.getListThree(vm.$data.index3);
+	  vm.getList(vm.$data.index1);
+	  vm.getListTwo(vm.$data.index2);
+	  vm.getListThree(vm.$data.index3);
     },
     // 初始化时间
     setTime() {

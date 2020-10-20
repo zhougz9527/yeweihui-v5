@@ -4,15 +4,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.yeweihui.common.config.wx.WxMaProperties;
-import com.yeweihui.common.exception.RRException;
 import com.yeweihui.modules.user.dao.MpUserDao;
-import com.yeweihui.modules.user.entity.MessageEntity;
 import com.yeweihui.modules.user.entity.MpUserEntity;
 import com.yeweihui.modules.user.entity.UserEntity;
 import com.yeweihui.modules.user.service.MessageService;
 import com.yeweihui.modules.user.service.MpUserService;
 import com.yeweihui.modules.user.service.UserService;
-import okhttp3.*;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,41 +119,41 @@ public class MpUserServiceImpl extends ServiceImpl<MpUserDao, MpUserEntity> impl
     @Override
     @Transactional
     public void pushTemplateMessage(JSONObject data, Long uid, String type) {
-        OkHttpClient client = new OkHttpClient();
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("https://api.weixin.qq.com/cgi-bin/token").newBuilder();
-        urlBuilder.addQueryParameter("grant_type", "client_credential");
-        urlBuilder.addQueryParameter("appid", publicAppId);
-        urlBuilder.addQueryParameter("secret", publicSecret);
-        Request request = new Request.Builder().url(urlBuilder.build()).get().build();
-        try (Response response = client.newCall(request).execute()) {
-            String body = response.body().string();
-            logger.info("request access_token response result: " + body);
-            JSONObject obj = JSONObject.parseObject(body);
-            String accessToken = obj.getString("access_token");
-            logger.info("access_token :" + accessToken);
-            urlBuilder = HttpUrl.parse("https://api.weixin.qq.com/cgi-bin/message/template/send").newBuilder();
-            urlBuilder.addQueryParameter("access_token", accessToken);
-
-            RequestBody requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), data.toJSONString());
-            request = new Request.Builder().url(urlBuilder.build()).post(requestBody).build();
-            Response response2 = client.newCall(request).execute();
-            String body2 = response2.body().string();
-            logger.info("request body2 response: " + body2);
-            JSONObject obj2 = JSONObject.parseObject(body2);
-            logger.info("request 模板消息 response json:" + obj2);
-            if (obj2.getInteger("errcode") != 0) {
-                throw new Exception();
-            }
-            MessageEntity messageEntity = new MessageEntity();
-            messageEntity.setUid(uid);
-            messageEntity.setMessage(data.toJSONString());
-            messageEntity.setType(type);
-            messageService.insert(messageEntity);
-
-        } catch (Exception e) {
-            logger.error("推送模板消息失败", e);
-            throw new RRException("推送模板消息失败, 请确认是否关注【蝴蝶居】公众号");
-        }
+//        OkHttpClient client = new OkHttpClient();
+//        HttpUrl.Builder urlBuilder = HttpUrl.parse("https://api.weixin.qq.com/cgi-bin/token").newBuilder();
+//        urlBuilder.addQueryParameter("grant_type", "client_credential");
+//        urlBuilder.addQueryParameter("appid", publicAppId);
+//        urlBuilder.addQueryParameter("secret", publicSecret);
+//        Request request = new Request.Builder().url(urlBuilder.build()).get().build();
+//        try (Response response = client.newCall(request).execute()) {
+//            String body = response.body().string();
+//            logger.info("request access_token response result: " + body);
+//            JSONObject obj = JSONObject.parseObject(body);
+//            String accessToken = obj.getString("access_token");
+//            logger.info("access_token :" + accessToken);
+//            urlBuilder = HttpUrl.parse("https://api.weixin.qq.com/cgi-bin/message/template/send").newBuilder();
+//            urlBuilder.addQueryParameter("access_token", accessToken);
+//
+//            RequestBody requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), data.toJSONString());
+//            request = new Request.Builder().url(urlBuilder.build()).post(requestBody).build();
+//            Response response2 = client.newCall(request).execute();
+//            String body2 = response2.body().string();
+//            logger.info("request body2 response: " + body2);
+//            JSONObject obj2 = JSONObject.parseObject(body2);
+//            logger.info("request 模板消息 response json:" + obj2);
+//            if (obj2.getInteger("errcode") != 0) {
+//                throw new Exception();
+//            }
+//            MessageEntity messageEntity = new MessageEntity();
+//            messageEntity.setUid(uid);
+//            messageEntity.setMessage(data.toJSONString());
+//            messageEntity.setType(type);
+//            messageService.insert(messageEntity);
+//
+//        } catch (Exception e) {
+//            logger.error("推送模板消息失败", e);
+//            throw new RRException("推送模板消息失败, 请确认是否关注【蝴蝶居】公众号");
+//        }
 
     }
 

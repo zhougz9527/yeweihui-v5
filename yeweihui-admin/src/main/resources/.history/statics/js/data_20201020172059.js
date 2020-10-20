@@ -323,8 +323,8 @@ var vm = new Vue({
       zoneId: null,
     },
     index1: 1,
-    index2: 1,
-    index3: 1,
+    index2: 2,
+    index3: 3,
     showList: true,
     title: null,
     roleList: {},
@@ -450,7 +450,7 @@ var vm = new Vue({
     },
     // 查询数据3
     getListThree(index) {
-      console.log('getListThree', index);
+      console.log('getList', index);
       let url = baseURL;
       switch (Number(index)) {
         case 1:
