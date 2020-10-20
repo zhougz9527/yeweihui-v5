@@ -6,6 +6,8 @@ import com.yeweihui.common.utils.PageUtils;
 import com.yeweihui.modules.jmkj.Entity.*;
 import com.yeweihui.modules.jmkj.dao.JmkjSql;
 import com.yeweihui.modules.jmkj.service.JmkjService;
+import com.yeweihui.modules.user.entity.UserEntity;
+import com.yeweihui.modules.user.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,8 @@ public class JmkjServiceImpl implements JmkjService{
     @Autowired
     JmkjSql jmkjSql;
 
+    @Autowired
+    UserServiceImpl mUserServiceImpl;
 
     @Transactional
     @Override
@@ -173,6 +177,23 @@ public class JmkjServiceImpl implements JmkjService{
             }
         }
 
+        if (map.get("realname")==null){
+
+
+            UserEntity mUser = mUserServiceImpl.selectById(uid);
+            PerformanceOfDutiesBean mPerformanceOfDutiesBean = new PerformanceOfDutiesBean();
+            mPerformanceOfDutiesBean.setUid(mUser.getId());
+            mPerformanceOfDutiesBean.setRealname(mUser.getRealname());
+            mPerformanceOfDutiesBean.setNum(0l);
+            mPerformanceOfDutiesBean.setAvatarUrl(mUser.getAvatarUrl());
+            PerformanceOfDutiesBeans.add(mPerformanceOfDutiesBean);
+            map.put("realname",mPerformanceOfDutiesBean.getRealname());
+            map.put("avatarUrl",mPerformanceOfDutiesBean.getAvatarUrl());
+            map.put("num",mPerformanceOfDutiesBean.getNum());
+            map.put("ranking",PerformanceOfDutiesBeans.size());
+
+        }
+
         map.put("listData",PerformanceOfDutiesBeans);
 
         return map;
@@ -233,6 +254,23 @@ public class JmkjServiceImpl implements JmkjService{
             }
         }
 
+        if (map.get("realname")==null){
+
+
+            UserEntity mUser = mUserServiceImpl.selectById(uid);
+            PerformanceRateBean mPerformanceRateBean = new PerformanceRateBean();
+            mPerformanceRateBean.setUid(mUser.getId());
+            mPerformanceRateBean.setRealname(mUser.getRealname());
+            mPerformanceRateBean.setProportion(0f);
+            mPerformanceRateBean.setAvatarUrl(mUser.getAvatarUrl());
+            PerformanceRateBeans.add(mPerformanceRateBean);
+            map.put("realname",mPerformanceRateBean.getRealname());
+            map.put("avatarUrl",mPerformanceRateBean.getAvatarUrl());
+            map.put("num",mPerformanceRateBean.getProportion());
+            map.put("ranking",PerformanceRateBeans.size());
+
+        }
+
         map.put("listData",PerformanceRateBeans);
 
         return map;
@@ -289,6 +327,23 @@ public class JmkjServiceImpl implements JmkjService{
                 map.put("ranking",i+1);
                 break;
             }
+        }
+
+        if (map.get("realname")==null){
+
+
+            UserEntity mUser = mUserServiceImpl.selectById(uid);
+            PerformanceOfDutiesBean mPerformanceOfDutiesBean = new PerformanceOfDutiesBean();
+            mPerformanceOfDutiesBean.setUid(mUser.getId());
+            mPerformanceOfDutiesBean.setRealname(mUser.getRealname());
+            mPerformanceOfDutiesBean.setNum(0l);
+            mPerformanceOfDutiesBean.setAvatarUrl(mUser.getAvatarUrl());
+            PerformanceOfDutiesBeans.add(mPerformanceOfDutiesBean);
+            map.put("realname",mPerformanceOfDutiesBean.getRealname());
+            map.put("avatarUrl",mPerformanceOfDutiesBean.getAvatarUrl());
+            map.put("num",mPerformanceOfDutiesBean.getNum());
+            map.put("ranking",PerformanceOfDutiesBeans.size());
+
         }
 
         map.put("listData",PerformanceOfDutiesBeans);
@@ -349,6 +404,23 @@ public class JmkjServiceImpl implements JmkjService{
             }
         }
 
+        if (map.get("realname")==null){
+
+
+            UserEntity mUser = mUserServiceImpl.selectById(uid);
+            PerformanceRateBean mPerformanceRateBean = new PerformanceRateBean();
+            mPerformanceRateBean.setUid(mUser.getId());
+            mPerformanceRateBean.setRealname(mUser.getRealname());
+            mPerformanceRateBean.setProportion(0f);
+            mPerformanceRateBean.setAvatarUrl(mUser.getAvatarUrl());
+            PerformanceRateBeans.add(mPerformanceRateBean);
+            map.put("realname",mPerformanceRateBean.getRealname());
+            map.put("avatarUrl",mPerformanceRateBean.getAvatarUrl());
+            map.put("num",mPerformanceRateBean.getProportion());
+            map.put("ranking",PerformanceRateBeans.size());
+
+        }
+
         map.put("listData",PerformanceRateBeans);
 
         return map;
@@ -405,6 +477,23 @@ public class JmkjServiceImpl implements JmkjService{
                 map.put("ranking",i+1);
                 break;
             }
+        }
+
+        if (map.get("realname")==null){
+
+
+            UserEntity mUser = mUserServiceImpl.selectById(uid);
+            PerformanceOfDutiesBean mPerformanceOfDutiesBean = new PerformanceOfDutiesBean();
+            mPerformanceOfDutiesBean.setUid(mUser.getId());
+            mPerformanceOfDutiesBean.setRealname(mUser.getRealname());
+            mPerformanceOfDutiesBean.setNum(0l);
+            mPerformanceOfDutiesBean.setAvatarUrl(mUser.getAvatarUrl());
+            PerformanceOfDutiesBeans.add(mPerformanceOfDutiesBean);
+            map.put("realname",mPerformanceOfDutiesBean.getRealname());
+            map.put("avatarUrl",mPerformanceOfDutiesBean.getAvatarUrl());
+            map.put("num",mPerformanceOfDutiesBean.getNum());
+            map.put("ranking",PerformanceOfDutiesBeans.size());
+
         }
 
         map.put("listData",PerformanceOfDutiesBeans);
@@ -464,6 +553,23 @@ public class JmkjServiceImpl implements JmkjService{
             }
         }
 
+        if (map.get("realname")==null){
+
+
+            UserEntity mUser = mUserServiceImpl.selectById(uid);
+            PerformanceOfDutiesBean mPerformanceOfDutiesBean = new PerformanceOfDutiesBean();
+            mPerformanceOfDutiesBean.setUid(mUser.getId());
+            mPerformanceOfDutiesBean.setRealname(mUser.getRealname());
+            mPerformanceOfDutiesBean.setNum(0l);
+            mPerformanceOfDutiesBean.setAvatarUrl(mUser.getAvatarUrl());
+            PerformanceOfDutiesBeans.add(mPerformanceOfDutiesBean);
+            map.put("realname",mPerformanceOfDutiesBean.getRealname());
+            map.put("avatarUrl",mPerformanceOfDutiesBean.getAvatarUrl());
+            map.put("num",mPerformanceOfDutiesBean.getNum());
+            map.put("ranking",PerformanceOfDutiesBeans.size());
+
+        }
+
         map.put("listData",PerformanceOfDutiesBeans);
 
         return map;
@@ -519,6 +625,23 @@ public class JmkjServiceImpl implements JmkjService{
                 map.put("ranking",i+1);
                 break;
             }
+        }
+
+        if (map.get("realname")==null){
+
+
+            UserEntity mUser = mUserServiceImpl.selectById(uid);
+            PerformanceOfDutiesBean mPerformanceOfDutiesBean = new PerformanceOfDutiesBean();
+            mPerformanceOfDutiesBean.setUid(mUser.getId());
+            mPerformanceOfDutiesBean.setRealname(mUser.getRealname());
+            mPerformanceOfDutiesBean.setNum(0l);
+            mPerformanceOfDutiesBean.setAvatarUrl(mUser.getAvatarUrl());
+            PerformanceOfDutiesBeans.add(mPerformanceOfDutiesBean);
+            map.put("realname",mPerformanceOfDutiesBean.getRealname());
+            map.put("avatarUrl",mPerformanceOfDutiesBean.getAvatarUrl());
+            map.put("num",mPerformanceOfDutiesBean.getNum());
+            map.put("ranking",PerformanceOfDutiesBeans.size());
+
         }
 
         map.put("listData",PerformanceOfDutiesBeans);
@@ -578,6 +701,23 @@ public class JmkjServiceImpl implements JmkjService{
             }
         }
 
+        if (map.get("realname")==null){
+
+
+            UserEntity mUser = mUserServiceImpl.selectById(uid);
+            PerformanceOfDutiesBean mPerformanceOfDutiesBean = new PerformanceOfDutiesBean();
+            mPerformanceOfDutiesBean.setUid(mUser.getId());
+            mPerformanceOfDutiesBean.setRealname(mUser.getRealname());
+            mPerformanceOfDutiesBean.setNum(0l);
+            mPerformanceOfDutiesBean.setAvatarUrl(mUser.getAvatarUrl());
+            PerformanceOfDutiesBeans.add(mPerformanceOfDutiesBean);
+            map.put("realname",mPerformanceOfDutiesBean.getRealname());
+            map.put("avatarUrl",mPerformanceOfDutiesBean.getAvatarUrl());
+            map.put("num",mPerformanceOfDutiesBean.getNum());
+            map.put("ranking",PerformanceOfDutiesBeans.size());
+
+        }
+
         map.put("listData",PerformanceOfDutiesBeans);
 
         return map;
@@ -633,6 +773,23 @@ public class JmkjServiceImpl implements JmkjService{
                 map.put("ranking",i+1);
                 break;
             }
+        }
+
+        if (map.get("realname")==null){
+
+
+            UserEntity mUser = mUserServiceImpl.selectById(uid);
+            PerformanceOfDutiesBean mPerformanceOfDutiesBean = new PerformanceOfDutiesBean();
+            mPerformanceOfDutiesBean.setUid(mUser.getId());
+            mPerformanceOfDutiesBean.setRealname(mUser.getRealname());
+            mPerformanceOfDutiesBean.setNum(0l);
+            mPerformanceOfDutiesBean.setAvatarUrl(mUser.getAvatarUrl());
+            PerformanceOfDutiesBeans.add(mPerformanceOfDutiesBean);
+            map.put("realname",mPerformanceOfDutiesBean.getRealname());
+            map.put("avatarUrl",mPerformanceOfDutiesBean.getAvatarUrl());
+            map.put("num",mPerformanceOfDutiesBean.getNum());
+            map.put("ranking",PerformanceOfDutiesBeans.size());
+
         }
 
         map.put("listData",PerformanceOfDutiesBeans);
