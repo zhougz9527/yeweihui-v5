@@ -175,13 +175,59 @@ public class BillServiceImpl extends ServiceImpl<BillDao, BillEntity> implements
             }
         }
 
+        List<BillMemberEntity> copyToMemberEntityList = bill.getCopyToMemberEntityList();
+        if(copyToMemberEntityList != null && copyToMemberEntityList.size()>0){
+            for (BillMemberEntity billMemberEntity : copyToMemberEntityList) {
+                billMemberEntity.setBid(bill.getId());
+                billMemberEntity.setReferUid(bill.getUid());
+                billMemberEntity.setType(BillMemberTypeEnum.抄送.getCode());
+                billMemberService.insert(billMemberEntity);
+            }
+        }
+
+        Long bid = bill.getId();
+        UserEntity refUser = userService.selectById(bill.getUid());
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        for (BillMemberEntity billMemberEntity: billMemberEntityList) {
+            MpUserEntity mpUserEntity = mpUserService.selectOne(new EntityWrapper<MpUserEntity>().eq("uid", billMemberEntity.getUid()));
+            if (mpUserEntity == null) continue;
+            String openId = mpUserEntity.getOpenidPublic();
+            JSONObject billRemind = new JSONObject();
+            billRemind.put("touser", openId);
+            billRemind.put("template_id", "FO8_aLmkgrWVtM9yy6AA0wTi8gjeD4wpY9-26Txm0NI");
+            JSONObject miniProgram = new JSONObject();
+            miniProgram.put("appid", "wx5e7524c02dade60a");
+            miniProgram.put("pagepath", String.format("pages/billdetail/index?id=%s", bid));
+            billRemind.put("miniprogram", miniProgram);
+            JSONObject data = new JSONObject();
+            JSONObject first = new JSONObject();
+            first.put("value", "您有一项新的费用报销审批");
+            JSONObject keyword1 = new JSONObject();
+            keyword1.put("value", "费用报销");
+            JSONObject keyword2 = new JSONObject();
+            keyword2.put("value", refUser.getRealname());
+            JSONObject keyword3 = new JSONObject();
+            keyword3.put("value", df.format(bill.getCreateTime()));
+            JSONObject keyword4 = new JSONObject();
+            keyword4.put("value", userEntity.getRoleName());
+            data.put("first", first);
+            data.put("keyword1", keyword1);
+            data.put("keyword2", keyword2);
+            data.put("keyword3", keyword3);
+            data.put("keyword4", keyword4);
+            billRemind.put("data", data);
+            System.out.println(billRemind);
+            mpUserService.pushTemplateMessage(billRemind, billMemberEntity.getUid(), "bill");
+        }
+
         new Timer().schedule(new TimerTask() {
 
             int i=0;
             public void run() {
 
                 i = i+1;
-                if (i>=4)return;
+                if (i>=3)return;
 
                 List<BillMemberEntity> copyToMemberEntityList = bill.getCopyToMemberEntityList();
                 if(copyToMemberEntityList != null && copyToMemberEntityList.size()>0){
@@ -230,7 +276,7 @@ public class BillServiceImpl extends ServiceImpl<BillDao, BillEntity> implements
                 }
 
             }
-        }, 1000*60*60*12 , 1000);
+        }, 1000*60 , 1000);
 
 
         this.saveOrUpdateExtra(bill);

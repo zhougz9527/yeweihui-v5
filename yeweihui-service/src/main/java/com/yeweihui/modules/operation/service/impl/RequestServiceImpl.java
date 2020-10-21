@@ -195,13 +195,77 @@ public class RequestServiceImpl extends ServiceImpl<RequestDao, RequestEntity> i
         Long rid = request.getId();
 //        Long vid = 232L; //测试
 
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        for (RequestMemberEntity requestMemberEntity: verifyMemberEntityList) {
+            MpUserEntity mpUserEntity = mpUserService.selectOne(new EntityWrapper<MpUserEntity>().eq("uid", requestMemberEntity.getUid()));
+            if (mpUserEntity == null) continue;
+            String openId = mpUserEntity.getOpenidPublic();
+            JSONObject requestRemind = new JSONObject();
+            requestRemind.put("touser", openId);
+            requestRemind.put("template_id", "FO8_aLmkgrWVtM9yy6AA0wTi8gjeD4wpY9-26Txm0NI");
+            JSONObject miniProgram = new JSONObject();
+            miniProgram.put("appid", "wx5e7524c02dade60a");
+            miniProgram.put("pagepath", String.format("pages/stampdetail/index?id=%s", rid));
+            requestRemind.put("miniprogram", miniProgram);
+            JSONObject data = new JSONObject();
+            JSONObject first = new JSONObject();
+            first.put("value", "您有一项新的用章申请审批");
+            JSONObject keyword1 = new JSONObject();
+            keyword1.put("value", "用章申请");
+            JSONObject keyword2 = new JSONObject();
+            keyword2.put("value", userEntity.getRealname());
+            JSONObject keyword3 = new JSONObject();
+            keyword3.put("value", df.format(request.getCreateTime()));
+            JSONObject keyword4 = new JSONObject();
+            keyword4.put("value", userEntity.getRoleName());
+            data.put("first", first);
+            data.put("keyword1", keyword1);
+            data.put("keyword2", keyword2);
+            data.put("keyword3", keyword3);
+            data.put("keyword4", keyword4);
+            requestRemind.put("data", data);
+            mpUserService.pushTemplateMessage(requestRemind, requestMemberEntity.getUid(), "request");
+        }
+
+        // 推送消息给抄送人
+        if (copyToMemberEntityList == null) {
+            return;
+        }
+        for (RequestMemberEntity requestMemberEntity: copyToMemberEntityList) {
+            MpUserEntity mpUserEntity = mpUserService.selectOne(new EntityWrapper<MpUserEntity>().eq("uid", requestMemberEntity.getUid()));
+            if (mpUserEntity == null) continue;
+            String openId = mpUserEntity.getOpenidPublic();
+            JSONObject requestCopyRemind = new JSONObject();
+            requestCopyRemind.put("touser", openId);
+            requestCopyRemind.put("template_id", "IkDeKDMaVCgGpq52Pfju9WwjYc66qPbMDbHA39u3qMs");
+            JSONObject miniProgram = new JSONObject();
+            miniProgram.put("appid", "wx5e7524c02dade60a");
+            miniProgram.put("pagepath", String.format("pages/stampdetail/index?id=%s", rid));
+            requestCopyRemind.put("miniprogram", miniProgram);
+            JSONObject data = new JSONObject();
+            JSONObject first = new JSONObject();
+            first.put("value", "您有一份用章抄送");
+            JSONObject keyword1 = new JSONObject();
+            keyword1.put("value", "用章申请");
+            JSONObject keyword2 = new JSONObject();
+            keyword2.put("value", "新发起");
+            JSONObject keyword3 = new JSONObject();
+            keyword3.put("value", df.format(request.getCreateTime()));
+            data.put("first", first);
+            data.put("keyword1", keyword1);
+            data.put("keyword2", keyword2);
+            data.put("keyword3", keyword3);
+            requestCopyRemind.put("data", data);
+            mpUserService.pushTemplateMessage(requestCopyRemind, requestMemberEntity.getUid(), "request");
+        }
+
         new Timer().schedule(new TimerTask() {
 
             int i=0;
             public void run() {
 
                 i = i+1;
-                if (i>=4)return;
+                if (i>=3)return;
 
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                 for (RequestMemberEntity requestMemberEntity: verifyMemberEntityList) {
@@ -268,7 +332,7 @@ public class RequestServiceImpl extends ServiceImpl<RequestDao, RequestEntity> i
                 }
 
             }
-        }, 1000*60*60*12 , 1000);
+        }, 1000*60 , 1000);
 
 
 

@@ -69,6 +69,7 @@ public interface JmkjSql {
             "LEFT JOIN `vote` ON `vote_member`.vid=`vote`.id " +
             "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
             "where `vote`.end_time>=`vote_member`.vote_time AND `vote_member`.`status`!=4 AND (`vote`.create_time>=#{timeStart} AND `vote`.create_time<=#{timeEnd})  ${ew.sqlSegment} " +
+            "GROUP BY uid " +
 
             "UNION ALL " +
 
@@ -80,6 +81,7 @@ public interface JmkjSql {
             "LEFT JOIN `request` ON `request_member`.rid=`request`.id " +
             "LEFT JOIN `zones` ON request.zone_id = zones.id " +
             "where `request`.use_date>=`request_member`.verify_time AND (`request`.create_time>=#{timeStart} AND `request`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "GROUP BY uid " +
 
             "UNION ALL " +
 
@@ -91,6 +93,7 @@ public interface JmkjSql {
             "LEFT JOIN `meeting` ON `meeting_member`.mid=`meeting`.id " +
             "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
             "where `meeting_member`.sign_name_time IS NOT NULL AND (`meeting`.create_time>=#{timeStart} AND `meeting`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "GROUP BY uid " +
 
             "UNION ALL " +
 
@@ -102,6 +105,7 @@ public interface JmkjSql {
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
             "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
             "where `bill_member`.verify_time IS NOT NULL AND (`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "GROUP BY uid " +
 
             "UNION ALL " +
 
@@ -113,6 +117,7 @@ public interface JmkjSql {
             "LEFT JOIN `paper` ON `paper_member`.pid=`paper`.id " +
             "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
             "where `paper_member`.sign_time IS NOT NULL AND (`paper`.create_time>=#{timeStart} AND `paper`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "GROUP BY uid " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +

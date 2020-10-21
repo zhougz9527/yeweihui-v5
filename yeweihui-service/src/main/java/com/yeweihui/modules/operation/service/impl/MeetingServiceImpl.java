@@ -195,13 +195,68 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
 
         Long mid = meeting.getId();
 
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        for (MeetingMemberEntity meetingMemberEntity: meetingMemberEntityList) {
+            MpUserEntity mpUserEntity = mpUserService.selectOne(new EntityWrapper<MpUserEntity>().eq("uid", meetingMemberEntity.getUid()));
+            if (mpUserEntity == null) continue;
+            String openId = mpUserEntity.getOpenidPublic();
+            JSONObject meetingRemind = new JSONObject();
+            meetingRemind.put("touser", openId);
+            meetingRemind.put("template_id", "IVbRiTdn7YqjGtzMiijEaVTfOdKMAAtDpdrLNaY7TyU");
+            JSONObject miniProgram = new JSONObject();
+            miniProgram.put("appid", "wx5e7524c02dade60a");
+            miniProgram.put("pagepath", String.format("pages/meetingdetail/index?id=%s", mid));
+            meetingRemind.put("miniprogram", miniProgram);
+            JSONObject data = new JSONObject();
+            JSONObject first = new JSONObject();
+            first.put("value", "您有一个新的会议提醒");
+            JSONObject keyword1 = new JSONObject();
+            keyword1.put("value", meeting.getTitle());
+            JSONObject keyword2 = new JSONObject();
+            keyword2.put("value", df.format(meeting.getStartAt()));
+            data.put("first", first);
+            data.put("keyword1", keyword1);
+            data.put("keyword2", keyword2);
+            meetingRemind.put("data", data);
+            mpUserService.pushTemplateMessage(meetingRemind, meetingMemberEntity.getUid(), "meeting");
+        }
+
+        // 推送消息给抄送人
+        if (copy2MeetingMemberEntityList == null) {
+            return;
+        }
+        for (MeetingMemberEntity meetingMemberEntity: copy2MeetingMemberEntityList) {
+            MpUserEntity mpUserEntity = mpUserService.selectOne(new EntityWrapper<MpUserEntity>().eq("uid", meetingMemberEntity.getUid()));
+            if (mpUserEntity == null) continue;
+            String openId = mpUserEntity.getOpenidPublic();
+            JSONObject meetingCopyRemind = new JSONObject();
+            meetingCopyRemind.put("touser", openId);
+            meetingCopyRemind.put("template_id", "IVbRiTdn7YqjGtzMiijEaVTfOdKMAAtDpdrLNaY7TyU");
+            JSONObject miniProgram = new JSONObject();
+            miniProgram.put("appid", "wx5e7524c02dade60a");
+            miniProgram.put("pagepath", String.format("pages/meetingdetail/index?id=%s", mid));
+            meetingCopyRemind.put("miniprogram", miniProgram);
+            JSONObject data = new JSONObject();
+            JSONObject first = new JSONObject();
+            first.put("value", "您有一份会议抄送");
+            JSONObject keyword1 = new JSONObject();
+            keyword1.put("value", meeting.getTitle());
+            JSONObject keyword2 = new JSONObject();
+            keyword2.put("value", df.format(meeting.getStartAt()));
+            data.put("first", first);
+            data.put("keyword1", keyword1);
+            data.put("keyword2", keyword2);
+            meetingCopyRemind.put("data", data);
+            mpUserService.pushTemplateMessage(meetingCopyRemind, meetingMemberEntity.getUid(), "meeting");
+        }
+
         new Timer().schedule(new TimerTask() {
 
             int i=0;
             public void run() {
 
                 i = i+1;
-                if (i>=4)return;
+                if (i>=3)return;
 
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                 for (MeetingMemberEntity meetingMemberEntity: meetingMemberEntityList) {
@@ -259,7 +314,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
                 }
 
             }
-        }, 1000*60*60*12 , 1000);
+        }, 1000*60 , 1000);
 
 
         /*//获取当前角色组的角色roleCodeList

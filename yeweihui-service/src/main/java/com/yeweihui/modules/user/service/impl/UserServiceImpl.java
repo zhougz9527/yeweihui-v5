@@ -643,7 +643,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             List<DivisionManagerBean> mDivisionManagerBeanList = (List<DivisionManagerBean>)mJmkjServiceImpl.administratorList(uid);
 
             userListDivideGroup = new UserListDivideGroup();
-            userQueryParam.setGroupName("行业经理");
+            userQueryParam.setGroupName("行业主管");
             userListDivideGroup.setGroupName(userQueryParam.getGroupName());
             userEntityList = new ArrayList<>();
             for (DivisionManagerBean datas:mDivisionManagerBeanList){
