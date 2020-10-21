@@ -107,6 +107,3 @@ html {
     background-color:#438CB3;
     color:#fff;
 }
-.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active:hover{
-    color:#fff;
-}

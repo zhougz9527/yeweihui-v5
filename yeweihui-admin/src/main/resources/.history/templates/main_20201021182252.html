@@ -84,7 +84,7 @@
             </div>
             <div style="margin-top: 20px">
                 <el-row :gutter="30">
-                    <el-col span="11">
+                    <el-col span="8">
                         <el-card class="box-card">
                             <div slot="header" class="clearfix">
                                 <span style="font-size: 18px; color: #00c0ef">𝅛 人员列表</span>
@@ -108,9 +108,9 @@
                             </div>
                         </el-card>
                     </el-col>
-                    <el-col span="5" style="display: flex;flex-direction: column;">
+                    <el-col span="6" style="display: flex;flex-direction: column;">
                         <div>
-                            <el-card class="box-card" style="height: 180px;">
+                            <el-card class="box-card" style="height: 200px;">
                                 <div slot="header" class="clearfix">
                                     <span style="font-size: 18px; color: #A9D07A;">𝅛 收支报表</span>
                                 </div>
@@ -131,17 +131,17 @@
                         </div>
                         
                     </el-col>
-                    <el-col span="8">
+                    <el-col span="12">
                         <div>
                             <el-card class="box-card" >
                                 <div slot="header" class="clearfix">
                                     <span style="font-size: 18px; color: #FD8598">𝅛 我的数据</span>
                                 </div>
-                                <div style="text-align: left;">
-                                    <div style="font-size: 26px; color: #FD8598;margin-bottom:15px">上月在线时长</div>
-                                    <div style="font-size: 26px; color: #FD8598;margin-bottom:15px">{{ onLineTime?onLineTime:0 }}min</div>
-                                    <div style="font-size: 26px; color: #FD8598;margin-bottom:15px">上月登录次数</div>
-                                    <div style="font-size: 26px; color: #FD8598;margin-bottom:15px">{{ loginTimes||0 }}</div>
+                                <div style="text-align: center;">
+                                    <u style="font-size: 30px; color: #FD8598;">上月在线时长</u> <br />
+                                    <u style="font-size: 30px; color: #FD8598;">{{ onLineTime?onLineTime+'min':0 }}</u><br />
+                                    <u style="font-size: 30px; color: #FD8598;">上月登录次数</u><br />
+                                    <u style="font-size: 30px; color: #FD8598;">{{ loginTimes||0 }}</u><br />
                                 </div>
                             </el-card></div>
                     </el-col>

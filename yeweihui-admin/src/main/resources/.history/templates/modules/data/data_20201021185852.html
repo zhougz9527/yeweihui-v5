@@ -8,16 +8,19 @@
 <body>
 <div id="rrapp" v-cloak>
     <div style="font-size: 22px;font-weight: 600;margin: 15px 0;" title="">履职数据
-<img style="width:15px;height:15px;margin-left:10px" src="../../../statics/images/ask.svg" alt="" title="操作性任务
-履职量：指的是五大操作任务指派给您时您在规定时间内完成的数量
-履职率：指的是五大操作任务指派给您时您在规定时间内完成的数量占总数的比率
-逾期量：指的是五大操作任务指派给您时您在规定时间内未完成的数量
-逾期率：指的是五大操作任务指派给您时您在规定时间内未完成的数量占总数的比率
-新建总量：指的是您创建五大任务的总数
+<img style="width:15px;height:15px;margin-left:10px" src="../../../statics/images/ask.svg" alt="" title="履职数据计算标准：
 
-浏览性任务
-完成量：通告和公示浏览完成后的数量
-新建总量：指的是您创建通告和公示的总数"></div>
+
+
+任务类选择的时间为创建时间
+
+表决，用章，以截止时间作为完成标准
+
+会议以签字时间结束后（看代码逻辑）天作为完成标准
+
+报销以全部结束时间作为完成标准
+
+发函为全部审批结束作为完成标准"></div>
     <div>
         <div class="inlinde-block">
             <el-date-picker

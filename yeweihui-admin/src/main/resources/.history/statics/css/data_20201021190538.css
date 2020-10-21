@@ -103,10 +103,7 @@ html {
 .el-date-editor--daterange{
     width: 400px;
 }
-.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
-    background-color:#438CB3;
-    color:#fff;
-}
-.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active:hover{
+.is-top .is-active{
+    backgroud-color:#438CB3;
     color:#fff;
 }
