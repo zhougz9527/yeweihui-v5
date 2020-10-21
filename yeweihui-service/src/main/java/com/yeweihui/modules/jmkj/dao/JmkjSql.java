@@ -57,67 +57,77 @@ public interface JmkjSql {
             "uid," +
             "realname," +
             "avatarUrl," +
-            "count(*)as num " +
+            "sum(if(create_time>=#{timeStart} AND create_time<=#{timeEnd} and md=1,1,0)) as num " +
             "from " +
             "(" +
 
             "select " +
-            "`vote_member`.uid as uid," +
+            "`vote`.create_time as create_time,"+
+            "if(`vote`.end_time>=`vote_member`.vote_time AND `vote_member`.`status`!=4,1,0) as md," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "from `vote_member` LEFT JOIN `user` ON `vote_member`.uid=`user`.id " +
+            "from `user` LEFT JOIN `vote_member` ON `vote_member`.uid=`user`.id " +
             "LEFT JOIN `vote` ON `vote_member`.vid=`vote`.id " +
             "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where `vote`.end_time>=`vote_member`.vote_time AND `vote_member`.`status`!=4 AND (`vote`.create_time>=#{timeStart} AND `vote`.create_time<=#{timeEnd})  ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`request_member`.uid as uid," +
+            "`request`.create_time as create_time," +
+            "if(`request`.use_date>=`request_member`.verify_time,1,0) as md," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `request_member` LEFT JOIN `user` ON `request_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `request_member` ON `request_member`.uid=`user`.id " +
             "LEFT JOIN `request` ON `request_member`.rid=`request`.id " +
             "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where `request`.use_date>=`request_member`.verify_time AND (`request`.create_time>=#{timeStart} AND `request`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`meeting_member`.uid as uid," +
+            "`meeting`.create_time as create_time," +
+            "if(`meeting_member`.sign_name_time IS NOT NULL,1,0) as md," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `meeting_member` LEFT JOIN `user` ON `meeting_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `meeting_member` ON `meeting_member`.uid=`user`.id " +
             "LEFT JOIN `meeting` ON `meeting_member`.mid=`meeting`.id " +
             "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where `meeting_member`.sign_name_time IS NOT NULL AND (`meeting`.create_time>=#{timeStart} AND `meeting`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`bill_member`.uid as uid," +
+            "`bill`.create_time as create_time," +
+            "if(`bill_member`.verify_time IS NOT NULL,1,0) as md," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `bill_member` LEFT JOIN `user` ON `bill_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `bill_member` ON `bill_member`.uid=`user`.id " +
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
             "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where `bill_member`.verify_time IS NOT NULL AND (`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`paper_member`.uid as uid," +
+            "`paper`.create_time as create_time," +
+            "if(`paper_member`.sign_time IS NOT NULL,1,0) as md,"+
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `paper_member` LEFT JOIN `user` ON `paper_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `paper_member` ON `paper_member`.uid=`user`.id " +
             "LEFT JOIN `paper` ON `paper_member`.pid=`paper`.id " +
             "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where `paper_member`.sign_time IS NOT NULL AND (`paper`.create_time>=#{timeStart} AND `paper`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +
@@ -140,41 +150,44 @@ public interface JmkjSql {
             "uid," +
             "realname," +
             "avatarUrl," +
-            "sum(complete) as complete," +
-            "sum(fail) as fail " +
+            "sum(if(create_time>=#{timeStart} AND create_time<=#{timeEnd},complete,0)) as complete," +
+            "sum(if(create_time>=#{timeStart} AND create_time<=#{timeEnd},fail,0)) as fail " +
             "from " +
             "(" +
 
             "select " +
-            "`vote_member`.uid as uid," +
+            "`vote`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
             "sum(if(`vote`.end_time>=`vote_member`.vote_time AND `vote_member`.`status`!=4,1,0)) as complete," +
             "sum(if(`vote`.end_time<`vote_member`.vote_time OR `vote_member`.`status`=4 OR `vote_member`.vote_time IS NULL,1,0)) as fail " +
-            "from `vote_member` LEFT JOIN `user` ON `vote_member`.uid=`user`.id " +
+            "from `user` LEFT JOIN `vote_member` ON `vote_member`.uid=`user`.id " +
             "LEFT JOIN `vote` ON `vote_member`.vid=`vote`.id " +
             "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where (`vote`.create_time>=#{timeStart} AND `vote`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`request_member`.uid as uid," +
+            "`request`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
             "sum(if(`request`.use_date>=`request_member`.verify_time,1,0)) as complete," +
             "sum(if(`request`.use_date<`request_member`.verify_time OR `request_member`.verify_time IS NULL,1,0)) as fail " +
-            "FROM `request_member` LEFT JOIN `user` ON `request_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `request_member` ON `request_member`.uid=`user`.id " +
             "LEFT JOIN `request` ON `request_member`.rid=`request`.id " +
             "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where (`request`.create_time>=#{timeStart} AND `request`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`meeting_member`.uid as uid," +
+            "`meeting`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
             "sum(if(`meeting_member`.sign_name_time IS NOT NULL,1,0)) as complete," +
@@ -182,13 +195,14 @@ public interface JmkjSql {
             "FROM `meeting_member` LEFT JOIN `user` ON `meeting_member`.uid=`user`.id " +
             "LEFT JOIN `meeting` ON `meeting_member`.mid=`meeting`.id " +
             "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where (`meeting`.create_time>=#{timeStart} AND `meeting`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`bill_member`.uid as uid," +
+            "`bill`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
             "sum(if(`bill_member`.verify_time IS NOT NULL,1,0)) as complete," +
@@ -196,13 +210,14 @@ public interface JmkjSql {
             "FROM `bill_member` LEFT JOIN `user` ON `bill_member`.uid=`user`.id " +
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
             "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where (`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`paper_member`.uid as uid," +
+            "`paper`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
             "sum(if(`paper_member`.sign_time IS NOT NULL,1,0)) as complete," +
@@ -210,8 +225,8 @@ public interface JmkjSql {
             "FROM `paper_member` LEFT JOIN `user` ON `paper_member`.uid=`user`.id " +
             "LEFT JOIN `paper` ON `paper_member`.pid=`paper`.id " +
             "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where `paper_member`.sign_time IS NOT NULL AND (`paper`.create_time>=#{timeStart} AND `paper`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
-            "GROUP BY uid " +
+            "where `paper_member`.sign_time IS NOT NULL ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +
@@ -229,62 +244,72 @@ public interface JmkjSql {
             "uid," +
             "realname," +
             "avatarUrl," +
-            "count(*)as num " +
+            "sum(if(create_time>=#{timeStart} AND create_time<=#{timeEnd},1,0)) as num "+
             "from " +
             "(" +
 
             "select " +
-            "`vote_member`.uid as uid," +
+            "`vote`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "from `vote_member` LEFT JOIN `user` ON `vote_member`.uid=`user`.id " +
+            "from `user` LEFT JOIN `vote_member` ON `vote_member`.uid=`user`.id " +
             "LEFT JOIN `vote` ON `vote_member`.vid=`vote`.id " +
             "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where (`vote`.end_time<`vote_member`.vote_time OR `vote_member`.`status`=4) AND (`vote`.create_time>=#{timeStart} AND `vote`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where (`vote`.end_time<`vote_member`.vote_time OR `vote_member`.`status`=4) ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`request_member`.uid as uid," +
+            "`request`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `request_member` LEFT JOIN `user` ON `request_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `request_member` ON `request_member`.uid=`user`.id " +
             "LEFT JOIN `request` ON `request_member`.rid=`request`.id " +
             "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where `request`.use_date<`request_member`.verify_time AND (`request`.create_time>=#{timeStart} AND `request`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where `request`.use_date<`request_member`.verify_time ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`meeting_member`.uid as uid," +
+            "`meeting`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `meeting_member` LEFT JOIN `user` ON `meeting_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `meeting_member` ON `meeting_member`.uid=`user`.id " +
             "LEFT JOIN `meeting` ON `meeting_member`.mid=`meeting`.id " +
             "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where `meeting_member`.sign_name_time IS NULL AND (`meeting`.create_time>=#{timeStart} AND `meeting`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where `meeting_member`.sign_name_time IS NULL ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`bill_member`.uid as uid," +
+            "`bill`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `bill_member` LEFT JOIN `user` ON `bill_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `bill_member` ON `bill_member`.uid=`user`.id " +
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
             "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where `bill_member`.verify_time IS NULL AND (`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where `bill_member`.verify_time IS NULL ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`paper_member`.uid as uid," +
+            "`paper`.create_time as create_time," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `paper_member` LEFT JOIN `user` ON `paper_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `paper_member` ON `paper_member`.uid=`user`.id " +
             "LEFT JOIN `paper` ON `paper_member`.pid=`paper`.id " +
             "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where `paper_member`.sign_time IS NULL AND (`paper`.create_time>=#{timeStart} AND `paper`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where `paper_member`.sign_time IS NULL ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +
@@ -307,73 +332,83 @@ public interface JmkjSql {
             "uid," +
             "realname," +
             "avatarUrl," +
-            "sum(if(complete=1,1,0)) as complete," +
-            "sum(if(fail=1,1,0)) as fail " +
+            "sum(if(md=1 and complete=1,1,0)) as complete," +
+            "sum(if(md=1 and fail=1,1,0)) as fail " +
             "from " +
             "(" +
 
             "select " +
-            "`vote_member`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
+            "if((`vote`.create_time>=#{timeStart} AND `vote`.create_time<=#{timeEnd}),1,0) as md," +
             "if(`vote`.end_time>=`vote_member`.vote_time AND `vote_member`.`status`!=4,1,0) as complete," +
             "if(`vote`.end_time<`vote_member`.vote_time OR `vote_member`.`status`=4,1,0) as fail " +
-            "from `vote_member` LEFT JOIN `user` ON `vote_member`.uid=`user`.id " +
+            "from `user` LEFT JOIN `vote_member` ON `vote_member`.uid=`user`.id " +
             "LEFT JOIN `vote` ON `vote_member`.vid=`vote`.id " +
             "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where (`vote`.create_time>=#{timeStart} AND `vote`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`request_member`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
+            "if((`request`.create_time>=#{timeStart} AND `request`.create_time<=#{timeEnd}),1,0) as md," +
             "if(`request`.use_date>=`request_member`.verify_time,1,0) as complete," +
             "if(`request`.use_date<`request_member`.verify_time,1,0) as fail " +
-            "FROM `request_member` LEFT JOIN `user` ON `request_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `request_member` ON `request_member`.uid=`user`.id " +
             "LEFT JOIN `request` ON `request_member`.rid=`request`.id " +
             "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where (`request`.create_time>=#{timeStart} AND `request`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`meeting_member`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
+            "if((`meeting`.create_time>=#{timeStart} AND `meeting`.create_time<=#{timeEnd}),1,0) as md," +
             "if(`meeting_member`.sign_name_time IS NOT NULL,1,0) as complete," +
             "if(`meeting_member`.sign_name_time IS NULL,1,0) as fail " +
-            "FROM `meeting_member` LEFT JOIN `user` ON `meeting_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `meeting_member` ON `meeting_member`.uid=`user`.id " +
             "LEFT JOIN `meeting` ON `meeting_member`.mid=`meeting`.id " +
             "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where (`meeting`.create_time>=#{timeStart} AND `meeting`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`bill_member`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
+            "if((`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}),1,0) as md," +
             "if(`bill_member`.verify_time IS NOT NULL,1,0) as complete," +
             "if(`bill_member`.verify_time IS NULL,1,0) as fail " +
-            "FROM `bill_member` LEFT JOIN `user` ON `bill_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `bill_member` ON `bill_member`.uid=`user`.id " +
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
             "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where (`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`paper_member`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
             "`user`.avatar_url as avatarUrl," +
+            "if(`paper_member`.sign_time IS NOT NULL AND (`paper`.create_time>=#{timeStart} AND `paper`.create_time<=#{timeEnd}),1,0) as md," +
             "if(`paper_member`.sign_time IS NOT NULL,1,0) as complete," +
             "if(`paper_member`.sign_time IS NULL,1,0) as fail " +
-            "FROM `paper_member` LEFT JOIN `user` ON `paper_member`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `paper_member` ON `paper_member`.uid=`user`.id " +
             "LEFT JOIN `paper` ON `paper_member`.pid=`paper`.id " +
             "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where `paper_member`.sign_time IS NOT NULL AND (`paper`.create_time>=#{timeStart} AND `paper`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +
@@ -391,57 +426,67 @@ public interface JmkjSql {
             "uid," +
             "realname," +
             "avatarUrl," +
-            "count(*)as num " +
+            "sum(if(md=1,1,0))as num " +
             "from " +
             "(" +
 
             "select " +
-            "`vote`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`vote`.create_time>=#{timeStart} AND `vote`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
-            "from `vote` LEFT JOIN `user` ON `vote`.uid=`user`.id " +
+            "from `user` LEFT JOIN `vote` ON `vote`.uid=`user`.id " +
             "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where (`vote`.create_time>=#{timeStart} AND `vote`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`request`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`request`.create_time>=#{timeStart} AND `request`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `request` LEFT JOIN `user` ON `request`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `request` ON `request`.uid=`user`.id " +
             "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where (`request`.create_time>=#{timeStart} AND `request`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`meeting`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`meeting`.create_time>=#{timeStart} AND `meeting`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `meeting` LEFT JOIN `user` ON `meeting`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `meeting` ON `meeting`.uid=`user`.id " +
             "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where (`meeting`.create_time>=#{timeStart} AND `meeting`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`bill`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `bill` LEFT JOIN `user` ON `bill`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `bill` ON `bill`.uid=`user`.id " +
             "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where (`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`paper`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`paper`.create_time>=#{timeStart} AND `paper`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
-            "FROM `paper` LEFT JOIN `user` ON `paper`.uid=`user`.id " +
+            "FROM `user` LEFT JOIN `paper` ON `paper`.uid=`user`.id " +
             "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where (`paper`.create_time>=#{timeStart} AND `paper`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +
@@ -459,29 +504,33 @@ public interface JmkjSql {
             "uid," +
             "realname," +
             "avatarUrl," +
-            "count(*)as num " +
+            "sum(if(md=1,1,0))as num " +
             "from " +
             "(" +
 
             "select " +
-            "`announce_member`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`announce`.create_time>=#{timeStart} AND `announce`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
-            "from `announce_member` LEFT JOIN `user` ON `announce_member`.uid=`user`.id " +
+            "from `user` LEFT JOIN `announce_member` ON `announce_member`.uid=`user`.id " +
             "LEFT JOIN `announce` ON `announce`.id=`announce_member`.aid " +
             "LEFT JOIN `zones` ON announce.zone_id = zones.id " +
-            "where (`announce`.create_time>=#{timeStart} AND `announce`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`notice_member`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`notice`.create_time>=#{timeStart} AND `notice`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
-            "from `notice_member` LEFT JOIN `user` ON `notice_member`.uid=`user`.id " +
+            "from `user` LEFT JOIN `notice_member` ON `notice_member`.uid=`user`.id " +
             "LEFT JOIN `notice` ON `notice`.id=`notice_member`.nid " +
             "LEFT JOIN `zones` ON notice.zone_id = zones.id " +
-            "where (`notice`.create_time>=#{timeStart} AND `notice`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +
@@ -499,27 +548,31 @@ public interface JmkjSql {
             "uid," +
             "realname," +
             "avatarUrl," +
-            "count(*)as num " +
+            "sum(md=1,1,0)as num " +
             "from " +
             "(" +
 
             "select " +
-            "`announce`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`announce`.create_time>=#{timeStart} AND `announce`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
-            "from `announce` LEFT JOIN `user` ON `announce`.uid=`user`.id " +
+            "from `user` LEFT JOIN `announce` ON `announce`.uid=`user`.id " +
             "LEFT JOIN `zones` ON `announce`.zone_id = zones.id " +
-            "where (`announce`.create_time>=#{timeStart} AND `announce`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             "UNION ALL " +
 
             "select " +
-            "`notice`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`notice`.create_time>=#{timeStart} AND `notice`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
-            "from `notice` LEFT JOIN `user` ON `notice`.uid=`user`.id " +
+            "from `user` LEFT JOIN `notice` ON `notice`.uid=`user`.id " +
             "LEFT JOIN `zones` ON `notice`.zone_id = zones.id " +
-            "where (`notice`.create_time>=#{timeStart} AND `notice`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +
@@ -537,18 +590,20 @@ public interface JmkjSql {
             "uid," +
             "realname," +
             "avatarUrl," +
-            "sum(on_line_time)as num " +
+            "sum(if(md=1,on_line_time,0))as num " +
             "from " +
             "(" +
 
             "select " +
-            "`jmkj_login_status`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`jmkj_login_status`.create_time>=#{timeStart} AND `jmkj_login_status`.create_time<=#{timeEnd}),1,0) as md," +
             "`jmkj_login_status`.on_line_time as on_line_time," +
             "`user`.avatar_url as avatarUrl " +
-            "from `jmkj_login_status` LEFT JOIN `user` ON `jmkj_login_status`.uid=`user`.id " +
+            "from `user` LEFT JOIN `jmkj_login_status` ON `jmkj_login_status`.uid=`user`.id " +
             "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
-            "where (`jmkj_login_status`.create_time>=#{timeStart} AND `jmkj_login_status`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +
@@ -571,13 +626,15 @@ public interface JmkjSql {
             "(" +
 
             "select " +
-            "`jmkj_login_status`.uid as uid," +
+            "`user`.id as uid," +
             "`user`.realname as realname," +
+            "if((`jmkj_login_status`.create_time>=#{timeStart} AND `jmkj_login_status`.create_time<=#{timeEnd}),1,0) as md," +
             "`jmkj_login_status`.login_times as login_times," +
             "`user`.avatar_url as avatarUrl " +
-            "from `jmkj_login_status` LEFT JOIN `user` ON `jmkj_login_status`.uid=`user`.id " +
+            "from `user` LEFT JOIN `jmkj_login_status` ON `jmkj_login_status`.uid=`user`.id " +
             "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
-            "where (`jmkj_login_status`.create_time>=#{timeStart} AND `jmkj_login_status`.create_time<=#{timeEnd}) ${ew.sqlSegment} " +
+            "where true ${ew.sqlSegment} " +
+            "GROUP BY `user`.id " +
 
             ")tablea " +
             "WHERE tablea.realname IS NOT NULL " +

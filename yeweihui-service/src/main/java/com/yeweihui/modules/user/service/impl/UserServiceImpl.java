@@ -601,6 +601,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         //保存用户与角色关系
         sysUserRoleService.saveOrUpdate(userEntity.getId(), Arrays.asList(inviteForm.getRoleId()));
 
+
+
+
         return userEntity;
     }
 

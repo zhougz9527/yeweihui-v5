@@ -137,7 +137,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (mAdministrationFrom!=null)
         if (zoneId==1){
 
-            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+            IndustryDirectorWrapper.eq("`user`.zone_id",mAdministrationFrom.getZonesId());
 
         }else if (zoneId==2){
 
@@ -214,7 +214,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (mAdministrationFrom!=null)
         if (zoneId==1){
 
-            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+            IndustryDirectorWrapper.eq("`user`.zone_id",mAdministrationFrom.getZonesId());
 
         }else if (zoneId==2){
 
@@ -289,7 +289,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (mAdministrationFrom!=null)
         if (zoneId==1){
 
-            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+            IndustryDirectorWrapper.eq("`user`.zone_id",mAdministrationFrom.getZonesId());
 
         }else if (zoneId==2){
 
@@ -364,7 +364,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (mAdministrationFrom!=null)
         if (zoneId==1){
 
-            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+            IndustryDirectorWrapper.eq("`user`.zone_id",mAdministrationFrom.getZonesId());
 
         }else if (zoneId==2){
 
@@ -439,7 +439,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (mAdministrationFrom!=null)
         if (zoneId==1){
 
-            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+            IndustryDirectorWrapper.eq("`user`.zone_id",mAdministrationFrom.getZonesId());
 
         }else if (zoneId==2){
 
@@ -513,7 +513,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (mAdministrationFrom!=null)
         if (zoneId==1){
 
-            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+            IndustryDirectorWrapper.eq("`user`.zone_id",mAdministrationFrom.getZonesId());
 
         }else if (zoneId==2){
 
@@ -587,7 +587,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (mAdministrationFrom!=null)
         if (zoneId==1){
 
-            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+            IndustryDirectorWrapper.eq("`user`.zone_id",mAdministrationFrom.getZonesId());
 
         }else if (zoneId==2){
 
@@ -661,7 +661,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (mAdministrationFrom!=null)
         if (zoneId==1){
 
-            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+            IndustryDirectorWrapper.eq("`user`.zone_id",mAdministrationFrom.getZonesId());
 
         }else if (zoneId==2){
 
@@ -735,7 +735,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (mAdministrationFrom!=null)
         if (zoneId==1){
 
-            IndustryDirectorWrapper.eq("zones.id",mAdministrationFrom.getZonesId());
+            IndustryDirectorWrapper.eq("`user`.zone_id",mAdministrationFrom.getZonesId());
 
         }else if (zoneId==2){
 
