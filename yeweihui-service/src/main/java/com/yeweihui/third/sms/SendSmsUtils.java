@@ -59,7 +59,7 @@ public class SendSmsUtils {
             request.putQueryParameter("PhoneNumbers", phoneNumbers);
             request.putQueryParameter("SignName", "维心网络");
             request.putQueryParameter("TemplateCode", templateCode);
-            request.putQueryParameter("TemplateParam", templateParam);
+            if(templateParam!=null)request.putQueryParameter("TemplateParam", templateParam);
             //            request.putQueryParameter("SmsUpExtendCode", "1");
             //            request.putQueryParameter("OutId", "1");
             try {

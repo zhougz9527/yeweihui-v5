@@ -69,8 +69,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "from `user` LEFT JOIN `vote_member` ON `vote_member`.uid=`user`.id " +
             "LEFT JOIN `vote` ON `vote_member`.vid=`vote`.id " +
-            "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -83,8 +83,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `request_member` ON `request_member`.uid=`user`.id " +
             "LEFT JOIN `request` ON `request_member`.rid=`request`.id " +
-            "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -97,8 +97,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `meeting_member` ON `meeting_member`.uid=`user`.id " +
             "LEFT JOIN `meeting` ON `meeting_member`.mid=`meeting`.id " +
-            "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -111,8 +111,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `bill_member` ON `bill_member`.uid=`user`.id " +
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
-            "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -125,8 +125,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `paper_member` ON `paper_member`.uid=`user`.id " +
             "LEFT JOIN `paper` ON `paper_member`.pid=`paper`.id " +
-            "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             ")tablea " +
@@ -164,8 +164,8 @@ public interface JmkjSql {
             "sum(if(`vote`.end_time<`vote_member`.vote_time OR `vote_member`.`status`=4 OR `vote_member`.vote_time IS NULL,1,0)) as fail " +
             "from `user` LEFT JOIN `vote_member` ON `vote_member`.uid=`user`.id " +
             "LEFT JOIN `vote` ON `vote_member`.vid=`vote`.id " +
-            "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -179,8 +179,8 @@ public interface JmkjSql {
             "sum(if(`request`.use_date<`request_member`.verify_time OR `request_member`.verify_time IS NULL,1,0)) as fail " +
             "FROM `user` LEFT JOIN `request_member` ON `request_member`.uid=`user`.id " +
             "LEFT JOIN `request` ON `request_member`.rid=`request`.id " +
-            "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -194,8 +194,8 @@ public interface JmkjSql {
             "sum(if(`meeting_member`.sign_name_time IS NULL,1,0)) as fail " +
             "FROM `meeting_member` LEFT JOIN `user` ON `meeting_member`.uid=`user`.id " +
             "LEFT JOIN `meeting` ON `meeting_member`.mid=`meeting`.id " +
-            "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -209,8 +209,8 @@ public interface JmkjSql {
             "sum(if(`bill_member`.verify_time IS NULL,1,0)) as fail " +
             "FROM `bill_member` LEFT JOIN `user` ON `bill_member`.uid=`user`.id " +
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
-            "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -224,8 +224,8 @@ public interface JmkjSql {
             "sum(if(`paper_member`.sign_time IS NULL,1,0)) as fail " +
             "FROM `paper_member` LEFT JOIN `user` ON `paper_member`.uid=`user`.id " +
             "LEFT JOIN `paper` ON `paper_member`.pid=`paper`.id " +
-            "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where `paper_member`.sign_time IS NOT NULL ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 and `paper_member`.sign_time IS NOT NULL ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             ")tablea " +
@@ -255,8 +255,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "from `user` LEFT JOIN `vote_member` ON `vote_member`.uid=`user`.id " +
             "LEFT JOIN `vote` ON `vote_member`.vid=`vote`.id " +
-            "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where (`vote`.end_time<`vote_member`.vote_time OR `vote_member`.`status`=4) ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 and (`vote`.end_time<`vote_member`.vote_time OR `vote_member`.`status`=4) ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -268,8 +268,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `request_member` ON `request_member`.uid=`user`.id " +
             "LEFT JOIN `request` ON `request_member`.rid=`request`.id " +
-            "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where `request`.use_date<`request_member`.verify_time ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 and `request`.use_date<`request_member`.verify_time ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -281,8 +281,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `meeting_member` ON `meeting_member`.uid=`user`.id " +
             "LEFT JOIN `meeting` ON `meeting_member`.mid=`meeting`.id " +
-            "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where `meeting_member`.sign_name_time IS NULL ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 and `meeting_member`.sign_name_time IS NULL ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -294,8 +294,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `bill_member` ON `bill_member`.uid=`user`.id " +
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
-            "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where `bill_member`.verify_time IS NULL ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 and `bill_member`.verify_time IS NULL ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -307,8 +307,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `paper_member` ON `paper_member`.uid=`user`.id " +
             "LEFT JOIN `paper` ON `paper_member`.pid=`paper`.id " +
-            "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where `paper_member`.sign_time IS NULL ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 and `paper_member`.sign_time IS NULL ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             ")tablea " +
@@ -346,8 +346,8 @@ public interface JmkjSql {
             "if(`vote`.end_time<`vote_member`.vote_time OR `vote_member`.`status`=4,1,0) as fail " +
             "from `user` LEFT JOIN `vote_member` ON `vote_member`.uid=`user`.id " +
             "LEFT JOIN `vote` ON `vote_member`.vid=`vote`.id " +
-            "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -361,8 +361,8 @@ public interface JmkjSql {
             "if(`request`.use_date<`request_member`.verify_time,1,0) as fail " +
             "FROM `user` LEFT JOIN `request_member` ON `request_member`.uid=`user`.id " +
             "LEFT JOIN `request` ON `request_member`.rid=`request`.id " +
-            "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -376,8 +376,8 @@ public interface JmkjSql {
             "if(`meeting_member`.sign_name_time IS NULL,1,0) as fail " +
             "FROM `user` LEFT JOIN `meeting_member` ON `meeting_member`.uid=`user`.id " +
             "LEFT JOIN `meeting` ON `meeting_member`.mid=`meeting`.id " +
-            "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -391,8 +391,8 @@ public interface JmkjSql {
             "if(`bill_member`.verify_time IS NULL,1,0) as fail " +
             "FROM `user` LEFT JOIN `bill_member` ON `bill_member`.uid=`user`.id " +
             "LEFT JOIN `bill` ON `bill_member`.bid=`bill`.id " +
-            "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -406,8 +406,8 @@ public interface JmkjSql {
             "if(`paper_member`.sign_time IS NULL,1,0) as fail " +
             "FROM `user` LEFT JOIN `paper_member` ON `paper_member`.uid=`user`.id " +
             "LEFT JOIN `paper` ON `paper_member`.pid=`paper`.id " +
-            "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             ")tablea " +
@@ -436,8 +436,8 @@ public interface JmkjSql {
             "if((`vote`.create_time>=#{timeStart} AND `vote`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
             "from `user` LEFT JOIN `vote` ON `vote`.uid=`user`.id " +
-            "LEFT JOIN `zones` ON vote.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -448,8 +448,8 @@ public interface JmkjSql {
             "if((`request`.create_time>=#{timeStart} AND `request`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `request` ON `request`.uid=`user`.id " +
-            "LEFT JOIN `zones` ON request.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -460,8 +460,8 @@ public interface JmkjSql {
             "if((`meeting`.create_time>=#{timeStart} AND `meeting`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `meeting` ON `meeting`.uid=`user`.id " +
-            "LEFT JOIN `zones` ON meeting.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -472,8 +472,8 @@ public interface JmkjSql {
             "if((`bill`.create_time>=#{timeStart} AND `bill`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `bill` ON `bill`.uid=`user`.id " +
-            "LEFT JOIN `zones` ON bill.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -484,8 +484,8 @@ public interface JmkjSql {
             "if((`paper`.create_time>=#{timeStart} AND `paper`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
             "FROM `user` LEFT JOIN `paper` ON `paper`.uid=`user`.id " +
-            "LEFT JOIN `zones` ON paper.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             ")tablea " +
@@ -515,8 +515,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "from `user` LEFT JOIN `announce_member` ON `announce_member`.uid=`user`.id " +
             "LEFT JOIN `announce` ON `announce`.id=`announce_member`.aid " +
-            "LEFT JOIN `zones` ON announce.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -528,8 +528,8 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "from `user` LEFT JOIN `notice_member` ON `notice_member`.uid=`user`.id " +
             "LEFT JOIN `notice` ON `notice`.id=`notice_member`.nid " +
-            "LEFT JOIN `zones` ON notice.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             ")tablea " +
@@ -558,8 +558,8 @@ public interface JmkjSql {
             "if((`announce`.create_time>=#{timeStart} AND `announce`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
             "from `user` LEFT JOIN `announce` ON `announce`.uid=`user`.id " +
-            "LEFT JOIN `zones` ON `announce`.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             "UNION ALL " +
@@ -570,8 +570,8 @@ public interface JmkjSql {
             "if((`notice`.create_time>=#{timeStart} AND `notice`.create_time<=#{timeEnd}),1,0) as md," +
             "`user`.avatar_url as avatarUrl " +
             "from `user` LEFT JOIN `notice` ON `notice`.uid=`user`.id " +
-            "LEFT JOIN `zones` ON `notice`.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             ")tablea " +
@@ -602,7 +602,7 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "from `user` LEFT JOIN `jmkj_login_status` ON `jmkj_login_status`.uid=`user`.id " +
             "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             ")tablea " +
@@ -633,7 +633,7 @@ public interface JmkjSql {
             "`user`.avatar_url as avatarUrl " +
             "from `user` LEFT JOIN `jmkj_login_status` ON `jmkj_login_status`.uid=`user`.id " +
             "LEFT JOIN `zones` ON `user`.zone_id = zones.id " +
-            "where true ${ew.sqlSegment} " +
+            "where `user`.verify_status=1 ${ew.sqlSegment} " +
             "GROUP BY `user`.id " +
 
             ")tablea " +

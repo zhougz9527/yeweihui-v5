@@ -806,7 +806,7 @@ public class JmkjServiceImpl implements JmkjService{
         if (IndustryDirectorParameterBean.getTelephone()!=null && !"".equals(IndustryDirectorParameterBean.getTelephone()))
             IndustryDirectorWrapper.eq("`user`.mobile",IndustryDirectorParameterBean.getTelephone());
         if (IndustryDirectorParameterBean.getName()!=null && !"".equals(IndustryDirectorParameterBean.getName()))
-            IndustryDirectorWrapper.eq("`user`.realname",IndustryDirectorParameterBean.getTelephone());
+            IndustryDirectorWrapper.eq("`user`.realname",IndustryDirectorParameterBean.getName());
         if (IndustryDirectorParameterBean.getLevel()!=null && !"".equals(IndustryDirectorParameterBean.getLevel()))
             IndustryDirectorWrapper.eq("`division_manager`.level",IndustryDirectorParameterBean.getLevel());
 

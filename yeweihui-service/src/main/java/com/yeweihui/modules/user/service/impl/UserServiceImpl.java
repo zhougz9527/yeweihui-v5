@@ -146,7 +146,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
                         //状态 0禁用 1正常
                         .eq(null != status , "status", status)
                         //没有关键词时不查行业主管
-                        .ne(StringUtils.isBlank(keyword), "role_name", "行业主管")
+                        //.ne(StringUtils.isBlank(keyword), "role_name", "行业主管")
                 //暂时不需要部门，区域选项
 //                        .addFilterIfNeed(params.get(Constant.SQL_FILTER) != null, (String)params.get(Constant.SQL_FILTER))
         );
@@ -605,7 +605,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         if (tels!=null)
             for (String tel:tels){
 
-                new SendSmsUtils().sendSmsNoParam(tel, "SMS_205060161");
+                new SendSmsUtils().sendSmsByTem(tel, "SMS_205060161",null);
             }
 
         return userEntity;
@@ -625,11 +625,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
         if (verifyStatus==1){
 
-            new SendSmsUtils().sendSmsNoParam(this.selectById(userId).getMobile(), "SMS_205075137");
+            new SendSmsUtils().sendSmsByTem(this.selectById(userId).getMobile(), "SMS_205075137",null);
 
         }else if (verifyStatus==3){
 
-            new SendSmsUtils().sendSmsNoParam(this.selectById(userId).getMobile(), "SMS_205070141");
+            new SendSmsUtils().sendSmsByTem(this.selectById(userId).getMobile(), "SMS_205070141",null);
         }
     }
 
