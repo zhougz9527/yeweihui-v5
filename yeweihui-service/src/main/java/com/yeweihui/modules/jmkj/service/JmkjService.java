@@ -2,6 +2,8 @@ package com.yeweihui.modules.jmkj.service;
 
 import com.yeweihui.modules.jmkj.Entity.IndustryDirectorParameterBean;
 
+import java.util.List;
+
 public interface JmkjService {
 
     boolean updateTime(Long uid,Long time);
@@ -29,6 +31,8 @@ public interface JmkjService {
     Object OnlineNum(long uid,Long zoneId,Long timeStart,Long timeEnd);
 
     Object IndustryDirector(IndustryDirectorParameterBean IndustryDirectorParameterBean);
+
+    List<String> getCodeTel(String code);
 
     int TimeVote(long vid);
 

@@ -601,8 +601,12 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         //保存用户与角色关系
         sysUserRoleService.saveOrUpdate(userEntity.getId(), Arrays.asList(inviteForm.getRoleId()));
 
+        List<String> tels = mJmkjServiceImpl.getCodeTel(inviteForm.getInviteCode());
+        if (tels!=null)
+            for (String tel:tels){
 
-
+                new SendSmsUtils().sendSmsNoParam(tel, "SMS_205060161");
+            }
 
         return userEntity;
     }
@@ -621,11 +625,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
         if (verifyStatus==1){
 
-            new SendSmsUtils().sendSmsByTem(this.selectById(userId).getMobile(), "SMS_204761640", "{\"type\":\""+ "成功" +"\"}");
+            new SendSmsUtils().sendSmsNoParam(this.selectById(userId).getMobile(), "SMS_205075137");
 
         }else if (verifyStatus==3){
 
-            new SendSmsUtils().sendSmsByTem(this.selectById(userId).getMobile(), "SMS_204761640", "{\"type\":\""+ "失败" +"\"}");
+            new SendSmsUtils().sendSmsNoParam(this.selectById(userId).getMobile(), "SMS_205070141");
         }
     }
 

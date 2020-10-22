@@ -710,7 +710,23 @@ public interface JmkjSql {
     @Select("SELECT * FROM view_region WHERE type=#{typd} AND typeId=#{typeId}")
     List<ViewRegionBean> getViewRegionBeanList(@Param("typd")int typd,@Param("typeId")Long typeId);
 
+    /**
+     * 插叙某表（五张行政级表）的名字（地名）
+     * */
     @Select("select `name` FROM ${tablename} where id=#{id}")
     String getNmsl(@Param("tablename")String tablename,@Param("id")Long id);
+
+
+    /**
+     * 查询邀请码所属小区的小区管理员电话
+     * */
+    @Select("SELECT " +
+            "`user`.mobile " +
+            "FROM " +
+            "`user` LEFT JOIN `zones` ON `user`.zone_id=zones.id " +
+            "LEFT JOIN sys_user_role ON `user`.id=sys_user_role.user_id " +
+            "LEFT JOIN sys_role ON sys_user_role.role_id=sys_role.role_id " +
+            "WHERE zones.invite_code=#{code} AND sys_role.role_name='小区管理员'")
+    List<String> getCodeTel(String code);
 
 }

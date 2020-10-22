@@ -816,6 +816,11 @@ public class JmkjServiceImpl implements JmkjService{
     }
 
     @Override
+    public List<String> getCodeTel(String code) {
+        return jmkjSql.getCodeTel(code);
+    }
+
+    @Override
     public int TimeVote(long vid) {
         return jmkjSql.TimeVote(vid);
     }
@@ -887,6 +892,8 @@ public class JmkjServiceImpl implements JmkjService{
         return mDivisionManagerBeanList;
     }
 
+
+
     /**
      * 递归查询行政级别下的所有子级
      * */
@@ -928,5 +935,7 @@ public class JmkjServiceImpl implements JmkjService{
 
         return jmkjSql.getNmsl(tablename,id);
     }
+
+
 
 }
