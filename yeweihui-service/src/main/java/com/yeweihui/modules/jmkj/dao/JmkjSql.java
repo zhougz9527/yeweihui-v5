@@ -548,7 +548,7 @@ public interface JmkjSql {
             "uid," +
             "realname," +
             "avatarUrl," +
-            "sum(md=1,1,0)as num " +
+            "sum(if(md=1,1,0))as num " +
             "from " +
             "(" +
 

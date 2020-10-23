@@ -194,7 +194,14 @@ public class JmkjServiceImpl implements JmkjService{
 
         }
 
-        map.put("listData",PerformanceOfDutiesBeans);
+        if (!"admin".equals(mUserServiceImpl.selectById(uid).getUsername()) && PerformanceOfDutiesBeans.size()>10 && zoneId!=1){
+
+            map.put("listData",PerformanceOfDutiesBeans.subList(0,10));
+
+        }else {
+
+            map.put("listData",PerformanceOfDutiesBeans);
+        }
 
         return map;
 
@@ -271,7 +278,14 @@ public class JmkjServiceImpl implements JmkjService{
 
         }
 
-        map.put("listData",PerformanceRateBeans);
+        if (!"admin".equals(mUserServiceImpl.selectById(uid).getUsername()) && PerformanceRateBeans.size()>10 && zoneId!=1){
+
+            map.put("listData",PerformanceRateBeans.subList(0,10));
+
+        }else {
+
+            map.put("listData",PerformanceRateBeans);
+        }
 
         return map;
     }
@@ -346,7 +360,14 @@ public class JmkjServiceImpl implements JmkjService{
 
         }
 
-        map.put("listData",PerformanceOfDutiesBeans);
+        if (!"admin".equals(mUserServiceImpl.selectById(uid).getUsername()) && PerformanceOfDutiesBeans.size()>10 && zoneId!=1){
+
+            map.put("listData",PerformanceOfDutiesBeans.subList(0,10));
+
+        }else {
+
+            map.put("listData",PerformanceOfDutiesBeans);
+        }
 
         return map;
     }
@@ -421,7 +442,14 @@ public class JmkjServiceImpl implements JmkjService{
 
         }
 
-        map.put("listData",PerformanceRateBeans);
+        if (!"admin".equals(mUserServiceImpl.selectById(uid).getUsername()) && PerformanceRateBeans.size()>10 && zoneId!=1){
+
+            map.put("listData",PerformanceRateBeans.subList(0,10));
+
+        }else {
+
+            map.put("listData",PerformanceRateBeans);
+        }
 
         return map;
     }
@@ -496,7 +524,14 @@ public class JmkjServiceImpl implements JmkjService{
 
         }
 
-        map.put("listData",PerformanceOfDutiesBeans);
+        if (!"admin".equals(mUserServiceImpl.selectById(uid).getUsername()) && PerformanceOfDutiesBeans.size()>10 && zoneId!=1){
+
+            map.put("listData",PerformanceOfDutiesBeans.subList(0,10));
+
+        }else {
+
+            map.put("listData",PerformanceOfDutiesBeans);
+        }
 
         return map;
     }
@@ -570,7 +605,14 @@ public class JmkjServiceImpl implements JmkjService{
 
         }
 
-        map.put("listData",PerformanceOfDutiesBeans);
+        if (!"admin".equals(mUserServiceImpl.selectById(uid).getUsername()) && PerformanceOfDutiesBeans.size()>10 && zoneId!=1){
+
+            map.put("listData",PerformanceOfDutiesBeans.subList(0,10));
+
+        }else {
+
+            map.put("listData",PerformanceOfDutiesBeans);
+        }
 
         return map;
     }
@@ -644,7 +686,14 @@ public class JmkjServiceImpl implements JmkjService{
 
         }
 
-        map.put("listData",PerformanceOfDutiesBeans);
+        if (!"admin".equals(mUserServiceImpl.selectById(uid).getUsername()) && PerformanceOfDutiesBeans.size()>10 && zoneId!=1){
+
+            map.put("listData",PerformanceOfDutiesBeans.subList(0,10));
+
+        }else {
+
+            map.put("listData",PerformanceOfDutiesBeans);
+        }
 
         return map;
     }
@@ -718,7 +767,14 @@ public class JmkjServiceImpl implements JmkjService{
 
         }
 
-        map.put("listData",PerformanceOfDutiesBeans);
+        if (!"admin".equals(mUserServiceImpl.selectById(uid).getUsername()) && PerformanceOfDutiesBeans.size()>10 && zoneId!=1){
+
+            map.put("listData",PerformanceOfDutiesBeans.subList(0,10));
+
+        }else {
+
+            map.put("listData",PerformanceOfDutiesBeans);
+        }
 
         return map;
     }
@@ -792,7 +848,14 @@ public class JmkjServiceImpl implements JmkjService{
 
         }
 
-        map.put("listData",PerformanceOfDutiesBeans);
+        if (!"admin".equals(mUserServiceImpl.selectById(uid).getUsername()) && PerformanceOfDutiesBeans.size()>10 && zoneId!=1){
+
+            map.put("listData",PerformanceOfDutiesBeans.subList(0,10));
+
+        }else {
+
+            map.put("listData",PerformanceOfDutiesBeans);
+        }
 
         return map;
     }
