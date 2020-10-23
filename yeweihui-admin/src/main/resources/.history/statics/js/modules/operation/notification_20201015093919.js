@@ -129,7 +129,7 @@ var vm = new Vue({
 					roleNameSet.add(user.roleName);
 				}
 			});
-			// roleNameSet.delete('行业主管');
+			roleNameSet.delete('行业主管');
 			return Array.from(roleNameSet).map( r => {
 				return {
 					value: r,
