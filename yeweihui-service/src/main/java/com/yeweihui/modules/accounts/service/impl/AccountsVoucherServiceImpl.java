@@ -26,6 +26,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.itextpdf.text.DocumentException;
 import com.yeweihui.common.exception.RRException;
 import com.yeweihui.common.utils.BeanUtil;
+import com.yeweihui.common.utils.MoneyUtils;
 import com.yeweihui.common.utils.PageUtils;
 import com.yeweihui.common.utils.Query;
 import com.yeweihui.modules.accounts.dao.AccountsVoucherDao;
@@ -131,29 +132,39 @@ public class AccountsVoucherServiceImpl extends ServiceImpl<AccountsVoucherDao, 
 		if(!accountsService.canAddOrUpdate(accountsVoucher.getAccountsId())){throw new RRException("当前账簿状态不允许添加或编辑凭证");}
 		if(accountsVoucher.getAccountsFinancialinforms().size() > 6){throw new RRException("一条凭证最多只能录入6条财务信息");}
 
+		/*
+		 * 以下注释内容 用于根据凭证日期限制凭证编辑
 		SimpleDateFormat SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		Calendar currentDateCalendar = Calendar.getInstance();
 		currentDateCalendar.setTime(new Date());
-		/*try {
-			currentDateCalendar.setTime(SimpleDateFormat.parse(SimpleDateFormat.format(new Date())));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}*/
-		int year = currentDateCalendar.get(Calendar.YEAR);
-		int month = currentDateCalendar.get(Calendar.MONTH)+1;
+
+		int minYear = currentDateCalendar.get(Calendar.YEAR);
+		int minMonth = currentDateCalendar.get(Calendar.MONTH)+1;
+		int maxYear = currentDateCalendar.get(Calendar.YEAR);
+		int maxMonth = currentDateCalendar.get(Calendar.MONTH)+1;
 		int maxDay = currentDateCalendar.getActualMaximum(Calendar.DATE);
 
+		// 区别添加模式和编辑模式的，对于账簿可修改起始时间的限制,以下是限制
+		//if(accountsVoucher.getId() == 0)
+		//{
+			AccountsEntity accounts = accountsService.selectById(accountsVoucher.getAccountsId());
+			Calendar StartDateCalendar = Calendar.getInstance();
+			StartDateCalendar.setTime(accounts.getStartDate());
+			minYear = StartDateCalendar.get(Calendar.YEAR);
+			minMonth = StartDateCalendar.get(Calendar.MONTH)+1;
+		//}
+		
 		Date startDate = null;
 		Date endDate = null;
 		try {
-			startDate = SimpleDateFormat.parse(String.format("%s-%s-%s", year,month,1));
-			endDate = SimpleDateFormat.parse(String.format("%s-%s-%s", year,month,maxDay));
+			startDate = SimpleDateFormat.parse(String.format("%s-%s-%s", minYear,minMonth,1));
+			endDate = SimpleDateFormat.parse(String.format("%s-%s-%s", maxYear,maxMonth,maxDay));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		if(accountsVoucher.getDate().getTime() < startDate.getTime() || accountsVoucher.getDate().getTime() > endDate.getTime()){throw new RRException("只允许添加或编辑当月的凭证");}
-		
+		*/
 		if(accountsVoucher.getId() <= 0){
 			accountsVoucher.setTagNumber(getNextTagNumber(accountsVoucher.getAccountsId()));
 		}else{
@@ -218,10 +229,29 @@ public class AccountsVoucherServiceImpl extends ServiceImpl<AccountsVoucherDao, 
     			data.put("accounts", accounts);
     			data.put("voucher", voucher);
     		
+    			Double earningSum = 0.0;
+    			Double expenditureSum = 0.0;
+    			Double aggregate = 0.0;
+    			
     			for (AccountsFinancialinformEntity accountsFinancialinform : voucher.getAccountsFinancialinforms()) {
     				accountsFinancialinform.getAccountsSubject().setLevelInfo(accountsSubjectService.getLevelInfo(accountsFinancialinform.getAccountsSubject().getId()));
-				}
-    		
+    				if(accountsFinancialinform.getAccountsSubject().getRdtype() == 1)
+    				{
+    					earningSum += accountsFinancialinform.getMoney();
+    				}
+    				else if(accountsFinancialinform.getAccountsSubject().getRdtype() == 2)
+    				{
+    					expenditureSum += accountsFinancialinform.getMoney();
+    				}
+    			}
+    			
+    			aggregate = (earningSum-expenditureSum);
+    			aggregate = (aggregate==null)?0:aggregate;
+    			
+    			data.put("earningSum", earningSum);
+    			data.put("expenditureSum", expenditureSum);
+    			data.put("aggregateChinese", MoneyUtils.NumToRMBStr(aggregate));
+    			
     			data.put("zoneName", zonesService.selectById(accounts.getZoneId()).getName());
     		
     			int accessoryCount = 0;

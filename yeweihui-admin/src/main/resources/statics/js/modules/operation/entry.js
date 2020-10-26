@@ -234,9 +234,9 @@ var vm = new Vue({
             })
         },
         getData() {
-        	
             let that = this;
             that.isLoadVoucherData = true;
+            that.printingArray = [];
             $.ajax({
                 type: 'POST',
                 url: baseURL + `accounts/voucher/list`,
@@ -396,16 +396,19 @@ var vm = new Vue({
             	 $.get(baseURL + `accounts/accounts/submitAudit?endDate=${that.currentAccounts.endDate}`, function (r) {
                       if (r.code === 0) {
                           that.$message.success('提交审核成功');
-                          location.reload();
+                          setTimeout(function(){
+                        	  window.location.reload();
+                		  }, 1500 )
                       } else {
                           that.$message.warning(r.msg);
+                          that.isLockScreen=false;
                       }
-                      that.isLockScreen=false;
                  })
               },() => {});
         }
         ,
         submitAduitResult(result) {
+        	
             let that = this;
             this.$confirm('是否确认提交审核结果？', '提示', {
                 confirmButtonText: '确定',
@@ -416,12 +419,25 @@ var vm = new Vue({
             	 that.isLockScreen=true;
             	 $.get(baseURL + "accounts/accounts/submitAuditResult?result="+result, function (r) {
                       if (r.code === 0) {
-                          that.$message.success('提交审核结果成功');
-                          location.reload();
+                    	  var targerATag = $("a[href='#modules/operation/expendituredetails.html']", window.parent.document);
+                    	  
+                    	  that.$message.success('提交审核结果成功'+((targerATag.length > 0)?"，即将进入收支详情页":""));
+                    	  if(targerATag.length > 0)
+                    	  {
+                    		  setTimeout(function(){
+                    			  targerATag[0].click();
+                    		  }, 1500 )
+                    	  }
+                    	  else
+                    	  {
+                    		  setTimeout(function(){
+                    			  window.location.reload();
+                    		  }, 1500 )
+                    	  }
                       } else {
                           that.$message.warning(r.msg);
+                          that.isLockScreen=false;
                       }
-                      that.isLockScreen=false;
                  })
               },() => {});
         },
@@ -479,20 +495,25 @@ var vm = new Vue({
             this._data.dialogAccessoryVisible = true
         },
         handleRemove(file, fileList) {
-            console.log(file, fileList);
             this.fileList = fileList;
         },
         handleSuccess(response, file, fileList) {
-            console.log(response, file, fileList);
-            if (response.code == 0) {
-                var resultArray = [];
-                if(this.fileList.length > 0){
-                    resultArray = this.fileList.slice(0);
-                }
-                resultArray[resultArray.length] = {name:file.name,url:file.response.url}
-                this.fileList = resultArray;
+        	var copyFileList = fileList.slice(0);
+            var lastFileIndex = (copyFileList.length-1);
+            if(response.code == 0){
+            	for(var i=0;i<copyFileList.length;i++)
+            	{
+            		if(file.uid == copyFileList[i].uid)
+            		{
+            			copyFileList[i] = {name:copyFileList[i].name,url:copyFileList[i].response.url,uid:copyFileList[i].uid};
+            			this.fileList = copyFileList;
+            			break;
+            		}
+            	}
             } else {
-                this.$confirm(`${file.name}，请删除后重新操作`)
+            	console.log("上传失败：");
+            	console.log(file);
+                this.$aler(`${file.name}，请删除后重新操作`)
             }
         },
         handlePreview(file) {
@@ -586,8 +607,7 @@ var vm = new Vue({
         			minMonth = parseInt(minMonthInfo[1], 10);
         			
         			maxYear = minYear;
-        			console.log(maxMonth);
-        			maxMonth = ((minYear != currentYear)?12:currentMonth);
+        			maxMonth = ((minYear != currentYear)?12:currentMonth-1);
         			if(maxMonth == 0){
         				maxYear--;
         				maxMonth = 12;
@@ -613,8 +633,35 @@ var vm = new Vue({
             return (targetDate.getTime() >= minMonthDate.getTime() && targetDate.getTime() <= maxMonthDate.getTime());
         },
         SubmitAduitButtonClick(){
-        	this.isSubmitAduit = true;
-        	this.isCanSealingAccount = this.verifyMonth("canSelectEndMonth",null);
+        	if(this.fileList.length == 0)
+        	{
+        		vm.$confirm('当前还未上传银行对账单。', '提示', {
+                    confirmButtonText: '返回上传',
+                    cancelButtonText: '不上传，继续封账',
+                    distinguishCancelAndClose: true,
+                    type: 'info'
+                }).then(() => {
+                	
+                	if($("#accessoryManage").length > 0){
+                		this.accessoryManage(null,null);
+                	}
+                	else
+                	{
+                		vm.$message.warning("当前用户没有银行对账单管理的相关权限！");
+                	}
+
+                },() => {
+                	this.isSubmitAduit = true;
+                	this.isCanSealingAccount = this.verifyMonth("canSelectEndMonth",null);
+                }).catch((action) => {
+                    
+                });
+        		
+        	}else
+        	{
+        		this.isSubmitAduit = true;
+            	this.isCanSealingAccount = this.verifyMonth("canSelectEndMonth",null);
+        	}
         },
         viewPdfPrint() {
         	
@@ -644,9 +691,6 @@ var vm = new Vue({
                 window.open(baseURL + "accounts/voucher/viewPdf/"+voucherIds.toString());
             },() => {}).catch((action) => {
                 console.log(action)
-                if (action === 'cancel') {
-                    //             window.open(baseURL + `operation/announce/viewPdf/${id}/no`);
-                }
             });
         },
         viewPdfPrintPdf() {

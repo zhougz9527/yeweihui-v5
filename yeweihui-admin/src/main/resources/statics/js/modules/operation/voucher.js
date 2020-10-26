@@ -132,7 +132,6 @@ $(function () {
         var date = new Date();
         var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-
         return targetDate.getTime() >= firstDay.getTime() && targetDate.getTime() <= lastDay.getTime();
     }
     // 验证是否为编辑模式
@@ -142,8 +141,7 @@ $(function () {
             if (accounts.status == 0 || accounts.status == 2) {
                 if (voucher != null) {
                     if (
-                        (!voucher.id || voucher.id == undefined) ||
-                        verifyCurrentMonth(stringToDate(voucher.date))
+                        (!voucher.id || voucher.id == undefined) || true //verifyCurrentMonth(stringToDate(voucher.date))
                     ) {
                         return true;
                     }
@@ -271,13 +269,51 @@ $(function () {
                 "isSubmit":false,
                 "pickerOptions": {
                     disabledDate: (time) => {
-                        return !verifyCurrentMonth(time);
+                        return !this.AddVoucherSelectDate(time);
                     }
                 }
             }
         },
 
         methods: {
+        	// 添加凭证可选日期
+            AddVoucherSelectDate(targetDate){
+            	
+            	var targetDateStr = "";
+            	
+            	var minMonthDate = null;
+            	var minYear = 0;
+            	var minMonth = 0;
+            	
+            	var maxMonthDate = null;
+            	var maxYear = 0;
+            	var maxMonth = 0;
+
+            	var currentDate = new Date();
+            	var currentYear = currentDate.getFullYear();
+            	var currentMonth = currentDate.getMonth()+1;
+            	var currentDay = currentDate.getMonth();
+
+            	var minMonthInfo = this._data.accounts.startDate.split("-");
+            	minYear = parseInt(minMonthInfo[0], 10);
+            	minMonth = parseInt(minMonthInfo[1], 10);
+
+            	minMonthDate = new Date(minYear, minMonth-1, 1);
+            	
+            	if(currentMonth == 12)
+            	{
+            		maxYear = currentYear+1;
+            		maxMonth = 0;
+            	}
+            	else
+            	{
+            		maxYear = currentYear;
+            		maxMonth = currentMonth;
+            	}
+            	maxMonthDate = new Date(currentYear, maxMonth, 1);
+            	
+                return (targetDate.getTime() >= minMonthDate.getTime() && targetDate.getTime() < maxMonthDate.getTime());
+            },
             getAccessoryCountAll() {
                 var accessoryCount = 0;
                 this._data.accountsVoucher.accountsFinancialinforms.forEach(element => {
@@ -354,25 +390,29 @@ $(function () {
             }
             ,
             handleRemove(file, fileList) {
-                console.log(file, fileList);
                 this._data.accountsVoucher.accountsFinancialinforms[this._data.accessoryRowIndex].accessory.fileInfos = fileList;
             },
             handleSuccess(response, file, fileList) {
-                console.log(response, file, fileList);
-                if (response.code == 0) {
-                    var resultArray = [];
-                    if(this._data.accountsVoucher.accountsFinancialinforms[this._data.accessoryRowIndex].accessory.fileInfos.length > 0){
-                        resultArray = this._data.accountsVoucher.accountsFinancialinforms[this._data.accessoryRowIndex].accessory.fileInfos.slice(0);
-                    }
-                    resultArray[resultArray.length] = {name:file.name,url:file.response.url}
-                    this._data.accountsVoucher.accountsFinancialinforms[this._data.accessoryRowIndex].accessory.fileInfos = resultArray;
+                var copyFileList = fileList.slice(0);
+                var lastFileIndex = (copyFileList.length-1);
+                if(response.code == 0){
+                	for(var i=0;i<copyFileList.length;i++)
+                	{
+                		if(file.uid == copyFileList[i].uid)
+                		{
+                			copyFileList[i] = {name:copyFileList[i].name,url:copyFileList[i].response.url,uid:copyFileList[i].uid};
+                			this._data.accountsVoucher.accountsFinancialinforms[this._data.accessoryRowIndex].accessory.fileInfos = copyFileList;
+                			break;
+                		}
+                	}
                 } else {
-                    this.$confirm(`${file.name}，请删除后重新操作`)
+                	console.log("上传失败：");
+                	console.log(file);
+                    this.$aler(`${file.name}，请删除后重新操作`)
                 }
-            },
+             },
             handlePreview(file) {
-            	window.open(file.url);
-                console.log(file);
+            	window.open(file.response.url);
             },
             handleExceed(files, fileList) {
                 console.log(file, fileList);
@@ -452,6 +492,7 @@ $(function () {
                 		          message: '修改成功!',
                 		          type: 'success'
                 		        });
+                			window.location.reload();
     					}
                 		else{
                 			thisObje.$message.error(response.data.msg);

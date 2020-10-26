@@ -1,6 +1,7 @@
 package com.yeweihui.modules.accounts.controller;
 
 import com.itextpdf.text.DocumentException;
+import com.yeweihui.common.exception.RRException;
 import com.yeweihui.common.utils.BeanUtil;
 import com.yeweihui.common.utils.ExcelUtils;
 import com.yeweihui.common.utils.PageUtils;
@@ -8,6 +9,7 @@ import com.yeweihui.modules.sys.shiro.ShiroUtils;
 import com.yeweihui.modules.vo.query.AccountsFinancialinformQueryParam;
 import com.yeweihui.modules.vo.query.AccountsVoucherQueryParam;
 import com.yeweihui.third.pdf.PdfUtils;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,9 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 财务收支信息 - 控制器
@@ -92,6 +92,18 @@ public class AccountsFinancialinformController {
 		//需要填充的数据
 		Long zoneId = ShiroUtils.getUserEntity().getZoneId();
 		params.setZoneId(zoneId);
+		List<Long> idList = new ArrayList<Long>();
+		if(params!=null && !StringUtil.isNullOrEmpty(params.getFinancialinFormctIds())){
+		try{
+			for (String id : params.getFinancialinFormctIds().split(",")) {
+				idList.add(Long.parseLong(id));
+			}
+			params.setFinancialinFormctIdList(idList);
+			params.setPage("1");
+		}catch(Exception e){
+			throw new RRException("请指定正确的凭证ID信息，多个ID使用英文“,”隔开");
+		}
+		}
 		PageUtils page = accountsFinancialinformService.queryPage(BeanUtil.bean2map(params));
 		Map data = new HashMap();
 		data.put("flist",page.getList());
@@ -114,6 +126,18 @@ public class AccountsFinancialinformController {
 		//需要填充的数据
 		Long zoneId = ShiroUtils.getUserEntity().getZoneId();
 		params.setZoneId(zoneId);
+		List<Long> idList = new ArrayList<Long>();
+		if(params!=null &&!StringUtil.isNullOrEmpty(params.getFinancialinFormctIds())){
+			try{
+				for (String id : params.getFinancialinFormctIds().split(",")) {
+					idList.add(Long.parseLong(id));
+				}
+				params.setFinancialinFormctIdList(idList);
+				params.setPage("1");
+			}catch(Exception e){
+				throw new RRException("请指定正确的凭证ID信息，多个ID使用英文“,”隔开");
+			}
+		}
 		PageUtils page = accountsFinancialinformService.queryPage(BeanUtil.bean2map(params));
 		Map<String,Object> data = new HashMap<String, Object>();
 

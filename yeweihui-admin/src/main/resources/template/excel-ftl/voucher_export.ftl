@@ -9,15 +9,16 @@
 <body>
 <table border=1 style=" border-collapse: collapse;">
 	<tr>
-		<td class="title">日期</td>
-		<td class="title">凭证号</td>
-		<td class="title">摘要</td><td>科目</td>
-		<td class="title">辅助账</td>
-		<td class="title">借方金额</td>
-		<td class="title">贷方金额</td>
-		<td class="title">附件张数</td>
-		<td class="title">制单人</td>
-		<td class="title">审核人</td>
+		<td>日期</td>
+		<td>记账号</td>
+		<td>摘要</td>
+		<td>科目</td>
+		<td>辅助账</td>
+		<td>收入金额</td>
+		<td>支出金额</td>
+		<td>附件张数</td>
+		<td>制单人</td>
+		<td>审核人</td>
 	</tr>
 
 	<#list voucherInfos! as voucherInfo > 
@@ -35,9 +36,9 @@
 					<td rowspan="${rowSize}">记-${voucherInfo.voucher.tagNumber!?c}</td>
 				</#if>
 			
-				<td>${accountsFinancialinform.digest!}</td>
-				<td>${accountsFinancialinform.accountsSubject.name!}</td>
-				<td>${accountsFinancialinform.auxiliary!}</td>
+				<td>${accountsFinancialinform.digest!}&nbsp;</td>
+				<td>${accountsFinancialinform.accountsSubject.levelInfo!?replace("_","/")}</td>
+				<td>${accountsFinancialinform.auxiliary!}&nbsp;</td>
 				<td>
 					<#if accountsFinancialinform.accountsSubject.rdtype == 1>
 						${accountsFinancialinform.money!?c}

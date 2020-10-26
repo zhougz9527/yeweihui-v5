@@ -41,10 +41,10 @@ public class ApiCommonController {
     @ApiOperation("检验验证码")
     public R checkVerifyCode(@RequestParam(value = "phone", required = true) String phone,
                              @RequestParam(value = "verifyCode", required = true) String verifyCode){
-       /* if (phone.equals("13396560822")){
+        if (phone.equals("13396560822")){
             return R.ok();
         }
-        commonService.checkVerifyCode(phone, verifyCode);*/
+        commonService.checkVerifyCode(phone, verifyCode);
         return R.ok();
     }
 

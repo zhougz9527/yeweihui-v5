@@ -57,8 +57,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("业委汇api")
-            .description("业委汇-api文档")
+            .title("蝴蝶居api")
+            .description("蝴蝶居-api文档")
 //            .termsOfServiceUrl("localhost")
             .version("1.0.0")
             .build();

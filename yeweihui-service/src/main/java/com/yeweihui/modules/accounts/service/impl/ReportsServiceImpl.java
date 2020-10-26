@@ -70,7 +70,13 @@ public class ReportsServiceImpl extends ServiceImpl<AccountsFinancialinformDao, 
 
             } else {
                 receiptsAndDisbursementsParam.setAccountsDate(accountsEntity.getEndDate());
-                map.put("statisticalDate", accountsEntity.getEndDate());
+                if (statisticalDate != null) {
+                    map.put("statisticalDate", statisticalDate);
+
+                }
+                else {
+                    map.put("statisticalDate", accountsEntity.getEndDate());
+                }
 
             }
 
@@ -78,13 +84,23 @@ public class ReportsServiceImpl extends ServiceImpl<AccountsFinancialinformDao, 
             receiptsAndDisbursementsParam.setType(1); //科目类型：1(经营)、2(押金)
 
             //本月经营支出
-            reportsmap.put("operationsDisbursements", this.baseMapper.getReceiptsAndDisbursements(receiptsAndDisbursementsParam));
+            String operationsDisbursements=this.baseMapper.getReceiptsAndDisbursements(receiptsAndDisbursementsParam);
+            if(operationsDisbursements==null||"".equals(operationsDisbursements))
+            {
+                operationsDisbursements="0";
+            }
+            reportsmap.put("operationsDisbursements",operationsDisbursements);
             map.put("operations_disbursements_charts", this.baseMapper.getReceiptsAndDisbursementsBYSubject(receiptsAndDisbursementsParam));
 
             receiptsAndDisbursementsParam.setRdtype(1);
             receiptsAndDisbursementsParam.setType(1);
             //本月经营收入
-            reportsmap.put("operationsReceipts", this.baseMapper.getReceiptsAndDisbursements(receiptsAndDisbursementsParam));
+            String operationsReceipts=this.baseMapper.getReceiptsAndDisbursements(receiptsAndDisbursementsParam);
+            if(operationsReceipts==null||"".equals(operationsReceipts))
+            {
+                operationsReceipts="0";
+            }
+            reportsmap.put("operationsReceipts",operationsReceipts);
             map.put("operations_receipts_charts", this.baseMapper.getReceiptsAndDisbursementsBYSubject(receiptsAndDisbursementsParam));
 
 
@@ -92,23 +108,44 @@ public class ReportsServiceImpl extends ServiceImpl<AccountsFinancialinformDao, 
             receiptsAndDisbursementsParam.setType(2);
 
             //本月押金收入
-            reportsmap.put("depositReceipts", this.baseMapper.getReceiptsAndDisbursements(receiptsAndDisbursementsParam));
+
+            String depositReceipts=this.baseMapper.getReceiptsAndDisbursements(receiptsAndDisbursementsParam);
+            if(depositReceipts==null||"".equals(depositReceipts))
+            {
+                depositReceipts="0";
+            }
+            reportsmap.put("depositReceipts",depositReceipts);
             map.put("deposit_receipts_charts", this.baseMapper.getReceiptsAndDisbursementsBYSubject(receiptsAndDisbursementsParam));
 
             receiptsAndDisbursementsParam.setRdtype(2);
             receiptsAndDisbursementsParam.setType(2);
             //本月押金支出
-            reportsmap.put("depositDisbursements", this.baseMapper.getReceiptsAndDisbursements(receiptsAndDisbursementsParam));
+            String depositDisbursements=this.baseMapper.getReceiptsAndDisbursements(receiptsAndDisbursementsParam);
+            if(depositDisbursements==null||"".equals(depositDisbursements))
+            {
+                depositDisbursements="0";
+            }
+            reportsmap.put("depositDisbursements",depositDisbursements);
             map.put("deposit_disbursements_charts", this.baseMapper.getReceiptsAndDisbursementsBYSubject(receiptsAndDisbursementsParam));
 
 
             //本月经营结余
             receiptsAndDisbursementsParam.setType(1);
-            reportsmap.put("operationsBlance", this.baseMapper.getSurplusByType(receiptsAndDisbursementsParam));
+            String operationsBlance=this.baseMapper.getSurplusByType(receiptsAndDisbursementsParam);
+            if(operationsBlance==null||"".equals(operationsBlance))
+            {
+                operationsBlance="0";
+            }
+            reportsmap.put("operationsBlance", operationsBlance);
 
             //本月押金结余
             receiptsAndDisbursementsParam.setType(2);
-            reportsmap.put("depositBlance", this.baseMapper.getSurplusByType(receiptsAndDisbursementsParam));
+            String depositBlance=this.baseMapper.getSurplusByType(receiptsAndDisbursementsParam);
+            if(depositBlance==null||"".equals(depositBlance))
+            {
+                depositBlance="0";
+            }
+            reportsmap.put("depositBlance", depositBlance);
 
 
             if (isYear) {

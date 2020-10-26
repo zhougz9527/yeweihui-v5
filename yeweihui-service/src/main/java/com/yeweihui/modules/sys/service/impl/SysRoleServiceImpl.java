@@ -23,8 +23,10 @@ import com.yeweihui.common.utils.Constant;
 import com.yeweihui.common.utils.PageUtils;
 import com.yeweihui.common.utils.Query;
 import com.yeweihui.modules.sys.dao.SysRoleDao;
+import com.yeweihui.modules.sys.dao.SysUserRoleDao;
 import com.yeweihui.modules.sys.entity.SysDeptEntity;
 import com.yeweihui.modules.sys.entity.SysRoleEntity;
+import com.yeweihui.modules.sys.entity.SysUserRoleEntity;
 import com.yeweihui.modules.sys.service.*;
 import com.yeweihui.common.annotation.DataFilter;
 import com.yeweihui.modules.vo.query.SysRoleQueryParam;
@@ -33,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -139,6 +142,28 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
     public List<SysRoleEntity> simpleList(SysRoleQueryParam sysRoleQueryParam) {
         return this.baseMapper.simpleList(sysRoleQueryParam);
     }
+
+	/**
+	 * 根据用户id获取其最高级的角色名
+	 * @param userId
+	 * @return
+	 */
+	@Override
+	public String getHighestLevelRoleNameByUserId(Long userId) {
+		if (null == userId) {
+			return null;
+		}
+		//获取用户最高级别的角色
+		Long minRoleIdByUserId = sysUserRoleService.getMinRoleIdByUserId(userId);
+		if (null == minRoleIdByUserId) {
+			return null;
+		}
+		SysRoleEntity sysRoleEntity = baseMapper.selectById(minRoleIdByUserId);
+		if (null == sysRoleEntity) {
+			return null;
+		}
+		return sysRoleEntity.getRoleName();
+	}
 
 
 }

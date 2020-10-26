@@ -102,7 +102,8 @@ public class AccountsSubjectServiceImpl extends ServiceImpl<AccountsSubjectDao, 
 			}
 		}
 
-		return idInfo+"-"+nameInfo;
+		//return idInfo+"-"+nameInfo;
+		return nameInfo;
 	}
 
 }

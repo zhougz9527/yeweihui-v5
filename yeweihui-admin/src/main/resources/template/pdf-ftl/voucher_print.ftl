@@ -15,17 +15,6 @@
         body {
             font-family: SimHei;
         }
-
-		.fontStyle{
-            font-size:12px;
-            font-weight: normal;}
-
-        .pos {
-            position: absolute;
-            left: 100px;
-            top: 150px
-        }
-
         table {
             border-collapse: collapse;
             width: 100%;
@@ -33,12 +22,13 @@
             border: 1px solid #666666;
         }
         
-        table tbody{}
+        .fontSize{font-size:12px;}
+        .fontWeight{font-weight:bold;}
         td {
             border: 1px solid #666666;
             width: 20%;
             text-align: center;
-            padding: 10px;
+            padding: 5px;
         }
 
         .slip {
@@ -46,15 +36,15 @@
             height:800px;
             margin:  0 auto;
             text-align: center;
-            padding-top: 20px;
+            padding-top: 0px;
         }
-
+		.title{font-size:20px; font-weight:bold; padding-bottom:10px;}
         .header {
-			margin:10px 0px;
-			padding:10px 0px;
+			margin:5px 0px;
+			padding:5px 0px;
         }
 		.header table{border:0 none; table-layout:fixed; border-collapse: collapse;}
-		.header td{border:0 none; padding-top:5px;}
+		.header td{border:0 none; padding-top:5px; padding:5px 0px;}
 
 		.footer{padding:15px 0px;}
 		
@@ -85,31 +75,28 @@
 <body>
 <#list voucherInfos! as voucherInfo > 
     <div class="slip">
-        <div>
-            <h2> 记账凭证 </h2>
-            <span>${voucherInfo.voucher.date!?string('yyyy-MM-dd')}</span>
-        </div>
+        <div class="title">收支记账</div>
         <div class="header">
-        	<table border="0" cellpadding="0" cellspacing="0">
+        	<table border="0" cellpadding="0" cellspacing="0" class="fontSize">
 	        	<tr>
-	        		<td></td><td class="w_50_px textR">凭证号：</td><td class="w_50_px textL">记-${voucherInfo.voucher.tagNumber!"0"?c}</td>
+	        		<td class="textL"><b>日期：</b>${voucherInfo.voucher.date!?string('yyyy-MM-dd')}</td><td class="w_50_px textR"><b>记账号：</b></td><td class="w_50_px textL">记-${voucherInfo.voucher.tagNumber!"0"?c}</td>
 	        	</tr>
 	        	<tr>
-	        		<td class="textL">&nbsp;&nbsp;&nbsp;&nbsp;单位：${voucherInfo.zoneName!"无"}</td><td class="textR">附件：</td><td class="textL">&nbsp;&nbsp;${voucherInfo.accessoryCount!?c}</td>
+	        		<td class="textL">&nbsp;&nbsp;&nbsp;&nbsp;<b>单位：</b>${voucherInfo.zoneName!"无"}</td><td class="textR"><b>附件：</b></td><td class="textL">&nbsp;&nbsp;${voucherInfo.accessoryCount!?c}</td>
 	        	</tr>
         	</table>
         </div>
         <div>
-             <table>
+             <table class="fontSize">
                  <tr>
-                     <td class="w_24_p">摘要</td>
-                     <td class="w_24_p">科目</td>
-                     <td class="w_24_p">辅助账</td>
-                     <td class="w_14_p">借方</td>
-                     <td class="w_14_p">贷方</td>
+                     <td class="w_24_p"><b>摘要</b></td>
+                     <td class="w_24_p"><b>科目</b></td>
+                     <td class="w_24_p"><b>辅助账</b></td>
+                     <td class="w_14_p"><b>收入</b></td>
+                     <td class="w_14_p"><b>支出</b></td>
                  </tr>
                  <#list voucherInfo.voucher.accountsFinancialinforms! as accountsFinancialinform > 
-    			 	<tr class="fontStyle">
+    			 	<tr>
                         <td>${accountsFinancialinform.digest!}</td>
                         <td>${accountsFinancialinform.accountsSubject.levelInfo!}</td>
                         <td>${accountsFinancialinform.auxiliary!}</td>
@@ -129,17 +116,17 @@
                      <td colspan="5">&nbsp;</td>
                  </tr>
                  <tr>
-                     <td>人民币（大写）</td>
-                     <td colspan="2"></td>
-                     <td></td>
-                     <td></td>
+                     <td><b>人民币（大写）</b></td>
+                     <td colspan="2">${voucherInfo.aggregateChinese!"无数据"}</td>
+                     <td class="fontStyle">${voucherInfo.earningSum!?c}</td>
+                     <td class="fontStyle">${voucherInfo.expenditureSum!?c}</td>
                  </tr>
              </table>
         </div>
-        <div class="footer">
-			<div class="inputBox"><span>记账/制单：</span>${voucherInfo.voucher.makeUsername!}</div>
-			<div class="inputBox"><span>审核：${voucherInfo.accounts.auditor!}</span></div>
-			<div class="inputBox"><span>复核：</span></div>
+        <div class="footer fontSize">
+			<div class="inputBox"><span><b>记账/制单：</b></span>${voucherInfo.voucher.makeUsername!}</div>
+			<div class="inputBox"><span><b>审核：</b>${voucherInfo.accounts.auditor!}</span></div>
+			<div class="inputBox"><span><b>复核：</b></span></div>
         </div>
     </div>
 </#list>

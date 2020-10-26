@@ -77,4 +77,10 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleDao, SysUserR
 	public List<String> queryRoleNameList(Long userId) {
 		return baseMapper.queryRoleNameList(userId);
 	}
+
+	@Override
+	public Long getMinRoleIdByUserId(Long userId) {
+		return baseMapper.getMinRoleIdByUserId(userId);
+
+	}
 }

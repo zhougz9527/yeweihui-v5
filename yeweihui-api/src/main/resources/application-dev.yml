@@ -11,18 +11,9 @@ spring:
 #      username: cutie
 #      password: chenyang007
 #      url: jdbc:mysql://127.0.0.1:3306/yeweihui_prod?useUnicode=true&characterEncoding=utf8&useSSL=true&verifyServerCertificate=false
-
-#      url: jdbc:mysql://129.204.83.206:3306/yeweihui-dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
-#      username: root
-#      password: jinMu@123!456*?
-
-#      url: jdbc:mysql://127.0.0.1:3306/yeweihui_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
+#      url: jdbc:mysql://127.0.0.1:3306/yeweihui-dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
 #      username: root
 #      password: 123456
-
-#      url: jdbc:mysql://rm-bp1k07h3k0tm18j2yuo.mysql.rds.aliyuncs.com:3306/yeweihui_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
-#      username: jmkj_admin
-#      password: 9c4ce9fdf32c7d7b7b22f1aa583d465@
 
       url: jdbc:mysql://122.51.51.37:8500/yeweihui?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong&useSSL=true&verifyServerCertificate=false
       username: admin

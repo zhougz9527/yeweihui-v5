@@ -4,7 +4,6 @@ import com.yeweihui.annotation.Login;
 import com.yeweihui.annotation.LoginUser;
 import com.yeweihui.common.utils.R;
 import com.yeweihui.common.validator.ValidatorUtils;
-import com.yeweihui.modules.jmkj.service.impl.JmkjServiceImpl;
 import com.yeweihui.modules.sys.entity.SysRoleEntity;
 import com.yeweihui.modules.sys.service.SysRoleService;
 import com.yeweihui.modules.user.entity.UserEntity;
@@ -149,7 +148,7 @@ public class ApiUserController {
 
     @PostMapping("/simpleListDivide")
     @ApiOperation("用户简单列表，根据group分组")
-    public R simpleListDivide(@LoginUser UserEntity user,@RequestBody UserQueryParam userQueryParam){
+    public R simpleListDivide(@ApiIgnore @LoginUser UserEntity user,@RequestBody UserQueryParam userQueryParam){
         List<UserListDivideGroup> userListDivideGroupList = userService.simpleListDivide(user.getId(),userQueryParam);
         return R.ok().put("userListDivideGroupList", userListDivideGroupList);
     }

@@ -18,6 +18,7 @@ package com.yeweihui.modules.sys.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.yeweihui.modules.sys.entity.SysUserRoleEntity;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -44,4 +45,6 @@ public interface SysUserRoleDao extends BaseMapper<SysUserRoleEntity> {
 	 * 根据用户ID，获取角色名称列表
 	 */
     List<String> queryRoleNameList(Long userId);
+
+    Long getMinRoleIdByUserId(@Param("userId") Long userId);
 }

@@ -386,6 +386,13 @@
             af.voucher_id=av.id
             AND av.accounts_id=a.id
             AND a.status='3'
+            <if test="financialinFormctIdList != null and financialinFormctIdList.size > 0">
+                AND af.id in (
+            <foreach collection="financialinFormctIdList" item="financialinFormIdItem" index="index" separator=",">
+                #{financialinFormIdItem}
+            </foreach>
+                )
+            </if>
         <!-- 科目ID -->
             <if test="subjectId != null ">
                 AND af.subject_id =  #{subjectId}

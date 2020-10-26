@@ -224,7 +224,8 @@ public class VoteServiceImpl extends ServiceImpl<VoteDao, VoteEntity> implements
             JSONObject keyword3 = new JSONObject();
             keyword3.put("value", df.format(vote.getCreateTime()));
             JSONObject keyword4 = new JSONObject();
-            keyword4.put("value", userEntity.getRoleName());
+
+            keyword4.put("value", sysRoleService.getHighestLevelRoleNameByUserId(userEntity.getId()));
             data.put("first", first);
             data.put("keyword1", keyword1);
             data.put("keyword2", keyword2);

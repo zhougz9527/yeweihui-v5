@@ -156,6 +156,13 @@
         .el-date-editor .el-range-separator{
             width: auto;
         }
+        .ui-jqgrid tr.jqgrow td { white-space: normal !important; height:auto; }
+        
+        .ui-jqgrid-htable tr,.ui-jqgrid-btable tr,.table>tbody>tr>td.active{
+        background: rgb(125,186,198);
+    	color:#fff;
+    	}
+    	.table>tbody>tr.success>td,.table>tbody>tr.active>td,.table>thead>tr>th.active{background: rgb(95,156,168);}
     </style>
 </head>
 
@@ -178,7 +185,7 @@
                 </div>
             </div>
             <div class="form-group col-sm-2">
-                <div class="col-sm-2 control-label">凭证字号</div>
+                <div class="col-sm-2 control-label">记账字号</div>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" v-model="q.number" @keyup.enter="query" />
                 </div>
@@ -192,7 +199,7 @@
             <div class="form-group col-sm-2">
                 <div class="col-sm-2 control-label">科目</div>
                 <div class="col-sm-10">
-                    <el-cascader :options="options"  v-model="q.select" :show-all-levels="false" @change="changSelect"></el-cascader>
+                    <el-cascader :options="options"  v-model="q.select" :show-all-levels="false" @change="changSelect" clearable></el-cascader>
                 </div>
             </div>
         </div>

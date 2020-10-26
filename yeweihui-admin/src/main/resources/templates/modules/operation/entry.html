@@ -67,6 +67,14 @@
 .el-form-item {
     margin-bottom: 0px;
 }
+
+.el-table th, .el-table tr {
+    background: rgb(125,186,198);
+    color:#fff;
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td{
+	background: rgb(95,156,168); !important;
+}
 </style>
 <script>
 
@@ -115,8 +123,7 @@ var Role_Voucher_List = ${shiro.hasPermission(byPageInfo+"accounts:voucher:list"
 				<template>
 				<div style="width:60%; margin:auto;">
 				<el-alert title="当前时间不允许对账簿进行封账。" type="error" center show-icon v-show="!isCanSealingAccount" :closable="false" style="margin-top:10px;"></el-alert>
-				<el-alert title="当前账簿对账单信息为空，不影响提交。" type="warning" center show-icon v-show="(fileList.length == 0)" :closable="false" style="margin-top:10px;"></el-alert>
-    			</div></template>
+				</div></template>
     			<div slot="footer" class="dialog-footer">
       				<el-button type="primary" @click="submitAduit" v-show="isCanSealingAccount">提交审核</el-button>
     			</div>
@@ -139,7 +146,7 @@ var Role_Voucher_List = ${shiro.hasPermission(byPageInfo+"accounts:voucher:list"
 				<el-tag type="info" size="medium" effect="dark" v-if="currentAccounts.status == 1">审核中</el-tag> 
 				<el-tag type="info" size="medium" effect="dark" v-if="currentAccounts.status == 2">审核失败</el-tag> 
 				<#if shiro.hasPermission(byPageInfo+"accounts:accounts:getStatementOfAccounts")>
-				<el-button type="warning" size="small" @click="accessoryManage">银行对账单管理</el-button>
+				<el-button type="warning" size="small" @click="accessoryManage" id="accessoryManage">银行对账单管理</el-button>
 				<el-dialog title="银行对账单管理" :visible.sync="dialogAccessoryVisible"> 
 					
 					<el-upload class="upload-demo" action="../../sys/oss/upload" :on-preview="handlePreview" :disabled="!canEdit() || !${shiro.hasPermission(byPageInfo+"accounts:accounts:updateStatementOfAccounts")?string("true","false")}" :on-remove="handleRemove" :before-remove="beforeRemove" :on-success="handleSuccess" :on-exceed="handleExceed" :before-upload="handleBeforeUpload" :file-list="fileList" list-type="picture" accept="image/jpeg,image/jpg,image/png"> 
@@ -228,7 +235,7 @@ var Role_Voucher_List = ${shiro.hasPermission(byPageInfo+"accounts:voucher:list"
 
 			<el-form :inline="true" style="margin-top: 70px;">
 				<#if shiro.hasPermission(byPageInfo+"accounts:voucher:list")>
-				<el-form-item label="凭证编号"><el-input-number v-model="q.voteTitle" size="small" controls-position="right" :min="1" :max="9999" @keyup.enter="query" placeholder="请输入"/></el-form-item>
+				<el-form-item label="记账编号"><el-input-number v-model="q.voteTitle" size="small" controls-position="right" :min="1" :max="9999" @keyup.enter="query" placeholder="请输入"/></el-form-item>
 				<el-form-item label="科目"><el-cascader size="small" :options="subjects" :props="{ value: 'id', label: 'name',children:'children',expandTrigger: 'hover'}" filterable :show-all-levels="true" clearable @change="subjectChange($event)"/></el-form-item>
 				<el-form-item label="日期">
 					<el-date-picker size="small" v-model="q.creatDate" align="right" type="date" placeholder="选择日期"
@@ -291,7 +298,7 @@ var Role_Voucher_List = ${shiro.hasPermission(byPageInfo+"accounts:voucher:list"
 			 <el-table ref="multipleTable" :data="tableData6" tooltip-effect="dark" border height="590" style="width: 100%; margin:10px auto; border-color:#ccc;" @selection-change="handleSelectionChange" :span-method="mergeVoucherRow" v-loading.lock="isLoadVoucherData" element-loading-text="" element-loading-background="rgba(255, 255, 255, 0.6)"> 
 			    <el-table-column type="selection"> </el-table-column> 
 			    <el-table-column prop="voucher.date" label="日期" align="center" min-width="100" :formatter="voucherDateFormat"> </el-table-column> 
-				<el-table-column label="凭证号" align="center" min-width="100"> 
+				<el-table-column label="记账号" align="center" min-width="100"> 
 					<template slot-scope="scope"> 记-{{scope.row.voucher.tagNumber}} </template> 
 				</el-table-column> 
 				<el-table-column prop="digest" label="摘要" align="center" min-width="100"> </el-table-column> 
@@ -301,11 +308,11 @@ var Role_Voucher_List = ${shiro.hasPermission(byPageInfo+"accounts:voucher:list"
 					</template>
 				</el-table-column> 
 				<el-table-column prop="auxiliary" label="辅助账" align="center" min-width="100"> </el-table-column> 
-				<el-table-column label="借方金额" align="center" min-width="100"> 
+				<el-table-column label="收入金额" align="center" min-width="100"> 
 					<template slot-scope="scope"> {{scope.row.monery}}<span v-if="scope.row.accountsSubject.rdtype == 1">{{scope.row.money}}</span> <span v-else>0</span> 
 					</template> 
 				</el-table-column> 
-				<el-table-column label="贷方金额" align="center" min-width="100"> 
+				<el-table-column label="支出金额" align="center" min-width="100"> 
 					<template slot-scope="scope"> <span v-if="scope.row.accountsSubject.rdtype == 2">{{scope.row.money}}</span> <span v-else>0</span>
 					</template> 
 				</el-table-column> 

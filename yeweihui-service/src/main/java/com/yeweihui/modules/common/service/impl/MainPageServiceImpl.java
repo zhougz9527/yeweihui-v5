@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static com.yeweihui.modules.enums.bill.BillStatusEnum.通过;
+
 @Service
 public class MainPageServiceImpl implements MainPageService {
 
@@ -95,7 +97,7 @@ public class MainPageServiceImpl implements MainPageService {
         VoteQueryParam voteQueryParam = new VoteQueryParam();
         voteQueryParam.setZoneId(userEntity.getZoneId());
         voteQueryParam.setParticipateUid(uid);
-        voteQueryParam.setVoteStatusList(Arrays.asList(0, 1, 2, 4));
+        voteQueryParam.setVoteStatusList(Arrays.asList(0));
         voteQueryParam.setVoteMemberStatus(VoteMemberStatusEnum.待操作.getCode());
         voteQueryParam.setVoteMemberType(VoteMemberTypeEnum.表决.getCode());
         int waitVoteVerifyCount = voteService.getCount(voteQueryParam);
@@ -106,6 +108,8 @@ public class MainPageServiceImpl implements MainPageService {
         paperQueryParam.setPaperStatus(PaperStatusEnum.未签收.getCode());
         paperQueryParam.setReceiverUid(uid);
         paperQueryParam.setPaperMemberStatus(PaperStatusEnum.未签收.getCode());
+        
+        paperQueryParam.setMinRecordStatus(2);
         int waitPaperVerifyCount = paperService.getCount(paperQueryParam);
         mainPage1VO.setWaitPaperVerifyCount(waitPaperVerifyCount);
         //费用报销数量
@@ -113,7 +117,7 @@ public class MainPageServiceImpl implements MainPageService {
         billQueryParam.setZoneId(userEntity.getZoneId());
         List<Integer> billStatusList = new ArrayList<>();
         billStatusList.add(BillStatusEnum.等待.getCode());
-        billStatusList.add(BillStatusEnum.通过.getCode());
+        billStatusList.add(通过.getCode());
         billStatusList.add(BillStatusEnum.未通过.getCode());
         billQueryParam.setVerifyUid(uid);
         billQueryParam.setBillMemberStatus(BillMemberStatusEnum.未审批.getCode());

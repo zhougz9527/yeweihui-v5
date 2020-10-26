@@ -45,4 +45,8 @@ public class AccountsFinancialinformQueryParam extends BaseQueryParam {
 	@ApiModelProperty(value = "科目ID - 绑定科目信息")
 	@Min(value = 0, message="科目ID必须为大于等于0的数值")
 	private Long subjectId;
+	@ApiModelProperty(value = "财务ID")
+	private String financialinFormctIds;
+	@ApiModelProperty(value = "财务ID集合")
+	private List<Long> financialinFormctIdList =new ArrayList<Long>();
 }

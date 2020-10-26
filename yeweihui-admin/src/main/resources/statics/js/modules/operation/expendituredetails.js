@@ -25,21 +25,20 @@ $(function () {
             limit: 5			//每页数量
         },
         colModel: [
-            { label: 'id', name: 'id', index: 'id', width: 50, key: true, cellattr: addCellAttr },
 
-            { label: '日期', name: 'date', index: 'date_id', width: 50, cellattr: addCellAttr },
-            { label: '凭证字号', name: 'tagNumber', index: 'zone_id', width: 80, cellattr: addCellAttr },
-            { label: '摘要', name: 'digest', index: 'uid', width: 80, cellattr: addCellAttr },
-            { label: '科目', name: 'accountsSubject.name', index: 'num', width: 80, cellattr: addCellAttr },
-            { label: '小区id', name: 'id', index: 'zone_id', width: 80, hidden: true },
-            { label: '辅助账', name: 'auxiliary', index: 'auxiliary_id', width: 80, cellattr: addCellAttr },
-            { label: '借方', name: 'debit', index: 'no_num', width: 80, cellattr: addCellAttr },
-            { label: '货方', name: 'credit', index: 'quit_num', width: 80, cellattr: addCellAttr },
-            { label: '附件张数', name: 'accessory.fileInfos.length', index: 'vote_item', width: 80, cellattr: addCellAttr },
+            { label: '日期', name: 'date', index: 'date_id', width: 50, cellattr: addCellAttr, sortable: false },
+            { label: '记账字号', name: 'tagNumber', index: 'zone_id', width: 80, cellattr: addCellAttr, sortable: false },
+            { label: '摘要', name: 'digest', index: 'uid', width: 80, cellattr: addCellAttr, sortable: false },
+            { label: '科目', name: 'accountsSubject.name', index: 'num', width: 80, cellattr: addCellAttr, sortable: false },
+            { label: '小区id', name: 'id', index: 'zone_id', width: 80, hidden: true, sortable: false },
+            { label: '辅助账', name: 'auxiliary', index: 'auxiliary_id', width: 80, cellattr: addCellAttr, sortable: false },
+            { label: '收入', name: 'debit', index: 'no_num', width: 80, cellattr: addCellAttr, sortable: false },
+            { label: '支出', name: 'credit', index: 'quit_num', width: 80, cellattr: addCellAttr, sortable: false },
+            { label: '附件张数', name: 'accessory.fileInfos.length', index: 'vote_item', width: 80, cellattr: addCellAttr, sortable: false },
 
-            { label: '制单人', name: 'makeUsername', index: 'zone_name', width: 80, cellattr: addCellAttr },
-            { label: '审核人', name: 'auditor', index: 'realname', width: 80, cellattr: addCellAttr },
-            { label: '单据', name: 'title', index: 'title', width: 80, formatter: vm.btnFormatter },
+            { label: '制单人', name: 'makeUsername', index: 'zone_name', width: 80, cellattr: addCellAttr, sortable: false },
+            { label: '审核人', name: 'auditor', index: 'realname', width: 80, cellattr: addCellAttr, sortable: false },
+            { label: '单据', name: 'title', index: 'title', width: 80, formatter: vm.btnFormatter, sortable: false },
         ],
         onSelectRow: function (id) {
             if (arr.indexOf(id) == -1) {
@@ -148,7 +147,7 @@ var vm = new Vue({
                     endDate: vm.q.value1[1],
                     digest: vm.q.voteTitle,
                     auxiliary: vm.subsidiary,
-                    subjectId: vm.subjectId,
+                    subjectId: (vm.q.select == null||vm.q.select.length==0)?null:vm.q.select[vm.q.select.length-1],
                     tagNumber: vm.q.number
                 },
                 page: page
@@ -214,13 +213,14 @@ function options(data) {
 
 // pdf 
 function viewPdfPrint(id) {
+    var ids = $("#jqGrid").jqGrid('getGridParam','selarrrow');
     vm.$confirm('是否导出pdf?', '提示', {
         confirmButtonText: '是',
         cancelButtonText: '不需要',
         distinguishCancelAndClose: true,
         type: 'info'
     }).then(() => {
-        window.open(baseURL + `accounts/financialinform/financialinformviewPdf?startDate=${vm.q.value1.length === 0 ? '' : vm.q.value1[0]}&endDate=${vm.q.value1.length === 0 ? '' : vm.q.value1[1]}&subjectId=${vm.subjectId}&auxiliary=${vm.subsidiary}&digest=${vm.q.voteTitle}&tagNumber=${vm.q.number}&limit=10&page=${pages}`);
+        window.open(baseURL + `accounts/financialinform/financialinformviewPdf?startDate=${vm.q.value1.length === 0 ? '' : vm.q.value1[0]}&endDate=${vm.q.value1.length === 0 ? '' : vm.q.value1[1]}&subjectId=${(vm.q.select==null||vm.q.select.length==0)?"":vm.q.select[vm.q.select.length-1]}&auxiliary=${vm.subsidiary}&digest=${vm.q.voteTitle}&tagNumber=${vm.q.number}&limit=10&page=${pages}&financialinFormctIds=`+ids);
     }).catch((action) => {
         console.log(action)
         if (action === 'cancel') {
@@ -229,15 +229,16 @@ function viewPdfPrint(id) {
     });
 }
 
-// pdf 
+// excel 
 function viewExcelPrint(id) {
+    var ids = $("#jqGrid").jqGrid('getGridParam','selarrrow');
     vm.$confirm('是否导出Excel?', '提示', {
         confirmButtonText: '是',
         cancelButtonText: '不需要',
         distinguishCancelAndClose: true,
         type: 'info'
     }).then(() => {
-        window.open(baseURL + `accounts/financialinform/exportExcel?startDate=${vm.q.value1.length === 0 ? '' : vm.q.value1[0]}&endDate=${vm.q.value1.length === 0 ? '' : vm.q.value1[1]}&subjectId=${vm.subjectId}&auxiliary=${vm.subsidiary}&digest=${vm.q.voteTitle}&tagNumber=${vm.q.number}&limit=10&page=${pages}`);
+        window.open(baseURL + `accounts/financialinform/exportExcel?startDate=${vm.q.value1.length === 0 ? '' : vm.q.value1[0]}&endDate=${vm.q.value1.length === 0 ? '' : vm.q.value1[1]}&subjectId=${(vm.q.select==null||vm.q.select.length==0)?"":vm.q.select[vm.q.select.length-1]}&auxiliary=${vm.subsidiary}&digest=${vm.q.voteTitle}&tagNumber=${vm.q.number}&limit=10&page=${pages}&financialinFormctIds=`+ids);
     }).catch((action) => {
         console.log(action)
         if (action === 'cancel') {

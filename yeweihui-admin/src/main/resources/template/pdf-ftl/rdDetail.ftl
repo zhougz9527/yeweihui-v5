@@ -63,12 +63,12 @@
 <table class="gridtable" align="center" >
             <tr>
                 <td>日期</td>
-                <td>凭证字号</td>
+                <td>记账字号</td>
                 <td>摘要</td>
                 <td>科目</td>
                 <td>辅助账</td>
-                <td>借方</td>
-                <td>货方</td>
+                <td>收入</td>
+                <td>支出</td>
                 <td>附件张数</td>
                 <td>制单人</td>
                 <td>审核人</td>

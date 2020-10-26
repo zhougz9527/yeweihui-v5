@@ -52,7 +52,7 @@ public class SwaggerConfig{
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("业委汇")
+            .title("蝴蝶居")
             .description("yeweihui-admin文档")
             .version("3.2.0")
             .build();

@@ -164,7 +164,7 @@ public class AnnounceServiceImpl extends ServiceImpl<AnnounceDao, AnnounceEntity
             JSONObject keyword3 = new JSONObject();
             keyword3.put("value", df.format(announceEntity.getCreateTime()));
             JSONObject keyword4 = new JSONObject();
-            keyword4.put("value", refUser.getRoleName());
+            keyword4.put("value", sysRoleService.getHighestLevelRoleNameByUserId(refUser.getId()));
             data.put("first", first);
             data.put("keyword1", keyword1);
             data.put("keyword2", keyword2);

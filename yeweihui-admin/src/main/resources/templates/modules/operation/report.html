@@ -178,7 +178,7 @@
         
         .accountInfoTable{ width:100%;}
         .accountInfoTable td{ line-height: 24px;}
-        .accountInfoTable td:first-child{text-align: right; width:75px; font-weight:bold; vertical-align: top;}
+        .accountInfoTable td:first-child{text-align: left; width:75px; font-weight:bold; vertical-align: top;}
 
         .panel-heading {
             text-align: center;
@@ -234,10 +234,11 @@
 
     <div id="rrapp" v-cloak>
         <div v-show="showList">
-            <div class="grid-btn">
+        	<div class="el-row">
+            <div class="grid-btn col-sm-12">
                 <div class="panel panel-default" style="width:auto; float: right;">
                     <div class="panel-heading" style="background:#ffffff; font-size: 16px; font-weight: bold; ">
-                        本小区公共银行收支的银行账户信息
+                        本小区公共收支的银行账户信息
                     </div>
                     <div class="panel-body" id="panelContent">
                     
@@ -267,6 +268,7 @@
                     </div>
                 </div>
             </div>
+            </div>
             <div>
                 <div class="layui-row">
                     <div class="layui-col-lg6 layui-col-md12">
@@ -276,13 +278,15 @@
                             	<div class="layui-card-header">
                                 <i class="fa fa-chevron-right" aria-hidden="true"></i>
                                 <span>月度报表</span>
-                                &nbsp;&nbsp;&nbsp;
                                 <span>
                                     <el-date-picker v-model="q.creatDate" type="month" :picker-options="pickerOptions0"
                                         placeholder="选择月" value-format="yyyy-MM" format="yyyy-MM" @change="chagnetime">
                                     </el-date-picker>
                                 </span>
+                                &nbsp;&nbsp;&nbsp;
+   
                                 <span class="float-right" @click="edit(0)">查看月度报表</span>
+ 
                             </div>
                             <div class="layui-card-body">
                                 <div class="border_black left_color" v-if="monthBlance.reports">
@@ -367,14 +371,14 @@
                         
                         	<div class="layui-col-md6 layui-col-sm12">
                         		<div class="pie"><div id="main2"></div></div>
-                        		<div class="pie"><div id="main3"></div></div>
+                        		<div class="pie"><div id="main1"></div></div>
                         	</div>
                         	<div class="layui-col-md6 layui-col-sm12">
-                        		<div class="pie"><div id="main1"></div></div>
+                        		<div class="pie"><div id="main3"></div></div>
                         		<div class="pie"><div id="main4"></div></div>
                         	</div>
                         	
-                    		<!-- <div style="text-align: right;cursor: pointer;color:#5FA1EA"><span>查看详情</span></div> -->
+                    		<div style="text-align: right;"><span style="cursor: pointer;color:#5FA1EA" onClick="targetMenu('expendituredetails')">查看详情</span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
                     	</div>
                     
                     </div>
@@ -485,7 +489,7 @@
                         		<div class="pie"><div id="main8"></div></div>
                         	</div>
                         	
-                    		<!-- <div style="text-align: right;cursor: pointer;color:#5FA1EA"><span>查看详情</span></div> -->
+                    		<div style="text-align: right;"><span style="cursor: pointer;color:#5FA1EA" onClick="targetMenu('expendituredetails')">查看详情</span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
                     	</div>
                     </div>
                 </div>

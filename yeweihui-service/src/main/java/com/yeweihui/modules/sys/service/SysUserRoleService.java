@@ -47,4 +47,11 @@ public interface SysUserRoleService extends IService<SysUserRoleEntity> {
 	 * 根据用户ID，获取角色名称列表
 	 */
     List<String> queryRoleNameList(Long userId);
+
+	/**
+	 *根据用户id查找其最小的roleId
+	 * @param userId
+	 * @return
+	 */
+	Long getMinRoleIdByUserId(Long userId);
 }

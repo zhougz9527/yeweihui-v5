@@ -56,4 +56,11 @@ public interface SysRoleService extends IService<SysRoleEntity> {
 	 * @return
 	 */
     List<SysRoleEntity> simpleList(SysRoleQueryParam sysRoleQueryParam);
+
+	/**
+	 * 根据用户id获取其最高级的角色名
+	 * @param userId
+	 * @return
+	 */
+	String getHighestLevelRoleNameByUserId(Long userId);
 }

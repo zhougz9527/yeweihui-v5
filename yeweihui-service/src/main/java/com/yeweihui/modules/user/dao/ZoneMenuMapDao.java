@@ -2,6 +2,7 @@ package com.yeweihui.modules.user.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.yeweihui.modules.user.entity.ZoneMenuMapEntity;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public interface ZoneMenuMapDao extends BaseMapper<ZoneMenuMapEntity> {
 
-    List<ZoneMenuMapEntity> selectListByZoneIdAndGroupId(Long zoneId, Long groupId);
+    List<ZoneMenuMapEntity> selectListByZoneIdAndGroupId(@Param("zoneId") Long zoneId, @Param("groupId")Long groupId);
 
     /**
      * 查询用户所在小区的所有菜单ID
@@ -25,6 +26,6 @@ public interface ZoneMenuMapDao extends BaseMapper<ZoneMenuMapEntity> {
     /**
      * 根据用户获取
      */
-    ZoneMenuMapEntity findZoneMenuMapByUserId(Long userId, Long groupId);
+    ZoneMenuMapEntity findZoneMenuMapByUserId(@Param("userId")Long userId, @Param("groupId")Long groupId);
 
 }

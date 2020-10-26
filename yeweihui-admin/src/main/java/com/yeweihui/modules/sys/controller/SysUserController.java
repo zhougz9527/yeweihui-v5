@@ -24,10 +24,12 @@ import com.yeweihui.common.validator.Assert;
 import com.yeweihui.common.validator.ValidatorUtils;
 import com.yeweihui.common.validator.group.AddGroup;
 import com.yeweihui.common.validator.group.UpdateGroup;
+import com.yeweihui.modules.sys.service.SysRoleService;
 import com.yeweihui.modules.sys.service.SysUserRoleService;
 import com.yeweihui.modules.sys.shiro.ShiroUtils;
 import com.yeweihui.modules.user.entity.UserEntity;
 import com.yeweihui.modules.user.service.UserService;
+import org.apache.catalina.User;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,8 @@ public class SysUserController extends AbstractController {
 	private UserService userService;
 	@Autowired
 	private SysUserRoleService sysUserRoleService;
+	@Autowired
+	private SysRoleService sysRoleService;
 	
 	/**
 	 * 所有用户列表
@@ -60,7 +64,12 @@ public class SysUserController extends AbstractController {
 	/*@RequiresPermissions("sys:user:list")*/
 	public R list(@RequestParam Map<String, Object> params){
 		PageUtils page = userService.queryPage(params);
-
+		for (Object user : page.getList()) {
+			String roleName = sysRoleService.getHighestLevelRoleNameByUserId(((UserEntity) user).getId());
+			if (null != roleName) {
+				((UserEntity) user).setRoleName(roleName);
+			}
+		}
 		return R.ok().put("page", page);
 	}
 
@@ -84,7 +93,12 @@ public class SysUserController extends AbstractController {
 	 */
 	@RequestMapping("/info")
 	public R info(){
-		return R.ok().put("user", getUser());
+		UserEntity user = getUser();
+		String roleName = sysRoleService.getHighestLevelRoleNameByUserId(user.getId());
+		if (null != roleName) {
+			user.setRoleName(roleName);
+		}
+		return R.ok().put("user", user);
 	}
 	
 	/**
@@ -130,6 +144,10 @@ public class SysUserController extends AbstractController {
 	@RequestMapping("/infoMore/{userId}")
 	public R infoMore(@PathVariable("userId") Long userId){
 		UserEntity user = userService.info(userId);
+		String roleName = sysRoleService.getHighestLevelRoleNameByUserId(user.getId());
+		if (null != roleName) {
+			user.setRoleName(roleName);
+		}
 		return R.ok().put("user", user);
 	}
 	

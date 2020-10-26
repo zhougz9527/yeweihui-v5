@@ -7,10 +7,9 @@
  */
 $(function () {
 
-    //获取小区列表
-    // vm.getZonesList();
     // vm.initData();
     vm.getMonthStatistical();  // 月度
+    vm.getYearStatistical();   // 年度
 
     // $('#upload-file-form').change(function () {
     //     importExcel();
@@ -45,6 +44,7 @@ var vm = new Vue({
         q: {
             zoneId: null,
             groupId: null,
+            acconutsId : null,
             voteTitle: null,
             creatDate: null,
             yearDate: null,
@@ -61,7 +61,6 @@ var vm = new Vue({
 
     },
     mounted() {
-        this.getYearStatistical();   // 年度
         this.getCellList(); // 查询小区信息
     },
     methods: {
@@ -77,10 +76,10 @@ var vm = new Vue({
             vm.getYearDetails();
         },
         chagnetime() {
-            this.getMonthStatistical(this.q.creatDate)
+            this.getMonthStatistical()
         },
         yearchange() {
-            this.getYearStatistical(this.q.yearDate);   // 年度
+            this.getYearStatistical();   // 年度
         },
         modify() {
             let that = this;
@@ -128,17 +127,19 @@ var vm = new Vue({
                 }
             })
         },
-        getMonthStatistical(time) {
+        getMonthStatistical() {
             let that = this;
             //  月度报表
             $.ajax({
                 type: 'GET',
-                url: baseURL + `accounts/reports/monthStatistical?statisticalDate=${time ? time : ''}`,
+                url: baseURL + `accounts/reports/monthStatistical?statisticalDate=${this.q.creatDate ? this.q.creatDate : ''}`,
                 contentType: "application/json",
                 success: function (r) {
                     if (r.code === 0) {
                         that.monthBlance = r.data;
-                        vm.q.creatDate = (r.data.statisticalDate == null)?"":r.data.statisticalDate.substring(0, 7)
+                        vm.q.creatDate = (r.data.statisticalDate == null)?"":r.data.statisticalDate.substring(0, 7);
+                        vm.q.zoneId = (r.data.zoneId || r.data.zoneId>0)?r.data.zoneId:null;
+                        vm.q.acconutsId = (r.data.acconutsId || r.data.acconutsId>0)?r.data.zoneId:32;
                         vm.isNull = r.data.isNull;
                         if (vm.isNull == 1) {
                         	vm.$message.warning('该月份财务未提交报表，请联系财务或等待财务提交');
@@ -169,17 +170,18 @@ var vm = new Vue({
             })
 
         },
-        getYearStatistical(time) {
+        getYearStatistical() {
             let that = this;
             // 年度报表
             $.ajax({
                 type: 'GET',
-                url: baseURL + `accounts/reports/yearStatistical?statisticalDate=${time ? time : ''}`,
+                url: baseURL + `accounts/reports/yearStatistical?statisticalDate=${this.q.yearDate ? this.q.yearDate : ''}`,
                 contentType: "application/json",
                 success: function (r) {
                     if (r.code === 0) {
                         that.yearBlance = r.data;
                         vm.q.yearDate = (r.data.statisticalDate == null)?"":(r.data.statisticalDate).toString();
+                        vm.q.zoneId = (r.data.zoneId==0)?null:r.data.zoneId;
                         vm.isNullyear = r.data.isNull;
                         if (vm.isNullyear == 1) {
                         	vm.$message.warning('该年度未提交报表，请联系财务或等待财务提交');
@@ -359,6 +361,7 @@ var vm = new Vue({
             // 打印
         }
     }
+    
 })
 
 
@@ -525,5 +528,28 @@ function viewPdfPrintYear(id) {
             //             window.open(baseURL + `operation/announce/viewPdf/${id}/no`);
         }
     });
+}
+
+// 跳转菜单
+function targetMenu(tag){
+	
+	var targerATag = [];
+	switch(tag){
+		case "expendituredetails":targerATag = $("a[href='#modules/operation/expendituredetails.html']", window.parent.document);break;
+		default:targerATag = null;break;
+	}
+	if(targerATag != null)
+	{
+		if(targerATag.length > 0)
+		{
+  			targerATag[0].click();
+		}else
+		{
+			vm.$message.warning('当前用户无权跳转到指定模块！')
+		}
+	}else
+	{
+		vm.$message.warning('未找到跳转菜单信息！')
+	}
 }
 

@@ -214,36 +214,18 @@ public class BflyUserServiceImpl extends ServiceImpl<BflyUserDao, BflyUser> impl
         bflyUserCertRecord.setUnitName(submitCertFrom.getUnitName());
         bflyUserCertRecord.setFloorName(submitCertFrom.getFloorName());
         bflyUserCertRecord.setCheckHeaderUrl(submitCertFrom.getCheckHeaderUrl());
-        String checkHouseCertificateUrl1 = null;
-        String checkHouseCertificateUrl2 = null;
-        String checkHouseCertificateUrls = submitCertFrom.getCheckHouseCertificateUrl();
-        if (StringUtils.isNotBlank(checkHouseCertificateUrls)) {
-            String[] checkHouseCertificateUrlSplit= checkHouseCertificateUrls.split(",");
-            switch (checkHouseCertificateUrlSplit.length) {
-                case 2:
-                    checkHouseCertificateUrl2 = checkHouseCertificateUrlSplit[1];
-                case 1:
-                    checkHouseCertificateUrl1 = checkHouseCertificateUrlSplit[0];
-                default:
-            }
-        }
+
+        List<String> houseCertUrls = getStrsFromStrArray(submitCertFrom.getCheckHouseCertificateUrl(), 2);
+        String checkHouseCertificateUrl1 = houseCertUrls.get(0);
+        String checkHouseCertificateUrl2 = houseCertUrls.get(1);
+
         bflyUserCertRecord.setCheckHouseCertificateUrl(checkHouseCertificateUrl1);
         bflyUserCertRecord.setCheckHouseCertificateUrlExtra1(checkHouseCertificateUrl2);
         bflyUserCertRecord.setCheckIdCard(submitCertFrom.getCheckIdCard());
-        
-        String checkIdCardUrl1 = null;
-        String checkIdCardUrl2 = null;
-        String checkIdCardUrls = submitCertFrom.getCheckIdCardUrl();
-        if (null != checkIdCardUrls) {
-            String[] checkIdCardUrlSplit= checkIdCardUrls.split(",");
-            switch (checkIdCardUrlSplit.length) {
-                case 2:
-                    checkIdCardUrl1 = checkIdCardUrlSplit[1];
-                case 1:
-                    checkIdCardUrl2 = checkIdCardUrlSplit[0];
-                default:
-            }
-        }
+
+        List<String> checkIdCardUrls = getStrsFromStrArray(submitCertFrom.getCheckIdCardUrl(), 2);
+        String checkIdCardUrl1 = checkIdCardUrls.get(0);
+        String checkIdCardUrl2 = checkIdCardUrls.get(1);
         bflyUserCertRecord.setCheckIdCardUrl(checkIdCardUrl1);
         bflyUserCertRecord.setCheckIdCardUrlExtra1(checkIdCardUrl2);
         bflyUserCertRecord.setCheckPhoneNum(submitCertFrom.getCheckPhoneNum());
@@ -335,6 +317,28 @@ public class BflyUserServiceImpl extends ServiceImpl<BflyUserDao, BflyUser> impl
             sendMsgToAdmin(submitCertFrom.getZoneId());
             return "提交成功，小区管理员会帮您审核";
         }
+    }
+
+    /**
+     * 从'，'号隔开的String中获取size个非空白字符
+     * @param strArray
+     * @param size
+     * @return
+     */
+    public static List<String> getStrsFromStrArray(String strArray, int size) {
+        List<String> strings = new LinkedList<String>();
+        if (StringUtils.isNotBlank(strArray)) {
+            String[] split= strArray.split(",");
+            for (int i = 0; i < split.length; i++) {
+                if (StringUtils.isNotBlank(split[i])) {
+                    strings.add(split[i]);
+                }
+            }
+        }
+        while (strings.size() < size) {
+            strings.add(null);
+        }
+        return strings;
     }
 
     //给管理员发送短信

@@ -5,7 +5,9 @@ import com.yeweihui.common.utils.R;
 import com.yeweihui.modules.common.service.MainPageService;
 import com.yeweihui.modules.operation.entity.MenuMapEntity;
 import com.yeweihui.modules.sys.entity.SysMenuEntity;
+import com.yeweihui.modules.sys.entity.SysRoleEntity;
 import com.yeweihui.modules.sys.service.SysMenuService;
+import com.yeweihui.modules.sys.service.SysRoleService;
 import com.yeweihui.modules.user.entity.UserEntity;
 import com.yeweihui.modules.user.entity.ZoneGroupEntity;
 import com.yeweihui.modules.user.entity.ZoneMenuMapEntity;
@@ -45,6 +47,9 @@ public class ApiMainPageController {
     @Autowired
     private ZoneGroupService zoneGroupService;
 
+//    @Autowired
+//    private SysRoleService sysRoleService;
+
 //    private static Map<String, List<String>> historyMenuMap = new HashMap<String, List<String>>() {{
 //        put("list", new ArrayList<String>(){{ add("stamp"); add("vote"); add("meeting");
 //        add("mypaper");add("mybill"); add("mynotice"); }});
@@ -63,6 +68,9 @@ public class ApiMainPageController {
         Long userId = userIdQueryParam.getUid();
         List<SysMenuEntity> menuList = sysMenuService.getUserMenuList(userId);
         UserEntity userEntity = userService.info(userId);
+
+        //后台修改角色名称后导致的bug，打开注解替换下面行，未测试
+//        String group = userService.getGroupByRoleName(sysRoleService.selectById(userEntity.getRoleId()).getRoleName());
         String group = userService.getGroupByRoleName(userEntity.getRoleName());
 
         Map<String, List<MenuMapEntity>> menuListMap = sysMenuService.findMenuMapByUserId(userId);
@@ -93,13 +101,19 @@ public class ApiMainPageController {
 //         蝴蝶投票小程序添加的逻辑
         ZoneGroupEntity zoneGroupEntity = zoneGroupService.selectOne(new EntityWrapper<ZoneGroupEntity>().eq("group_name", group));
         List<ZoneMenuMapEntity> zoneMenuMapEntities = zoneMenuMapService.selectListByZoneIdAndGroupId(userEntity.getZoneId(), zoneGroupEntity.getId());
-        if (null != zoneMenuMapEntities) {
+        if (null != zoneMenuMapEntities && 0 != zoneMenuMapEntities.size()) {
             String menuMapIds = zoneMenuMapEntities.get(0).getMenuMapIds();
             List<String> ids = Arrays.asList(menuMapIds.split(","));
             if (ids.contains("44")) {
                 ret.get("history").get("list").add("ownmeeting");// 业主大会
+
             }
         }
+
+        ret.get("index").get("grid").add("added");
+        ret.get("my").get("list").add("expenditure");
+        ret.get("my").get("list").add("version");
+
         return R.ok().put("menuMap", ret);
     }
 
