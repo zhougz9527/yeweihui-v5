@@ -4,14 +4,14 @@ server:
     uri-encoding: UTF-8
     max-threads: 1000
     min-spare-threads: 30
-  port: 8180
+  port: 8080
   servlet:
 #    context-path: /yeweihui-admin
     context-path: /
 
 spring:
   profiles:
-   active: prod
+   active: dev
    #active: dev
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
